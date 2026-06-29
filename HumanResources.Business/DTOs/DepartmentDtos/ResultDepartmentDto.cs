@@ -7,7 +7,7 @@ namespace HumanResources.Business.DTOs.DepartmentDtos
     {
         public string Ad { get; set; }
         public int YoneticiId { get; set; }
-        public UserDto Yonetici { get; set; }
+        //public UserDto Yonetici { get; set; }
         public string YoneticiAdSoyad { get; set; }
         public int BirimlerCount { get; set; }
         public int PersonellerCount { get; set; }

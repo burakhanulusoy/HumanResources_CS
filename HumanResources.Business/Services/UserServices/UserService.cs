@@ -1,0 +1,144 @@
+using FluentValidation;
+using HumanResources.Business.Base;
+using HumanResources.Business.DTOs.UserDtos;
+using HumanResources.Entity.Entities;
+using Mapster;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+namespace HumanResources.Business.Services.UserServices
+{
+    public class UserService(UserManager<AppUser> _userManager, IValidator<CreateUserDto> _createValidator,IValidator<UpdateUserDto> _updateValidator) : IUserService
+    {
+        public async Task<BaseResult<object>> CreateAsync(CreateUserDto createDto)
+        {
+            var validationResult = await _createValidator.ValidateAsync(createDto);
+
+            if (!validationResult.IsValid)
+            {
+
+                return BaseResult<object>.Fail(validationResult.Errors);
+            }
+
+            var user = createDto.Adapt<AppUser>();       
+
+            user.IseGirisTarihi = DateTime.UtcNow;
+           
+
+            if (user.DogumTarihi != default)
+            {
+                user.DogumTarihi = DateTime.SpecifyKind(user.DogumTarihi, DateTimeKind.Utc);
+            }
+
+
+            user.UserName = createDto.UserName;
+            user.Email = createDto.Email;
+
+            var result = await _userManager.CreateAsync(user, createDto.Password);
+
+            if (!result.Succeeded)
+            {
+                // Identity hatalarýný (Password çok kýsa, username zaten var vs.) string listesine çeviriyoruz
+                return BaseResult<object>.Fail(result.Errors);
+            }
+
+            return BaseResult<object>.Success(new { Message = "Kullanýcý baþarýyla oluþturuldu." });
+        }
+
+        public async Task<BaseResult<object>> DeleteAsync(int id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+
+            if (user is null)
+            {
+                return BaseResult<object>.Fail("User Not Found");
+            }
+
+
+            user.IstenAyrilisTarihi = DateTime.UtcNow;
+
+            user.SilindiMi = true;
+
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                return BaseResult<object>.Fail(result.Errors);
+            }
+
+            return BaseResult<object>.Success(new { Message = "Deleted Success" });
+        }
+
+        public async Task<BaseResult<List<ResultUserDto>>> GetAllAsync()
+        {
+            var users = await _userManager.Users
+                .Include(u => u.Amir)
+                .Include(u => u.Departman)
+                .Include(u => u.Birim)
+                .AsNoTracking()
+                .ToListAsync();
+
+            TypeAdapterConfig<AppUser, ResultUserDto>.NewConfig()
+                .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null);
+
+            var userDtos = users.Adapt<List<ResultUserDto>>();
+
+            return BaseResult<List<ResultUserDto>>.Success(userDtos);
+        }
+
+        public async Task<BaseResult<ResultUserDto>> GetByIdAsync(int id)
+        {
+            var user = await _userManager.Users
+                 .Include(u => u.Departman)
+                 .Include(u => u.Birim)
+                 .AsNoTracking()
+                 .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (user is null)
+            {
+                return BaseResult<ResultUserDto>.Fail("User Not Found");
+            }
+
+            var userDto = user.Adapt<ResultUserDto>();
+
+            return BaseResult<ResultUserDto>.Success(userDto);
+        }
+
+        public async Task<BaseResult<object>> UpdateAsync(UpdateUserDto updateDto)
+        {
+            var validationResult = await _updateValidator.ValidateAsync(updateDto);
+
+            if (!validationResult.IsValid)
+            {
+                return BaseResult<object>.Fail(validationResult.Errors);
+            }
+
+            var user = await _userManager.FindByIdAsync(updateDto.Id.ToString());
+
+            if (user is null)
+            {
+                return BaseResult<object>.Fail("User Not Found");
+            }
+
+            updateDto.Adapt(user);
+
+            if (user.DogumTarihi != default)
+            {
+                user.DogumTarihi = DateTime.SpecifyKind(user.DogumTarihi, DateTimeKind.Utc);
+            }
+
+            user.IstenAyrilisTarihi = null;
+          
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+              
+                return BaseResult<object>.Fail(result.Errors);
+            }
+
+            return BaseResult<object>.Success();
+        }
+    }
+}

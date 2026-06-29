@@ -6,6 +6,7 @@ namespace HumanResources.Business.DTOs.UserDtos
     public class ResultUserDto 
     {
         // IdentityUser'dan Gelen Temel Özellikler
+        public int Id { get; set; }
         public string? UserName { get; set; }
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
@@ -39,10 +40,10 @@ namespace HumanResources.Business.DTOs.UserDtos
 
         //iliþkiler
         public int DepartmanId { get; set; }
-        public ResultDepartmentDto Departman { get; set; }
+        public DepartmentDto Departman { get; set; }
 
         public int BirimId { get; set; }
-        public ResultUnitDto Birim { get; set; }
+        public UnitDto Birim { get; set; }
 
         // ResultUserDto içinde sadece "Amir"in kim olduðunu tut
         public int? AmirId { get; set; }

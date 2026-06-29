@@ -40,10 +40,8 @@ namespace HumanResources.Business.DTOs.UserDtos
 
         //iliþkiler
         public int DepartmanId { get; set; }
-        public DepartmentDto Departman { get; set; }
 
         public int BirimId { get; set; }
-        public UnitDto Birim { get; set; }
 
         // ResultUserDto içinde sadece "Amir"in kim olduðunu tut
         public int? AmirId { get; set; }
