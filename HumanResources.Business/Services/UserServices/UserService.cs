@@ -1,6 +1,8 @@
 using FluentValidation;
 using HumanResources.Business.Base;
+using HumanResources.Business.DTOs.JwtTokenDto;
 using HumanResources.Business.DTOs.UserDtos;
+using HumanResources.Business.Services.JwtServices;
 using HumanResources.Entity.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
@@ -8,7 +10,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HumanResources.Business.Services.UserServices
 {
-    public class UserService(UserManager<AppUser> _userManager, IValidator<CreateUserDto> _createValidator,IValidator<UpdateUserDto> _updateValidator) : IUserService
+    public class UserService(UserManager<AppUser> _userManager
+                            , IValidator<CreateUserDto> _createValidator
+                            ,IValidator<UpdateUserDto> _updateValidator
+                            ,IJwtService _jwtService ) : IUserService
     {
 
 
@@ -81,7 +86,7 @@ namespace HumanResources.Business.Services.UserServices
 
         public async Task<BaseResult<List<UserDto>>> GetAllAsync()
         {
-            var items = await _userManager.Users.AsNoTracking().ToListAsync();
+            var items = await _userManager.Users.Include(x=>x.Amir).AsNoTracking().ToListAsync();
 
             TypeAdapterConfig<AppUser, UserDto>.NewConfig()
               .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null);
@@ -144,6 +149,27 @@ namespace HumanResources.Business.Services.UserServices
             var userDto = user.Adapt<ResultUserDto>();
 
             return BaseResult<ResultUserDto>.Success(userDto);
+        }
+
+        public async Task<BaseResult<TokenResponseDto>> LoginUserAsync(LoginUserDto loginUserDto)
+        {
+            var user = await _userManager.FindByNameAsync(loginUserDto.UserName);
+
+            if (user is null)
+            {
+                return BaseResult<TokenResponseDto>.Fail("Kullanýcý kaydý bulunamadý");
+            }
+
+            var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, loginUserDto.Password);
+
+            if (!isPasswordCorrect)
+            {
+                return BaseResult<TokenResponseDto>.Fail("Kullanýcý adý veya þifre hatalý");
+            }
+
+            var tokenResponse = await _jwtService.GenerateTokenAsync(user);
+
+            return BaseResult<TokenResponseDto>.Success(tokenResponse);
         }
 
         public async Task<BaseResult<object>> UpdateAsync(UpdateUserDto updateDto)

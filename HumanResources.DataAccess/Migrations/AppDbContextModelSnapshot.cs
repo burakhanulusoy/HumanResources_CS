@@ -192,6 +192,9 @@ namespace HumanResources.DataAccess.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<int?>("VardiyaId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AmirId");
@@ -206,6 +209,8 @@ namespace HumanResources.DataAccess.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("VardiyaId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -270,6 +275,44 @@ namespace HumanResources.DataAccess.Migrations
                     b.HasIndex("YoneticiId");
 
                     b.ToTable("Departmanlar");
+                });
+
+            modelBuilder.Entity("HumanResources.Entity.Entities.Vardiya", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Aciklama")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("AraDinlenmeSuresiDk")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeSpan>("BaslangicSaati")
+                        .HasColumnType("interval");
+
+                    b.Property<TimeSpan>("BitisSaati")
+                        .HasColumnType("interval");
+
+                    b.Property<TimeSpan>("CalismaSuresi")
+                        .HasColumnType("interval");
+
+                    b.Property<DateTime>("GuncellenmeTarihi")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("OlusturulmaTarihi")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("SilindiMi")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Vardiya");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -394,11 +437,17 @@ namespace HumanResources.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("HumanResources.Entity.Entities.Vardiya", "Vardiya")
+                        .WithMany("Personeller")
+                        .HasForeignKey("VardiyaId");
+
                     b.Navigation("Amir");
 
                     b.Navigation("Birim");
 
                     b.Navigation("Departman");
+
+                    b.Navigation("Vardiya");
                 });
 
             modelBuilder.Entity("HumanResources.Entity.Entities.Birim", b =>
@@ -487,6 +536,11 @@ namespace HumanResources.DataAccess.Migrations
                 {
                     b.Navigation("Birimler");
 
+                    b.Navigation("Personeller");
+                });
+
+            modelBuilder.Entity("HumanResources.Entity.Entities.Vardiya", b =>
+                {
                     b.Navigation("Personeller");
                 });
 #pragma warning restore 612, 618

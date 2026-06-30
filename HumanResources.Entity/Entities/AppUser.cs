@@ -44,6 +44,9 @@ namespace HumanResources.Entity.Entities
         public string SgkSicilNo { get; set; }
 
 
+        public int? VardiyaId { get; set; }
+        public Vardiya? Vardiya { get; set; }
+
 
         // Log ve Soft Delete
         public DateTime OlusturulmaTarihi { get; set; }

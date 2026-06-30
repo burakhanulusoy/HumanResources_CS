@@ -17,7 +17,7 @@ namespace HumanResources.API.Controllers
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var response = await _departmentService.GetByIdAsync(id);
