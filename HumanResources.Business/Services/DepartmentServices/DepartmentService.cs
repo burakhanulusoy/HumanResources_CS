@@ -5,6 +5,7 @@ using HumanResources.DataAccess.Repositories.DepartmentRepositories;
 using HumanResources.DataAccess.UOW;
 using HumanResources.Entity.Entities;
 using Mapster;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,22 +14,35 @@ namespace HumanResources.Business.Services.DepartmentServices
     public class DepartmentService(IDepartmentRepository _departmentRepository
                                    ,IUnitOfWork _unitOfWork
                                    ,IValidator<UpdateDepartmentDto> _updateValidator
-                                   ,IValidator<CreateDepartmentDto> _createValidator) : IDepartmentService
+                                   ,IValidator<CreateDepartmentDto> _createValidator
+                                   ,UserManager<AppUser> _userManager) : IDepartmentService
     {
         public async Task<BaseResult<object>> CreateAsync(CreateDepartmentDto createDto)
         {
-            var department = createDto.Adapt<Departman>();
-
             var validationResult = await _createValidator.ValidateAsync(createDto);
-
-            if(!validationResult.IsValid)
+            if (!validationResult.IsValid)
             {
-                return BaseResult<object>.Fail(validationResult.Errors); 
-
+                return BaseResult<object>.Fail(validationResult.Errors);
             }
 
-            await _departmentRepository.CreateAsync(department);
+            if (createDto.YoneticiId.HasValue)
+            {
+                var user = await _userManager.FindByIdAsync(createDto.YoneticiId.Value.ToString());
 
+                if (user == null)
+                {
+                    return BaseResult<object>.Fail("Belirtilen yönetici sistemde bulunamadý.");
+                }
+
+                var isManager = await _userManager.IsInRoleAsync(user, "Yönetici");
+                if (!isManager)
+                {
+                    return BaseResult<object>.Fail("Seçilen kiþi yönetici rolüne sahip deðil!");
+                }
+            }
+
+            var department = createDto.Adapt<Departman>();
+            await _departmentRepository.CreateAsync(department);
             var result = await _unitOfWork.SaveChangesAsync();
 
             return result ? BaseResult<object>.Success(department) : BaseResult<object>.Fail("Created Failed");
@@ -112,22 +126,41 @@ namespace HumanResources.Business.Services.DepartmentServices
 
         public async Task<BaseResult<object>> UpdateAsync(UpdateDepartmentDto updateDto)
         {
-            var item = updateDto.Adapt<Departman>();
-
             var validationResult = await _updateValidator.ValidateAsync(updateDto);
-
             if (!validationResult.IsValid)
             {
                 return BaseResult<object>.Fail(validationResult.Errors);
-
             }
 
-             _departmentRepository.Update(item);
+            var department = await _departmentRepository.GetByIdAsync(updateDto.Id); // Kendi repository'ndeki get metodunu yaz
+            if (department == null)
+            {
+                return BaseResult<object>.Fail("Güncellenecek departman bulunamadý.");
+            }
+
+            if (updateDto.YoneticiId.HasValue) // içinde deðer var mý unutma daha sistemsel olmasý lazým async için 
+            {
+                var user = await _userManager.FindByIdAsync(updateDto.YoneticiId.Value.ToString());
+
+                if (user == null)
+                {
+                    return BaseResult<object>.Fail("Belirtilen yönetici sistemde bulunamadý.");
+                }
+
+                var isManager = await _userManager.IsInRoleAsync(user, "Yönetici");
+                if (!isManager)
+                {
+                    return BaseResult<object>.Fail("Seçilen kiþi yönetici rolüne sahip deðil!");
+                }
+            }
+
+            updateDto.Adapt(department); 
+
+            _departmentRepository.Update(department);
 
             var result = await _unitOfWork.SaveChangesAsync();
 
             return result ? BaseResult<object>.Success() : BaseResult<object>.Fail("Updated Failed");
-
 
         }
     }

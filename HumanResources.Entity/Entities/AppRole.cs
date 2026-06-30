@@ -4,5 +4,6 @@ namespace HumanResources.Entity.Entities
 {
     public class AppRole:IdentityRole<int>
     {
+        public bool SilindiMi { get; set; } = false;
     }
 }
