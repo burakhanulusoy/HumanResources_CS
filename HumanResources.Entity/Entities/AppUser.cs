@@ -35,7 +35,7 @@ namespace HumanResources.Entity.Entities
         public AppUser Amir { get; set; }
         public IList<AppUser> BagliPersoneller { get; set; }
 
-
+        public IList<Izin> Izinler { get; set; }
 
         public DateTime IseGirisTarihi { get; set; }
         public DateTime? IstenAyrilisTarihi { get; set; }
