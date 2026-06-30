@@ -10,6 +10,14 @@ namespace HumanResources.DataAccess.Repositories.DepartmentRepositories
         {
         }
 
-      
+        public Task<List<Departman>> GetDepartmentsWithUserAsync()
+        {
+            return _table.Include(x => x.Yonetici).AsNoTracking().ToListAsync();
+        }
+
+        public Task<Departman> GetDepartmentWithUserAsync(int id)
+        {
+            return _table.Include(x=>x.Yonetici).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        }
     }
 }

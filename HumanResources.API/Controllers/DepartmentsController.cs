@@ -25,6 +25,25 @@ namespace HumanResources.API.Controllers
 
         }
 
+        [HttpGet("GetDepartmentsWithUser")]
+        public async Task<IActionResult> GetAllWithUser()
+        {
+            var response = await _departmentService.GetDepartmentsWithUserAsync();
+
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
+
+
+        [HttpGet("GetDepartmentWithUser")]
+        public async Task<IActionResult> GetWithUserById(int id)
+        {
+            var response = await _departmentService.GetDepartmentWithUserAsync(id);
+
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
+
+
+
         [HttpPost]
         public async Task<IActionResult> Create(CreateDepartmentDto item)
         {

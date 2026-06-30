@@ -25,6 +25,25 @@ namespace HumanResources.API.Controllers
 
         }
 
+
+        [HttpGet("WithDepartmentAndUnit")]
+        public async Task<IActionResult> GetAllWithDepartmentAndUnit()
+        {
+            var response = await _userService.GetAllUserWithDepartmentAndUnitAsync();
+
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
+
+        [HttpGet("ByIdWithDepartmentAndUnit")]
+        public async Task<IActionResult> GetByIdWithDepaertmentAndUnit(int id)
+        {
+            var response = await _userService.GetUserWithDepartmentAndUnitAsync(id);
+
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
+
+
+
         [HttpPost]
         public async Task<IActionResult> Create(CreateUserDto item)
         {

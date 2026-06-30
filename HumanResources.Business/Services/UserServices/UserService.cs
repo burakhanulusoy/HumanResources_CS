@@ -10,6 +10,8 @@ namespace HumanResources.Business.Services.UserServices
 {
     public class UserService(UserManager<AppUser> _userManager, IValidator<CreateUserDto> _createValidator,IValidator<UpdateUserDto> _updateValidator) : IUserService
     {
+
+
         public async Task<BaseResult<object>> CreateAsync(CreateUserDto createDto)
         {
             var validationResult = await _createValidator.ValidateAsync(createDto);
@@ -45,6 +47,10 @@ namespace HumanResources.Business.Services.UserServices
             return BaseResult<object>.Success(new { Message = "Kullanýcý baþarýyla oluþturuldu." });
         }
 
+
+
+
+
         public async Task<BaseResult<object>> DeleteAsync(int id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
@@ -70,14 +76,31 @@ namespace HumanResources.Business.Services.UserServices
             return BaseResult<object>.Success(new { Message = "Deleted Success" });
         }
 
-        public async Task<BaseResult<List<ResultUserDto>>> GetAllAsync()
+
+
+
+        public async Task<BaseResult<List<UserDto>>> GetAllAsync()
+        {
+            var items = await _userManager.Users.AsNoTracking().ToListAsync();
+
+            TypeAdapterConfig<AppUser, UserDto>.NewConfig()
+              .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null);
+
+            var mappedItem = items.Adapt<List<UserDto>>();
+
+            return BaseResult<List<UserDto>>.Success(mappedItem);
+
+
+        }
+
+        public async Task<BaseResult<List<ResultUserDto>>> GetAllUserWithDepartmentAndUnitAsync()
         {
             var users = await _userManager.Users
-                .Include(u => u.Amir)
-                .Include(u => u.Departman)
-                .Include(u => u.Birim)
-                .AsNoTracking()
-                .ToListAsync();
+               .Include(u => u.Amir)
+               .Include(u => u.Departman)
+               .Include(u => u.Birim)
+               .AsNoTracking()
+               .ToListAsync();
 
             TypeAdapterConfig<AppUser, ResultUserDto>.NewConfig()
                 .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null);
@@ -87,18 +110,36 @@ namespace HumanResources.Business.Services.UserServices
             return BaseResult<List<ResultUserDto>>.Success(userDtos);
         }
 
-        public async Task<BaseResult<ResultUserDto>> GetByIdAsync(int id)
+        public async Task<BaseResult<UserDto>> GetByIdAsync(int id)
+        {
+            var items = await _userManager.Users.AsNoTracking().FirstOrDefaultAsync(x=> x.Id == id);
+
+            TypeAdapterConfig<AppUser, UserDto>.NewConfig()
+              .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null);
+
+            var mappedItem = items.Adapt<UserDto>();
+
+            return BaseResult<UserDto>.Success(mappedItem);
+
+
+
+        }
+
+        public async Task<BaseResult<ResultUserDto>> GetUserWithDepartmentAndUnitAsync(int id)
         {
             var user = await _userManager.Users
-                 .Include(u => u.Departman)
-                 .Include(u => u.Birim)
-                 .AsNoTracking()
-                 .FirstOrDefaultAsync(u => u.Id == id);
+                .Include(u => u.Departman)
+                .Include(u => u.Birim)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user is null)
             {
                 return BaseResult<ResultUserDto>.Fail("User Not Found");
             }
+
+            TypeAdapterConfig<AppUser, ResultUserDto>.NewConfig()
+              .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null);
 
             var userDto = user.Adapt<ResultUserDto>();
 
@@ -140,5 +181,7 @@ namespace HumanResources.Business.Services.UserServices
 
             return BaseResult<object>.Success();
         }
+
+      
     }
 }

@@ -78,6 +78,38 @@ namespace HumanResources.Business.Services.DepartmentServices
             return BaseResult<ResultDepartmentDto>.Success(mappedItem);
         }
 
+        public async Task<BaseResult<List<ResultDepartmentWithUserDto>>> GetDepartmentsWithUserAsync()
+        {
+            var items = await _departmentRepository.GetDepartmentsWithUserAsync();
+
+            var mappedItem = items.Adapt<List<ResultDepartmentWithUserDto>>();
+
+            return BaseResult<List<ResultDepartmentWithUserDto>>.Success(mappedItem);
+
+
+
+        }
+
+        public async Task<BaseResult<ResultDepartmentWithUserDto>> GetDepartmentWithUserAsync(int id)
+        {
+
+            var items = await _departmentRepository.GetDepartmentWithUserAsync(id);
+
+            if(items is null)
+            {
+                return BaseResult<ResultDepartmentWithUserDto>.Fail("Department Not Found");
+            }
+
+
+            var mappedItem = items.Adapt<ResultDepartmentWithUserDto>();
+
+            return BaseResult<ResultDepartmentWithUserDto>.Success(mappedItem);
+
+
+
+
+        }
+
         public async Task<BaseResult<object>> UpdateAsync(UpdateDepartmentDto updateDto)
         {
             var item = updateDto.Adapt<Departman>();

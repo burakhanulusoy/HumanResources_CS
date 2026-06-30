@@ -43,8 +43,7 @@ namespace HumanResources.Business.DTOs.UserDtos
 
         public int BirimId { get; set; }
 
-        // ResultUserDto içinde sadece "Amir"in kim olduðunu tut
         public int? AmirId { get; set; }
-        public string? AmirAdSoyad { get; set; } // Sadece ekranda göstermek için adýný tut yeter
+        public string? AmirAdSoyad { get; set; } 
     }
 }
