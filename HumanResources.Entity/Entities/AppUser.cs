@@ -51,8 +51,10 @@ namespace HumanResources.Entity.Entities
         // Log ve Soft Delete
         public DateTime OlusturulmaTarihi { get; set; }
         public DateTime GuncellenmeTarihi { get; set; }
-        public bool SilindiMi { get; set; } 
+        public bool SilindiMi { get; set; }
 
+
+        public IList<AppUserEgitim> AppUserEgitims { get; set; }
 
     }
 }
