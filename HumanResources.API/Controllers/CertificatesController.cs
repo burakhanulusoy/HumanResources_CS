@@ -1,7 +1,6 @@
 ﻿using HumanResources.Business.DTOs.CertificateDtos;
 using HumanResources.Business.Services.CertificateServices;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace HumanResources.API.Controllers
 {

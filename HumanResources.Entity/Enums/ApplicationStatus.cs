@@ -23,4 +23,12 @@ namespace HumanResources.Entity.Enums
     }
 
 
+    public enum ZimmetDurumu
+    {
+        Aktif = 1,        // Personele teslim edildi, þu an kullanýyor
+        IadeEdildi = 2,   // Þirkete saðlam bir þekilde geri teslim edildi
+        Arizali = 3,      // Bozuldu veya hasar gördü
+        Kayip = 4         // Kayboldu veya çalýndý
+    }
+
 }

@@ -17,8 +17,7 @@ namespace HumanResources.Business.Validators.UserEducationValidators
             RuleFor(x => x.EgitimId)
                 .GreaterThan(0).WithMessage("Geçersiz eðitim kimliði.");
 
-            RuleFor(x => x.BasvuruTarihi)
-                .NotEmpty().WithMessage("Baþvuru tarihi zorunludur.");
+       
 
             RuleFor(x => x.BasvuruDurumu)
                 .IsInEnum().WithMessage("Geçersiz baþvuru durumu seçimi.");

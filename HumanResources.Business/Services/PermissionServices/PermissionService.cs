@@ -34,23 +34,29 @@
                 return result ? BaseResult<object>.Success(entity) : BaseResult<object>.Fail("Created Failed");
             }
 
-            public async Task<BaseResult<object>> DeleteAsync(int id)
+        public async Task<BaseResult<object>> DeleteAsync(int id)
+        {
+            var entity = await _permissionRepository.GetPermissionWithUserAsync(id); 
+            if (entity == null) return BaseResult<object>.Fail("Ýzin kaydý bulunamadý.");
+
+            // Eðer bu izin zaten onaylanmýþsa, harcanan günleri geri iade et
+            if (entity.AmirOnayi == true && entity.IkOnayi == true)
             {
-                var entity = await _permissionRepository.GetByIdAsync(id);
+                int kullanilanGun = (entity.BitisTarihi.Date - entity.BaslangicTarihi.Date).Days;
+                if (kullanilanGun <= 0) kullanilanGun = 1;
 
-                if (entity is null)
-                {
-                    return BaseResult<object>.Fail("Permission Not Found");
-                }
-
-                _permissionRepository.Delete(entity);
-
-                bool result = await _unitOfWork.SaveChangesAsync();
-
-                return result ? BaseResult<object>.Success() : BaseResult<object>.Fail("Deleted Failed");
+                // Personelin hanesinden düþ
+                entity.Personel.ToplamKullanilanIzinGunu -= kullanilanGun;
+                if (entity.Personel.ToplamKullanilanIzinGunu < 0) entity.Personel.ToplamKullanilanIzinGunu = 0;
             }
 
-            public async Task<BaseResult<List<PermissionDto>>> GetAllAsync()
+            _permissionRepository.Delete(entity);
+            bool result = await _unitOfWork.SaveChangesAsync();
+
+            return result ? BaseResult<object>.Success("Ýzin silindi ve güncellemeler yapýldý.") : BaseResult<object>.Fail("Silme baþarýsýz.");
+        }
+
+        public async Task<BaseResult<List<PermissionDto>>> GetAllAsync()
             {
                 var entities = await _permissionRepository.GetAllAsync();
 
@@ -170,7 +176,7 @@
         // ÝK ONAY ÝÞLEMÝ
         public async Task<BaseResult<object>> ApproveByIkAsync(ApprovePermissionDto approveDto)
         {
-            var entity = await _permissionRepository.GetByIdAsync(approveDto.Id);
+            var entity = await _permissionRepository.GetPermissionWithUserAsync(approveDto.Id);
 
             if (entity == null) return BaseResult<object>.Fail("Ýzin kaydý bulunamadý.");
 
@@ -180,13 +186,28 @@
                 return BaseResult<object>.Fail("Bu izin henüz amir tarafýndan onaylanmamýþ!");
             }
 
-            // Sadece ÝK onayýný güncelliyoruz
+            if (approveDto.OnayDurumu == true)
+            {
+                // Ýzin gününü hesapla (Bitis - Baslangic)
+                // Eðer izin tek günse .Days 0 dönebilir, genellikle +1 eklenir ama 
+                // sen direkt farký almak istersen (entity.BitisTarihi - entity.BaslangicTarihi).Days yeterli.
+                int kullanilanGun = (entity.BitisTarihi.Date - entity.BaslangicTarihi.Date).Days;
+
+                // Eðer izin gününü "0" bulursa (ayný gün izin gibi), en az 1 yapabilirsin:
+                if (kullanilanGun <= 0) kullanilanGun = 1;
+
+                // Personel nesnesini güncelliyoruz
+                // EF Core bu entity'yi ve altýndaki Personel'i takip ettiði için
+                // SaveChangesAsync ile otomatik olarak veritabanýna yansýyacak.
+                entity.Personel.ToplamKullanilanIzinGunu += kullanilanGun;
+            }
+
             entity.IkOnayi = approveDto.OnayDurumu;
 
             _permissionRepository.Update(entity);
             bool result = await _unitOfWork.SaveChangesAsync();
 
-            return result ? BaseResult<object>.Success("ÝK onayý baþarýyla kaydedildi.") : BaseResult<object>.Fail("Ýþlem baþarýsýz.");
+            return result ? BaseResult<object>.Success("ÝK onayý baþarýyla kaydedildi ve izin günleri güncellendi.") : BaseResult<object>.Fail("Ýþlem baþarýsýz.");
         }
 
 
