@@ -9,6 +9,11 @@ namespace HumanResources.Business.Services.PermissionServices
         Task<BaseResult<List<ResultPermissionDto>>> GetAllPermissionWithUser();
         Task<BaseResult<ResultPermissionDto>> GetPermissionWithUser(int id);
 
+        Task<BaseResult<List<ResultPermissionDto>>> GetMyTeamPendingPermissionsAsync(int amirId);
+        Task<BaseResult<List<ResultPermissionDto>>> GetIkPendingPermissionsAsync();
 
+        // Onaylama Metotları
+        Task<BaseResult<object>> ApproveByAmirAsync(ApprovePermissionDto approveDto);
+        Task<BaseResult<object>> ApproveByIkAsync(ApprovePermissionDto approveDto);
     }
 }

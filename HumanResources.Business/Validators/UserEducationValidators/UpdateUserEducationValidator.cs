@@ -32,13 +32,7 @@ namespace HumanResources.Business.Validators.UserEducationValidators
             RuleFor(x => x.AdminAciklamasi)
                 .MaximumLength(500).WithMessage("Admin açýklamasý en fazla 500 karakter olabilir.");
 
-            RuleFor(x => x.SonGecerlilikTarihi)
-                .GreaterThan(x => x.BasvuruTarihi).When(x => x.SonGecerlilikTarihi.HasValue)
-                .WithMessage("Sertifika son geçerlilik tarihi, baþvuru tarihinden önce olamaz.");
-
-            RuleFor(x => x.YenilemeTarihi)
-                .GreaterThan(x => x.BasvuruTarihi).When(x => x.YenilemeTarihi.HasValue)
-                .WithMessage("Yenileme tarihi, baþvuru tarihinden önce olamaz.");
+    
         }
     }
 }

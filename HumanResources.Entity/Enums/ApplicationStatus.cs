@@ -15,7 +15,12 @@ namespace HumanResources.Entity.Enums
         Tamamlandi = 3,
         IptalEdildi = 4
     }
-
+    public enum CertificateStatus //sertifika olayý
+    {
+        Gecerli = 1,      // Süresi devam ediyor
+        SuresiDolu = 2,   // Geçerlilik tarihi geçmiþ, yenilenmesi lazým
+        IptalEdildi = 3   // Herhangi bir disiplin suçu vb. sebeple iptal edilmiþ
+    }
 
 
 }

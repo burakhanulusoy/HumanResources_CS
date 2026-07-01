@@ -27,7 +27,7 @@
                 entity.BaslangicTarihi = DateTime.SpecifyKind(entity.BaslangicTarihi, DateTimeKind.Utc);
                 entity.BitisTarihi = DateTime.SpecifyKind(entity.BitisTarihi, DateTimeKind.Utc);
                
-            await _permissionRepository.CreateAsync(entity);
+                await _permissionRepository.CreateAsync(entity);
 
                 bool result = await _unitOfWork.SaveChangesAsync();
 
@@ -122,5 +122,87 @@
 
                 return result ? BaseResult<object>.Success(entity) : BaseResult<object>.Fail("Updated Failed");
             }
+
+
+
+
+
+
+
+
+        public async Task<BaseResult<List<ResultPermissionDto>>> GetMyTeamPendingPermissionsAsync(int amirId)
+        {
+            var entities = await _permissionRepository.GetMyTeamPendingPermissionsAsync(amirId);
+            var mappedEntities = entities.Adapt<List<ResultPermissionDto>>();
+            return BaseResult<List<ResultPermissionDto>>.Success(mappedEntities);
         }
+
+        public async Task<BaseResult<List<ResultPermissionDto>>> GetIkPendingPermissionsAsync()
+        {
+            var entities = await _permissionRepository.GetIkPendingPermissionsAsync();
+            var mappedEntities = entities.Adapt<List<ResultPermissionDto>>();
+            return BaseResult<List<ResultPermissionDto>>.Success(mappedEntities);
+        }
+
+
+
+
+
+        // AMÝR ONAY ÝÞLEMÝ
+        public async Task<BaseResult<object>> ApproveByAmirAsync(ApprovePermissionDto approveDto)
+        {
+            var entity = await _permissionRepository.GetByIdAsync(approveDto.Id);
+
+            if (entity == null) return BaseResult<object>.Fail("Ýzin kaydý bulunamadý.");
+
+            // Sadece Amir onayýný güncelliyoruz, diðer hiçbir veriye dokunmuyoruz
+            entity.AmirOnayi = approveDto.OnayDurumu;
+
+            _permissionRepository.Update(entity);
+            bool result = await _unitOfWork.SaveChangesAsync();
+
+            return result ? BaseResult<object>.Success("Amir onayý baþarýyla kaydedildi.") : BaseResult<object>.Fail("Ýþlem baþarýsýz.");
+        }
+
+
+
+
+        // ÝK ONAY ÝÞLEMÝ
+        public async Task<BaseResult<object>> ApproveByIkAsync(ApprovePermissionDto approveDto)
+        {
+            var entity = await _permissionRepository.GetByIdAsync(approveDto.Id);
+
+            if (entity == null) return BaseResult<object>.Fail("Ýzin kaydý bulunamadý.");
+
+            // ÝK doðrudan onaylayamaz, önce Amirin onaylamýþ olmasý (true) gerekir!
+            if (entity.AmirOnayi != true)
+            {
+                return BaseResult<object>.Fail("Bu izin henüz amir tarafýndan onaylanmamýþ!");
+            }
+
+            // Sadece ÝK onayýný güncelliyoruz
+            entity.IkOnayi = approveDto.OnayDurumu;
+
+            _permissionRepository.Update(entity);
+            bool result = await _unitOfWork.SaveChangesAsync();
+
+            return result ? BaseResult<object>.Success("ÝK onayý baþarýyla kaydedildi.") : BaseResult<object>.Fail("Ýþlem baþarýsýz.");
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
     }

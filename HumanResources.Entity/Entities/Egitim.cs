@@ -5,7 +5,7 @@ namespace HumanResources.Entity.Entities
 {
     public class Egitim : BaseEntity 
     {
-        public string Ad { get; set; } // Örn: IPC J-STD-001, ESD
+        public string Ad { get; set; } // Örn: IPC J-STD-001, ESD gibi !
         public string Egitmen { get; set; }
         public string EgitimAciklamasi { get; set; }
         public DateTime EgitimTarihi { get; set; }
@@ -13,7 +13,6 @@ namespace HumanResources.Entity.Entities
         public TrainingStatus Durumu { get; set; }
 
        
-        //HATLIIIIIIIIIIII
         // Ýliþki: Bu eðitime baþvuran/katýlan personeller
         public IList<AppUserEgitim> Katilimcilar { get; set; }
     }

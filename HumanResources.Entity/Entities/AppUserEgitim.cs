@@ -16,9 +16,7 @@ namespace HumanResources.Entity.Entities
         public ApplicationStatus BasvuruDurumu { get; set; }
         public string? AdminAciklamasi { get; set; } // Reddedilirse neden reddedildi?
 
-        // Eðitim Tamamlandýktan Sonrasý Ýçin
-        public DateTime? SonGecerlilikTarihi { get; set; } // Örn: 2 yýl sonra biter
-        public DateTime? YenilemeTarihi { get; set; } // Yenileme eðitimi ne zaman alýnmalý?
+     
 
        
     }

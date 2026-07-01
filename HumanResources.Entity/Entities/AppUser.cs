@@ -56,5 +56,7 @@ namespace HumanResources.Entity.Entities
 
         public IList<AppUserEgitim> AppUserEgitims { get; set; }
 
+
+        public IList<Sertifika> Sertifikalar { get; set; }
     }
 }
