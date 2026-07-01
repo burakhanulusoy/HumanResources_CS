@@ -56,6 +56,21 @@ namespace HumanResources.DataAccess.Context
         public DbSet<Departman> Departmanlar { get; set; }
         public DbSet<Birim> Birimler { get; set; }
 
+        public DbSet<Izin> Izinler { get; set; }
+        public DbSet<IzinTuru> IzinTurleri { get; set; }
+
+        public DbSet<Zimmet> Zimmetler { get; set; }
+        public DbSet<ZimmetTuru> ZimmetTurleri { get; set; }
+
+        public DbSet<Egitim> Egitimler { get; set; }
+        public DbSet<AppUserEgitim> AppUserEgitimler { get; set; } // Çoka çok (Many-to-Many) veya ara tablo
+        public DbSet<Sertifika> Sertifikalar { get; set; }
+        public DbSet<SertifikaTuru> SertifikaTurleri { get; set; }
+
+        public DbSet<Vardiya> Vardiyalar { get; set; }
+        public DbSet<Puantaj> Puantajlar { get; set; }
+
+
 
 
 

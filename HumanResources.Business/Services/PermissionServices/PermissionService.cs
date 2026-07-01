@@ -36,24 +36,46 @@
 
         public async Task<BaseResult<object>> DeleteAsync(int id)
         {
-            var entity = await _permissionRepository.GetPermissionWithUserAsync(id); 
+            var entity = await _permissionRepository.GetPermissionWithUserAsync(id);
             if (entity == null) return BaseResult<object>.Fail("Ýzin kaydý bulunamadý.");
 
-            // Eðer bu izin zaten onaylanmýþsa, harcanan günleri geri iade et
+            // Sadece onaylanmýþ izinlerde gün iadesi yap
             if (entity.AmirOnayi == true && entity.IkOnayi == true)
             {
-                int kullanilanGun = (entity.BitisTarihi.Date - entity.BaslangicTarihi.Date).Days;
-                if (kullanilanGun <= 0) kullanilanGun = 1;
+                DateTime today = DateTime.UtcNow.Date;
+                DateTime start = entity.BaslangicTarihi.Date;
+                DateTime end = entity.BitisTarihi.Date;
 
-                // Personelin hanesinden düþ
-                entity.Personel.ToplamKullanilanIzinGunu -= kullanilanGun;
-                if (entity.Personel.ToplamKullanilanIzinGunu < 0) entity.Personel.ToplamKullanilanIzinGunu = 0;
+                int refundableDays = 0;
+
+                if (start > today)
+                {
+                    // Ýzin henüz baþlamamýþ: Tüm günleri iade et
+                    refundableDays = (end - start).Days + 1; // +1 mantýðý: 1'inden 1'ine 1 gün sürer.
+                }
+                else if (end >= today)
+                {
+                    // Ýzin þu an devam ediyor: Sadece bugünden sonrasýný iade et
+                    // Örnek: Bugün 3'ü, bitiþ 5'i. 4 ve 5'i iade et.
+                    refundableDays = (end - today).Days;
+                }
+                else
+                {
+                    // Ýzin geçmiþte kalmýþ: Ýade yok (Personel zaten iznini kullanmýþ)
+                    refundableDays = 0;
+                }
+
+                if (refundableDays > 0)
+                {
+                    entity.Personel.ToplamKullanilanIzinGunu -= refundableDays;
+                    if (entity.Personel.ToplamKullanilanIzinGunu < 0) entity.Personel.ToplamKullanilanIzinGunu = 0;
+                }
             }
 
             _permissionRepository.Delete(entity);
             bool result = await _unitOfWork.SaveChangesAsync();
 
-            return result ? BaseResult<object>.Success("Ýzin silindi ve güncellemeler yapýldý.") : BaseResult<object>.Fail("Silme baþarýsýz.");
+            return result ? BaseResult<object>.Success("Ýzin silindi.") : BaseResult<object>.Fail("Silme baþarýsýz.");
         }
 
         public async Task<BaseResult<List<PermissionDto>>> GetAllAsync()
