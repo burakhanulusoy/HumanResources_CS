@@ -245,7 +245,24 @@ namespace HumanResources.Business.Services.UserServices
             return BaseResult<List<ResultUserDto>>.Success(mappedSubordinates);
         }
 
+        public async Task<BaseResult<List<ResultUserDto>>> GetAllUsersForReportAsync()
+        {
+            // Raporlama için özel: IgnoreQueryFilters() ile silinenleri/ayrýlanlarý da çeker
+            var users = await _userManager.Users
+                .IgnoreQueryFilters()
+                .Include(u => u.Amir)
+                .Include(u => u.Departman)
+                .Include(u => u.Birim)
+                .AsNoTracking()
+                .ToListAsync();
 
+            TypeAdapterConfig<AppUser, ResultUserDto>.NewConfig()
+                .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null);
+
+            var userDtos = users.Adapt<List<ResultUserDto>>();
+
+            return BaseResult<List<ResultUserDto>>.Success(userDtos);
+        }
 
 
 

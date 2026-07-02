@@ -11,5 +11,9 @@ namespace HumanResources.Business.Services.UserServices
         Task<BaseResult<ResultUserDto>> LoginUserAsync(LoginUserDto loginUserDto);
         // Belirli bir amire bağlı olan personelleri getirmek için (Ekibim / Org Şeması)
         Task<BaseResult<List<ResultUserDto>>> GetSubordinatesAsync(int amirId);
+
+        // Mevcutların altına şu satırı ekle:
+        Task<BaseResult<List<ResultUserDto>>> GetAllUsersForReportAsync();
+
     }
 }

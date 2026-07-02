@@ -37,6 +37,7 @@ namespace HumanResources.Business.DTOs.UserDtos
 
         public DateTime OlusturulmaTarihi { get; set; }
         public DateTime GuncellenmeTarihi { get; set; }
+        public bool SilindiMi { get; set; }
 
         //iliþkiler
         public int DepartmanId { get; set; }
