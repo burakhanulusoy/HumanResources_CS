@@ -1,17 +1,22 @@
+using Microsoft.AspNetCore.Http; // IFormFile için gerekli
+using System;
+
 namespace HumanResources.Business.DTOs.CertificateDtos
 {
     public class CreateCertificateDto
     {
         public int AppUserId { get; set; }
-
         public int SertifikaTuruId { get; set; }
 
-        public string VerenKurum { get; set; }   // Örn: Þirket Ýçi, Kýzýlay, MEB
-        public string BelgeNo { get; set; }      // Belgenin resmi numarasý
+        public string VerenKurum { get; set; }
+        public string BelgeNo { get; set; }
+
+        public string? Aciklama { get; set; }
+
+        public IFormFile? Dosya { get; set; }
 
         public DateTime AlinmaTarihi { get; set; }
         public DateTime GecerlilikTarihi { get; set; }
         public DateTime YenilemeTarihi { get; set; }
-
     }
 }

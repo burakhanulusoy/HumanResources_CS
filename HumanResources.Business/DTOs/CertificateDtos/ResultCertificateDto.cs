@@ -1,15 +1,20 @@
 using HumanResources.Business.Base;
 using HumanResources.Entity.Enums;
+using System;
 
 namespace HumanResources.Business.DTOs.CertificateDtos
 {
-    public class ResultCertificateDto:BaseDto
+    public class ResultCertificateDto : BaseDto
     {
         public int AppUserId { get; set; }
         public int SertifikaTuruId { get; set; }
 
-        public string VerenKurum { get; set; }   // Örn: Þirket Ýçi, Kýzýlay, MEB
-        public string BelgeNo { get; set; }      // Belgenin resmi numarasý
+        public string VerenKurum { get; set; }
+        public string BelgeNo { get; set; }
+
+        public string? Aciklama { get; set; }
+
+        public string? DosyaYolu { get; set; }
 
         public DateTime AlinmaTarihi { get; set; }
         public DateTime GecerlilikTarihi { get; set; }

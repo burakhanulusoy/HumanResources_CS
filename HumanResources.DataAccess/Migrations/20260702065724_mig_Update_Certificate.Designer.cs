@@ -3,6 +3,7 @@ using System;
 using HumanResources.DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HumanResources.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260702065724_mig_Update_Certificate")]
+    partial class mig_Update_Certificate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -319,47 +322,6 @@ namespace HumanResources.DataAccess.Migrations
                     b.HasIndex("YoneticiId");
 
                     b.ToTable("Departmanlar");
-                });
-
-            modelBuilder.Entity("HumanResources.Entity.Entities.DisiplinKaydi", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AppUserId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Detay")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("DisiplinNedeni")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("DosyaYolu")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("GuncellenmeTarihi")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("OlayTarihi")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("OlusturulmaTarihi")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("SilindiMi")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppUserId");
-
-                    b.ToTable("DisiplinKayitlari");
                 });
 
             modelBuilder.Entity("HumanResources.Entity.Entities.Egitim", b =>
@@ -856,17 +818,6 @@ namespace HumanResources.DataAccess.Migrations
                     b.Navigation("Yonetici");
                 });
 
-            modelBuilder.Entity("HumanResources.Entity.Entities.DisiplinKaydi", b =>
-                {
-                    b.HasOne("HumanResources.Entity.Entities.AppUser", "AppUser")
-                        .WithMany("DisiplinKayitlari")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AppUser");
-                });
-
             modelBuilder.Entity("HumanResources.Entity.Entities.Izin", b =>
                 {
                     b.HasOne("HumanResources.Entity.Entities.IzinTuru", "IzinTuru")
@@ -980,8 +931,6 @@ namespace HumanResources.DataAccess.Migrations
                     b.Navigation("AppUserEgitims");
 
                     b.Navigation("BagliPersoneller");
-
-                    b.Navigation("DisiplinKayitlari");
 
                     b.Navigation("Izinler");
 

@@ -57,7 +57,7 @@ namespace HumanResources.Entity.Entities
         public IList<AppUserEgitim> AppUserEgitims { get; set; }
         public IList<Sertifika> Sertifikalar { get; set; }
         public IList<Zimmet> Zimmetler { get; set; }
+        public IList<DisiplinKaydi> DisiplinKayitlari { get; set; }
         public int ToplamKullanilanIzinGunu { get; set; } = 0;  // deðer oto olaarak 0 dan baþlar yeni bilgi :)
-        public IList<Puantaj> Puantajlar { get; set; }
     }
 }

@@ -19,4 +19,8 @@
     <ProjectReference Include="..\HumanResources.Business\HumanResources.Business.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>

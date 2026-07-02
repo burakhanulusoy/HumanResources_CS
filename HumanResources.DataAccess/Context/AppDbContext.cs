@@ -68,9 +68,8 @@ namespace HumanResources.DataAccess.Context
         public DbSet<SertifikaTuru> SertifikaTurleri { get; set; }
 
         public DbSet<Vardiya> Vardiyalar { get; set; }
-        public DbSet<Puantaj> Puantajlar { get; set; }
 
-
+        public DbSet<DisiplinKaydi> DisiplinKayitlari { get; set; }
 
 
 

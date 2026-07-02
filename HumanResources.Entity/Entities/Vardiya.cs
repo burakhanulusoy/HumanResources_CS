@@ -16,6 +16,5 @@ namespace HumanResources.Entity.Entities
        
 
         public IList<AppUser> Personeller { get; set; }
-        public IList<Puantaj> Puantajlar { get; set; }
     }
 }

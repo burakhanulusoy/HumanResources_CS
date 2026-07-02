@@ -1,22 +1,36 @@
 using FluentValidation;
 using HumanResources.Business.Base;
 using HumanResources.Business.DTOs.CertificateDtos;
+using HumanResources.Business.Services.FileServices; // IFileService için eklendi
 using HumanResources.DataAccess.Repositories.CertificateRepositories;
 using HumanResources.DataAccess.UOW;
 using HumanResources.Entity.Entities;
 using HumanResources.Entity.Enums;
 using Mapster;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace HumanResources.Business.Services.CertificateServices
 {
-    public class CertificateService(ICertificateRepository _certificateRepository,
-                                    IUnitOfWork _unitOfWork,
-                                    IValidator<UpdateCertificateDto> _updateValidator,
-                                    IValidator<CreateCertificateDto> _createValidator) : ICertificateService
+    public class CertificateService : ICertificateService
     {
+        private readonly ICertificateRepository _certificateRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IValidator<UpdateCertificateDto> _updateValidator;
+        private readonly IValidator<CreateCertificateDto> _createValidator;
+        private readonly IFileService _fileService; // Yeni eklenen servisimiz
+
+        public CertificateService(ICertificateRepository certificateRepository,
+                                  IUnitOfWork unitOfWork,
+                                  IValidator<UpdateCertificateDto> updateValidator,
+                                  IValidator<CreateCertificateDto> createValidator,
+                                  IFileService fileService) // Constructor'a eklendi
+        {
+            _certificateRepository = certificateRepository;
+            _unitOfWork = unitOfWork;
+            _updateValidator = updateValidator;
+            _createValidator = createValidator;
+            _fileService = fileService;
+        }
+
         public async Task<BaseResult<object>> CreateAsync(CreateCertificateDto createDto)
         {
             var validationResult = await _createValidator.ValidateAsync(createDto);
@@ -28,10 +42,18 @@ namespace HumanResources.Business.Services.CertificateServices
 
             var entity = createDto.Adapt<Sertifika>();
 
+           
+            if (createDto.Dosya != null)
+            {
+               
+                string customName = $"Kullanici{createDto.AppUserId}_Tur{createDto.SertifikaTuruId}_{createDto.VerenKurum}";
+
+                entity.DosyaYolu = await _fileService.UploadFileAsync(createDto.Dosya, "certificates", customName);
+            }
+
             entity.AlinmaTarihi = DateTime.SpecifyKind(entity.AlinmaTarihi, DateTimeKind.Utc);
             entity.GecerlilikTarihi = DateTime.SpecifyKind(entity.GecerlilikTarihi, DateTimeKind.Utc);
             entity.YenilemeTarihi = DateTime.SpecifyKind(entity.YenilemeTarihi, DateTimeKind.Utc);
-
             entity.Durumu = CertificateStatus.Gecerli;
 
             await _certificateRepository.CreateAsync(entity);
@@ -47,6 +69,12 @@ namespace HumanResources.Business.Services.CertificateServices
             if (entity is null)
             {
                 return BaseResult<object>.Fail("Certificate Not Found");
+            }
+
+            // 2. KAYIT SÝLÝNÝRKEN SUNUCUDAKÝ DOSYAYI DA SÝL
+            if (!string.IsNullOrEmpty(entity.DosyaYolu))
+            {
+                _fileService.DeleteFile(entity.DosyaYolu);
             }
 
             _certificateRepository.Delete(entity);
@@ -85,6 +113,17 @@ namespace HumanResources.Business.Services.CertificateServices
 
             updateDto.Adapt(entity);
 
+            if (updateDto.Dosya != null)
+            {
+                if (!string.IsNullOrEmpty(entity.DosyaYolu))
+                {
+                    _fileService.DeleteFile(entity.DosyaYolu);
+                }
+
+                string customName = $"Kullanici{updateDto.AppUserId}_Tur{updateDto.SertifikaTuruId}_{updateDto.VerenKurum}";
+                entity.DosyaYolu = await _fileService.UploadFileAsync(updateDto.Dosya, "certificates", customName);
+            }
+
             entity.AlinmaTarihi = DateTime.SpecifyKind(entity.AlinmaTarihi, DateTimeKind.Utc);
             entity.GecerlilikTarihi = DateTime.SpecifyKind(entity.GecerlilikTarihi, DateTimeKind.Utc);
             entity.YenilemeTarihi = DateTime.SpecifyKind(entity.YenilemeTarihi, DateTimeKind.Utc);
@@ -95,18 +134,7 @@ namespace HumanResources.Business.Services.CertificateServices
             return result ? BaseResult<object>.Success(entity) : BaseResult<object>.Fail("Updated Failed");
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
+        // --- Özel Metotlar (Ayný Kalýyor) ---
 
         public async Task<BaseResult<List<CertificateDto>>> GetCertificateByUserIdAsync(int userId)
         {

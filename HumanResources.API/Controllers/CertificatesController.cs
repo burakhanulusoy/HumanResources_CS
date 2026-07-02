@@ -23,7 +23,7 @@ namespace HumanResources.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateCertificateDto item)
+        public async Task<IActionResult> Create([FromForm] CreateCertificateDto item)
         {
             var response = await _certificateService.CreateAsync(item);
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
@@ -37,7 +37,7 @@ namespace HumanResources.API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(UpdateCertificateDto item)
+        public async Task<IActionResult> Update([FromForm] UpdateCertificateDto item)
         {
             var response = await _certificateService.UpdateAsync(item);
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
