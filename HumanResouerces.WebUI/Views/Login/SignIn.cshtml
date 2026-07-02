@@ -1,0 +1,240 @@
+﻿
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html class="dark" lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>CS SAVUNMA - Giriş</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-surface": "#e0e3e5",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-error-container": "#ffdad6",
+                        "secondary-container": "#3a4a5f",
+                        "background": "#0A192F",
+                        "error-container": "#93000a",
+                        "inverse-on-surface": "#2d3133",
+                        "on-primary-container": "#74829d",
+                        "surface-container-high": "#272a2c",
+                        "surface-container-low": "#191c1e",
+                        "on-error": "#690005",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed-variant": "#004c69",
+                        "surface-container-lowest": "#0b0f10",
+                        "surface-container": "#1d2022",
+                        "secondary": "#b7c8e1",
+                        "surface-tint": "#b9c7e4",
+                        "on-tertiary-fixed": "#001e2c",
+                        "primary-container": "#0a192f",
+                        "tertiary": "#7bd0ff",
+                        "on-primary-fixed": "#0d1c32",
+                        "on-surface": "#e0e3e5",
+                        "surface": "#101415",
+                        "surface-dim": "#101415",
+                        "on-tertiary-container": "#008cbd",
+                        "outline-variant": "#44474d",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-primary-fixed-variant": "#39475f",
+                        "surface-variant": "#323537",
+                        "inverse-primary": "#515f78",
+                        "primary": "#b9c7e4",
+                        "on-secondary-fixed": "#0b1c30",
+                        "surface-bright": "#363a3b",
+                        "on-surface-variant": "#c5c6cd",
+                        "tertiary-container": "#001c29",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "tertiary-fixed": "#c4e7ff",
+                        "primary-fixed-dim": "#b9c7e4",
+                        "on-secondary": "#213145",
+                        "on-tertiary": "#00354a",
+                        "primary-fixed": "#d6e3ff",
+                        "on-primary": "#233148",
+                        "surface-container-highest": "#323537",
+                        "on-secondary-container": "#a9bad3",
+                        "outline": "#8f9097",
+                        "tertiary-fixed-dim": "#7bd0ff",
+                        "on-background": "#e0e3e5"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    spacing: {
+                        "container-max": "1440px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "40px",
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "stack-lg": "32px",
+                        "stack-xs": "4px",
+                        "stack-md": "16px",
+                        "stack-sm": "8px"
+                    },
+                    fontFamily: {
+                        "label-lg": ["Inter", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "label-sm": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "headline-lg-mobile": ["Playfair Display", "serif"],
+                        "headline-xl": ["Playfair Display", "serif"],
+                        "body-sm": ["Inter", "sans-serif"],
+                        "headline-lg": ["Playfair Display", "serif"],
+                        "headline-md": ["Playfair Display", "serif"]
+                    },
+                    fontSize: {
+                        "label-lg": ["14px", { lineHeight: "20px", letterSpacing: "0.05em", fontWeight: "600" }],
+                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+                        "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.15em", fontWeight: "500" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "300" }],
+                        "headline-lg-mobile": ["28px", { lineHeight: "36px", fontWeight: "400" }],
+                        "headline-xl": ["48px", { lineHeight: "56px", letterSpacing: "-0.01em", fontWeight: "700" }],
+                        "body-sm": ["14px", { lineHeight: "20px", fontWeight: "300" }],
+                        "headline-lg": ["32px", { lineHeight: "44px", letterSpacing: "-0.01em", fontWeight: "400" }],
+                        "headline-md": ["26px", { lineHeight: "34px", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tech-grid {
+            background-image: linear-gradient(to right, rgba(123, 208, 255, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(123, 208, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .glass-panel {
+            background: rgba(10, 25, 47, 0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(123, 208, 255, 0.15);
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .input-glow:focus-within {
+            border-color: #7bd0ff;
+            box-shadow: inset 0 0 0 1px rgba(123, 208, 255, 0.2), 0 0 15px rgba(123, 208, 255, 0.15);
+        }
+
+        .text-high-contrast {
+            text-shadow: 0 0 20px rgba(185, 199, 228, 0.2);
+        }
+
+        .quantum-pulse {
+            animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @@keyframes pulse {
+            0%, 100%
+
+        {
+            opacity: 0.3;
+        }
+
+        50% {
+            opacity: 0.7;
+        }
+
+        }
+    </style>
+</head>
+<body class="bg-[#0A192F] text-on-background h-screen w-screen overflow-hidden flex flex-col relative m-0 p-0 font-body-md">
+    <!-- Full Screen Background -->
+    <div class="absolute inset-0 z-0">
+        <img alt="Quantum Defense Network Visualization" class="w-full h-full object-cover scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjoAKOjn0BfHuXPRQu_W_GtBRwCqZxvDxmZ7hisCPrH4oHIkFoYfSggQQEeHZDhZxcYS0P1nOB7ERedOjc7IYTlOlaAtMuCzbIm_haDmD5cPSHTrn2psfYDz1kt5ZI4J5qGz1GDF7ZQw3-ZRx25nNk3FCPpkgDvCr2dNb5CoZnE0iCGtKJ0sS6jciVtVwFFNlAj42ciwhPUpfTM2mzppp-MQVzpuqTV-btY_X0hDsNNomsunzkF00hHkoz4-rxW5rDUovMZJlyzlg" />
+        <div class="absolute inset-0 bg-[#0A192F]/60 mix-blend-multiply"></div>
+        <div class="absolute inset-0 bg-gradient-to-tr from-[#0A192F] via-transparent to-[#0A192F]/40"></div>
+        <div class="absolute inset-0 tech-grid opacity-40"></div>
+        <!-- Ambient Glow -->
+        <div class="absolute top-1/3 left-1/3 w-[600px] h-[600px] bg-tertiary/20 rounded-full blur-[140px] opacity-30 pointer-events-none quantum-pulse"></div>
+    </div>
+    <!-- Main Content Area -->
+    <div class="flex flex-col flex-1 relative z-10 w-full h-full">
+        <!-- Login Container -->
+        <div class="flex-1 flex flex-col items-center justify-center px-margin-mobile md:px-margin-desktop w-full">
+            <div class="w-full max-w-[540px] glass-panel rounded-xl p-10 md:p-12 flex flex-col gap-stack-lg relative overflow-hidden">
+                <!-- Corner Accents -->
+                <div class="absolute top-0 right-0 w-24 h-24 border-t border-r border-tertiary/20 -translate-y-12 translate-x-12 rotate-45"></div>
+                <!-- Top Highlight -->
+                <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-tertiary/60 to-transparent"></div>
+                <!-- Branding -->
+                <div class="flex flex-col items-center justify-center gap-stack-sm text-center">
+                    <div class="bg-white/5 p-1 rounded-full border border-white/10 mb-4 ring-8 ring-white/5">
+                        <img alt="CS SAVUNMA Logo" class="w-16 h-16 object-contain brightness-110" src="https://lh3.googleusercontent.com/aida/AP1WRLtl8SV0luqmaEXCVr7QHCN4pN12w_qP8YvHARZaI1Pj1nYOh7fsutPk_4Y995KOe4aYeeNaZzZmnQl8NFkULts1lYT7a3Noiws_gdRRVp6mqUbmu95nAMJwUSU2AuisJe3QufYbWSJZUDTXbqTRdagEQyyM23Ke0P1ff3dc7AqRmiltsGzxAViddhieDBBU-m0yHj7Z1mWMsYDS8b96_TohqmxD1_fW2kBArYTQNMu5AasEGttXi_vvyJY" />
+                    </div>
+                    <h1 class="font-headline-md text-high-contrast text-primary italic tracking-tight">Stratejik Savunma ve<br /><span class="not-italic font-bold text-[32px] uppercase">Operasyonel Komuta Merkezi</span></h1>
+                    <div class="w-12 h-0.5 bg-tertiary/40 my-2 mx-auto"></div>
+                    <p class="font-body-md text-body-sm text-on-surface-variant/80 tracking-widest uppercase">Sisteme erişmek için kimlik bilgilerinizi doğrulayın.</p>
+                </div>
+                <!-- Login Form -->
+                <form class="flex flex-col gap-stack-md mt-4" onsubmit="event.preventDefault();">
+                    <!-- Username -->
+                    <div class="flex flex-col gap-stack-xs">
+                        <label class="font-label-sm text-[11px] text-tertiary/60 uppercase tracking-[0.2em]" for="username">Kullanıcı Adı</label>
+                        <div class="relative input-glow border border-white/5 rounded-lg bg-black/20 transition-all duration-300 flex items-center group">
+                            <span class="material-symbols-outlined absolute left-4 text-on-surface-variant/50 text-[18px] group-focus-within:text-tertiary transition-colors" data-icon="shield_person">shield_person</span>
+                            <input class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-body-md text-body-md py-4 pl-12 pr-4 placeholder:text-outline/40 placeholder:font-light" id="username" placeholder="Sicil No / Kimlik" type="text" />
+                        </div>
+                    </div>
+                    <!-- Password -->
+                    <div class="flex flex-col gap-stack-xs">
+                        <label class="font-label-sm text-[11px] text-tertiary/60 uppercase tracking-[0.2em]" for="password">Şifre</label>
+                        <div class="relative input-glow border border-white/5 rounded-lg bg-black/20 transition-all duration-300 flex items-center group">
+                            <span class="material-symbols-outlined absolute left-4 text-on-surface-variant/50 text-[18px] group-focus-within:text-tertiary transition-colors" data-icon="key_visualizer">key_visualizer</span>
+                            <input class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-body-md text-body-md py-4 pl-12 pr-4 placeholder:text-outline/40" id="password" placeholder="••••••••" type="password" />
+                            <button class="absolute right-4 text-on-surface-variant/50 hover:text-tertiary transition-colors" title="Şifreyi Göster" type="button">
+                                <span class="material-symbols-outlined text-[18px]" data-icon="visibility">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Action Button -->
+                    <button class="mt-6 w-full bg-primary-container/40 hover:bg-primary-container/80 border border-tertiary/20 hover:border-tertiary/60 text-primary font-label-lg text-label-lg uppercase py-4 rounded-lg transition-all duration-500 relative overflow-hidden group shadow-[0_0_20px_rgba(0,0,0,0.3)]" type="submit">
+                        <span class="relative z-10 flex items-center justify-center gap-3 tracking-[0.2em]">
+                            Giriş Yap
+                            <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform" data-icon="bolt">bolt</span>
+                        </span>
+                        <div class="absolute inset-0 bg-gradient-to-r from-tertiary/0 via-tertiary/10 to-tertiary/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+                    </button>
+                </form>
+                <!-- Links -->
+                <div class="flex justify-between items-center pt-8 mt-4 border-t border-white/5">
+                    <a class="font-label-sm text-[11px] text-on-surface-variant/60 hover:text-tertiary transition-colors flex items-center gap-2 uppercase tracking-wider" href="#">
+                        <span class="material-symbols-outlined text-[14px]" data-icon="lock_reset">lock_reset</span>
+                        Şifremi Unuttum
+                    </a>
+                    <a class="font-label-sm text-[11px] text-on-surface-variant/60 hover:text-tertiary transition-colors flex items-center gap-2 uppercase tracking-wider" href="#">
+                        <span class="material-symbols-outlined text-[14px]" data-icon="hub">hub</span>
+                        Yardım Merkezi
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <footer class="bg-black/40 backdrop-blur-xl border-t border-white/5 flex flex-col justify-center items-center w-full px-margin-desktop py-6 gap-stack-sm mt-auto shrink-0 relative">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-[1px] bg-tertiary/30"></div>
+            <div class="flex flex-col md:flex-row justify-between w-full items-center gap-6 max-w-container-max mx-auto">
+                <span class="font-label-sm text-[10px] text-on-surface-variant/50 text-center md:text-left tracking-[0.15em] uppercase">
+                    © 2024 DEFENSE SYSTEMS OPERATIONAL COMMAND. ALL RIGHTS RESERVED. SENSITIVE COMPARTMENTED INFORMATION.
+                </span>
+                <nav class="flex gap-8 flex-wrap justify-center">
+                    <a class="font-label-sm text-[10px] text-on-surface-variant/40 hover:text-tertiary transition-colors uppercase tracking-[0.2em]" href="#">Security Policy</a>
+                    <a class="font-label-sm text-[10px] text-on-surface-variant/40 hover:text-tertiary transition-colors uppercase tracking-[0.2em]" href="#">Terms of Service</a>
+                    <a class="font-label-sm text-[10px] text-on-surface-variant/40 hover:text-tertiary transition-colors uppercase tracking-[0.2em]" href="#">Contact Support</a>
+                    <a class="font-label-sm text-[10px] text-on-surface-variant/40 hover:text-tertiary transition-colors uppercase tracking-[0.2em]" href="#">System Status</a>
+                </nav>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

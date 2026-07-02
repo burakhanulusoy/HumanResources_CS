@@ -1,0 +1,11 @@
+using HumanResouerces.WebUI.Base;
+
+namespace HumanResources.Business.DTOs.ItemTypeDtos
+{
+    public class ResultItemTypeDto:BaseDto
+    {
+        public string Ad { get; set; } // Örn: Laptop, Monitör, ESD Bileklik, Ýþ Ayakkabýsý
+
+       
+    }
+}

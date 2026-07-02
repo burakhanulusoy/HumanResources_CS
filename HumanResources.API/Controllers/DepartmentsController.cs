@@ -22,28 +22,22 @@ namespace HumanResources.API.Controllers
         {
             var response = await _departmentService.GetByIdAsync(id);
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
-
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateDepartmentDto item)
         {
-
             var response = await _departmentService.CreateAsync(item);
 
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
         }
 
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-
             var response = await _departmentService.DeleteAsync(id);
 
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
-
         }
 
         [HttpPut]
@@ -54,7 +48,6 @@ namespace HumanResources.API.Controllers
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
         }
 
-
         [HttpGet("GetDepartmentsWithUser")]
         public async Task<IActionResult> GetAllWithUser()
         {
@@ -63,16 +56,13 @@ namespace HumanResources.API.Controllers
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
         }
 
-
-        [HttpGet("GetDepartmentWithUser")]
+        // ROUTE GÜNCELLENDİ: {id} parametresi eklendi
+        [HttpGet("GetDepartmentWithUser/{id}")]
         public async Task<IActionResult> GetWithUserById(int id)
         {
             var response = await _departmentService.GetDepartmentWithUserAsync(id);
 
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
         }
-
-
-
     }
 }
