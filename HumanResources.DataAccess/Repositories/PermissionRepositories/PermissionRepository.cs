@@ -46,5 +46,15 @@ namespace HumanResources.DataAccess.Repositories.PermissionRepositories
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        public async Task<List<Izin>> GetByUserIdAsync(int userId)
+        {
+            return await _table
+                .Include(x => x.IzinTuru) // UI'da izin türünün adýný (Yýllýk Ýzin, Rapor vb.) gösterebilmek için lazým
+                .Where(x => x.PersonelId == userId)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
     }
 }

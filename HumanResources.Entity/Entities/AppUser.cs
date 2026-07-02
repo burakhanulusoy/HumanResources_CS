@@ -33,6 +33,8 @@ namespace HumanResources.Entity.Entities
 
         public int? AmirId { get; set; }
         public AppUser Amir { get; set; }
+
+
         public IList<AppUser> BagliPersoneller { get; set; }
 
         public IList<Izin> Izinler { get; set; }

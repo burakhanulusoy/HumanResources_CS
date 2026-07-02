@@ -13,5 +13,8 @@ namespace HumanResources.DataAccess.Repositories.PermissionRepositories
 
         //  İK'nın amirden geçmiş ama henüz İK tarafından onaylanmamış izinleri görmesi
         Task<List<Izin>> GetIkPendingPermissionsAsync();
+
+        // Personele ait izin geçmişini getirmek için
+        Task<List<Izin>> GetByUserIdAsync(int userId);
     }
 }

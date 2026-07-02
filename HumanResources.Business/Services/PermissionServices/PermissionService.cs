@@ -235,7 +235,20 @@
 
 
 
+        public async Task<BaseResult<List<ResultPermissionDto>>> GetByUserIdAsync(int userId)
+        {
+            var entities = await _permissionRepository.GetByUserIdAsync(userId);
 
+            // ÝÞ KURALI: Defansif Programlama - Kayýt yoksa boþ liste yerine net bir mesajla Fail dönüyoruz.
+            if (entities == null || !entities.Any())
+            {
+                return BaseResult<List<ResultPermissionDto>>.Fail("Bu personele ait herhangi bir izin geçmiþi bulunamadý.");
+            }
+
+            var mappedEntities = entities.Adapt<List<ResultPermissionDto>>();
+
+            return BaseResult<List<ResultPermissionDto>>.Success(mappedEntities);
+        }
 
 
 

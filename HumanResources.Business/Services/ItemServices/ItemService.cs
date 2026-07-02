@@ -94,6 +94,12 @@ namespace HumanResources.Business.Services.ItemServices
         public async Task<BaseResult<List<ItemDto>>> GetItemsByUserIdAsync(int userId)
         {
             var entities = await _itemRepository.GetItemsByUserIdAsync(userId);
+
+            if (entities == null || !entities.Any())
+            {
+                return BaseResult<List<ItemDto>>.Fail("Bu personele ait herhangi bir zimmet kaydý bulunamadý.");
+            }
+
             var mappedEntities = entities.Adapt<List<ItemDto>>();
             return BaseResult<List<ItemDto>>.Success(mappedEntities);
         }

@@ -134,11 +134,18 @@ namespace HumanResources.Business.Services.CertificateServices
             return result ? BaseResult<object>.Success(entity) : BaseResult<object>.Fail("Updated Failed");
         }
 
-        // --- Özel Metotlar (Ayný Kalýyor) ---
+        // --- Özel Metotlar ---
 
         public async Task<BaseResult<List<CertificateDto>>> GetCertificateByUserIdAsync(int userId)
         {
             var entities = await _certificateRepository.GetCertificateByUserIdAsync(userId);
+
+            // ÝÞ KURALI: Kayýt yoksa Fail dön
+            if (entities == null || !entities.Any())
+            {
+                return BaseResult<List<CertificateDto>>.Fail("Bu personele ait herhangi bir sertifika kaydý bulunamadý.");
+            }
+
             var mappedEntities = entities.Adapt<List<CertificateDto>>();
             return BaseResult<List<CertificateDto>>.Success(mappedEntities);
         }
@@ -146,6 +153,13 @@ namespace HumanResources.Business.Services.CertificateServices
         public async Task<BaseResult<List<CertificateDto>>> GetDateUpcamingSoonAsync(int bildirimGunu)
         {
             var entities = await _certificateRepository.GetDateUpcamingSoonAsync(bildirimGunu);
+
+            // ÝÞ KURALI: Yaklaþan belge yoksa Fail dön
+            if (entities == null || !entities.Any())
+            {
+                return BaseResult<List<CertificateDto>>.Fail($"Önümüzdeki {bildirimGunu} gün içinde süresi dolacak sertifika bulunmamaktadýr.");
+            }
+
             var mappedEntities = entities.Adapt<List<CertificateDto>>();
             return BaseResult<List<CertificateDto>>.Success(mappedEntities);
         }
@@ -153,6 +167,13 @@ namespace HumanResources.Business.Services.CertificateServices
         public async Task<BaseResult<List<CertificateDto>>> GetUsersByCertificateTypeIdAsync(int sertifikaTuruId)
         {
             var entities = await _certificateRepository.GetUsersByCertificateTypeIdAsync(sertifikaTuruId);
+
+            // ÝÞ KURALI: Bu belgeyi kimse almamýþsa Fail dön
+            if (entities == null || !entities.Any())
+            {
+                return BaseResult<List<CertificateDto>>.Fail("Bu sertifika türüne sahip herhangi bir personel bulunamadý.");
+            }
+
             var mappedEntities = entities.Adapt<List<CertificateDto>>();
             return BaseResult<List<CertificateDto>>.Success(mappedEntities);
         }

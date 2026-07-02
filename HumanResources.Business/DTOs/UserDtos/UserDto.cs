@@ -38,12 +38,16 @@ namespace HumanResources.Business.DTOs.UserDtos
         public DateTime OlusturulmaTarihi { get; set; }
         public DateTime GuncellenmeTarihi { get; set; }
 
-        //iliþkiler
         public int DepartmanId { get; set; }
+        public string? DepartmanAd { get; set; } 
 
         public int BirimId { get; set; }
+        public string? BirimAd { get; set; } 
 
         public int? AmirId { get; set; }
-        public string? AmirAdSoyad { get; set; } 
+        public string? AmirAdSoyad { get; set; }
+
+        public int? VardiyaId { get; set; } 
+        public string? VardiyaAciklama { get; set; } 
     }
 }

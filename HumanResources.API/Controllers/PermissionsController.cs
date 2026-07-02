@@ -44,7 +44,6 @@ namespace HumanResources.API.Controllers
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
         }
 
-
         [HttpGet("GetAllWithUser")]
         public async Task<IActionResult> GetAllWithUser()
         {
@@ -56,6 +55,48 @@ namespace HumanResources.API.Controllers
         public async Task<IActionResult> GetWithUser(int id)
         {
             var response = await _permissionService.GetPermissionWithUser(id);
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
+
+        // --- YENİ EKLENEN ENDPOINTLER BURADAN İTİBAREN BAŞLIYOR ---
+
+        [HttpGet("GetByUserId/{userId}")]
+        public async Task<IActionResult> GetByUserId(int userId)
+        {
+            // Profil sayfasında personelin kendi izin geçmişini listeleyecek
+            var response = await _permissionService.GetByUserIdAsync(userId);
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
+
+        [HttpGet("GetMyTeamPendingPermissions/{amirId}")]
+        public async Task<IActionResult> GetMyTeamPendingPermissions(int amirId)
+        {
+            // Amirin ekranında "Ekibimin Onay Bekleyen İzinleri" tablosunu dolduracak
+            var response = await _permissionService.GetMyTeamPendingPermissionsAsync(amirId);
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
+
+        [HttpGet("GetIkPendingPermissions")]
+        public async Task<IActionResult> GetIkPendingPermissions()
+        {
+            // İK ekranında "Amirden Geçmiş, İK Onayı Bekleyen İzinler" tablosunu dolduracak
+            var response = await _permissionService.GetIkPendingPermissionsAsync();
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
+
+        [HttpPut("ApproveByAmir")]
+        public async Task<IActionResult> ApproveByAmir([FromBody] ApprovePermissionDto approveDto)
+        {
+            // Amirin "Onayla" veya "Reddet" butonuna bastığında çalışacak
+            var response = await _permissionService.ApproveByAmirAsync(approveDto);
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
+
+        [HttpPut("ApproveByIk")]
+        public async Task<IActionResult> ApproveByIk([FromBody] ApprovePermissionDto approveDto)
+        {
+            // İK'nın "Onayla" veya "Reddet" butonuna bastığında çalışacak (Gün iadesi / Gün düşümü burada yapılır)
+            var response = await _permissionService.ApproveByIkAsync(approveDto);
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
         }
     }

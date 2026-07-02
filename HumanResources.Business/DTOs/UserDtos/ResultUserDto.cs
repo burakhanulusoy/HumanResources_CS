@@ -48,6 +48,7 @@ namespace HumanResources.Business.DTOs.UserDtos
         // ResultUserDto içinde sadece "Amir"in kim olduðunu tut
         public int? AmirId { get; set; }
         public string? AmirAdSoyad { get; set; } // Sadece ekranda göstermek için adýný tut yeter
-
+                                                 // Diðer özelliklerin altýna ekle:
+        public IList<string> Roller { get; set; }
     }
 }

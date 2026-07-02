@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Http;
+using System;
+
 namespace HumanResources.Business.DTOs.UserDtos
 {
     public class UpdateUserDto
@@ -17,7 +20,9 @@ namespace HumanResources.Business.DTOs.UserDtos
         public string? Cinsiyet { get; set; }
         public string? MedeniDurum { get; set; }
         public string? KanGrubu { get; set; }
-        public string? FotografUrl { get; set; }
+
+        // DEÐÝÞÝKLÝK: Güncelleme sýrasýnda yeni bir fotoðraf seçilirse diye eklendi
+        public IFormFile? Fotograf { get; set; }
 
         // Ek Ýletiþim Bilgileri
         public string? Adres { get; set; }
@@ -27,8 +32,10 @@ namespace HumanResources.Business.DTOs.UserDtos
         // Ýþ ve Organizasyon Bilgileri
         public int? DepartmanId { get; set; }
         public int? BirimId { get; set; }
-        public int? AmirId { get; set; } // Amir zorunlu olmayabilir, o yüzden int?  ***********Zorunlu deðil
+        public int? AmirId { get; set; }
 
+        // DEÐÝÞÝKLÝK: Personelin vardiyasý deðiþebilir diye eklendi
+        public int? VardiyaId { get; set; }
 
         public string? CalismaDurumu { get; set; }
         public string? PersonelTipi { get; set; }

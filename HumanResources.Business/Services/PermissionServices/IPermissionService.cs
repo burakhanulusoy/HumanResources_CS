@@ -1,6 +1,7 @@
 ﻿using HumanResources.Business.Base;
 using HumanResources.Business.DTOs.PermissionDtos;
 using HumanResources.Business.Services.GenericServices;
+using HumanResources.Entity.Entities;
 
 namespace HumanResources.Business.Services.PermissionServices
 {
@@ -15,5 +16,12 @@ namespace HumanResources.Business.Services.PermissionServices
         // Onaylama Metotları
         Task<BaseResult<object>> ApproveByAmirAsync(ApprovePermissionDto approveDto);
         Task<BaseResult<object>> ApproveByIkAsync(ApprovePermissionDto approveDto);
+
+
+        // Personele ait izin geçmişini getirmek için
+
+        Task<BaseResult<List<ResultPermissionDto>>> GetByUserIdAsync(int userId);
+
+
     }
 }

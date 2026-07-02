@@ -71,7 +71,13 @@ namespace HumanResources.API.Controllers
 
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
         }
-
+        [HttpGet("GetSubordinates/{amirId}")]
+        public async Task<IActionResult> GetSubordinates(int amirId)
+        {
+            // Amirin kendi ekibini görmesi VEYA İK'nın o amirin ekibini listelemesi için kullanılır
+            var response = await _userService.GetSubordinatesAsync(amirId);
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
 
     }
 }

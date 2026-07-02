@@ -82,7 +82,6 @@ namespace HumanResources.Business.Validators.UserValidators
 
 
 
-            RuleFor(x => x.FotografUrl).NotEmpty().WithMessage("Fotoðraf url boþ býrakýlamaz");
 
             RuleFor(x => x.Adres)
                 .NotNull().WithMessage("Adres boþ olamaz.")

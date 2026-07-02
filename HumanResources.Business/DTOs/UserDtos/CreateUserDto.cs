@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Http;
+using System;
+
 namespace HumanResources.Business.DTOs.UserDtos
 {
     public class CreateUserDto
@@ -7,7 +10,6 @@ namespace HumanResources.Business.DTOs.UserDtos
         public string? Password { get; set; }
         public string? PhoneNumber { get; set; }
 
-        // Kimlik Bilgileri
         public string? SicilNo { get; set; }
         public string? Ad { get; set; }
         public string? Soyad { get; set; }
@@ -16,9 +18,9 @@ namespace HumanResources.Business.DTOs.UserDtos
         public string? Cinsiyet { get; set; }
         public string? MedeniDurum { get; set; }
         public string? KanGrubu { get; set; }
-        public string? FotografUrl { get; set; }
 
-        // Ek Ýletiþim Bilgileri
+        public IFormFile? Fotograf { get; set; }
+
         public string? Adres { get; set; }
         public string? AcilDurumKisiAdSoyad { get; set; }
         public string? AcilDurumTelefonu { get; set; }
@@ -26,8 +28,9 @@ namespace HumanResources.Business.DTOs.UserDtos
         // Ýþ ve Organizasyon Bilgileri
         public int? DepartmanId { get; set; }
         public int? BirimId { get; set; }
-        public int? AmirId { get; set; } // Amir zorunlu olmayabilir, o yüzden int?  ***********Zorunlu deðil
+        public int? AmirId { get; set; }
 
+        public int? VardiyaId { get; set; }
 
         public string? CalismaDurumu { get; set; }
         public string? PersonelTipi { get; set; }
