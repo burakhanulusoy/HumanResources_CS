@@ -13,9 +13,9 @@ namespace HumanResources.Business.Validators.DepartmentValidators
                 .MinimumLength(2).WithMessage("Departman adý en az 2 karakter olmalýdýr.")
                 .MaximumLength(100).WithMessage("Departman adý en fazla 100 karakter olabilir.");
 
-            //RuleFor(x => x.YoneticiId)
-            //    .NotEmpty().WithMessage("Yönetici seçimi zorunludur.")
-            //    .GreaterThan(0).WithMessage("Geçerli bir yönetici seçiniz.");
+            RuleFor(x => x.YoneticiId)
+                .NotEmpty().WithMessage("Yönetici seçimi zorunludur.")
+                .GreaterThan(0).WithMessage("Geçerli bir yönetici seçiniz.");
         }
     }
 }

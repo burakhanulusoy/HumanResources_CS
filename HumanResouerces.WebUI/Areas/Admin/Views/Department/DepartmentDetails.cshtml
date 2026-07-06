@@ -1,0 +1,315 @@
+﻿@model HumanResources.Business.DTOs.DepartmentDtos.ResultDepartmentWithUserDto
+@{
+    ViewData["Title"] = $"{Model.Ad} - Departman Personel Listesi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml"; // Doğru yol
+
+    // PDF Dosya adını dinamik oluşturuyoruz
+    string pdfFileName = $"Departman_Raporu_{Model.Ad.Replace(" ", "_")}_{DateTime.Now.ToString("dd_MM_yyyy")}.pdf";
+
+    // Personel sayısını güvenli bir şekilde alıyoruz
+    int staffCount = Model.Personeller?.Count ?? 0;
+
+    // Yönetici adını güvenli bir şekilde oluşturuyoruz
+    string yoneticiAdSoyad = Model.Yonetici != null ? $"{Model.Yonetici.Ad} {Model.Yonetici.Soyad}" : "Yönetici Atanmadı";
+}
+
+<style>
+    /* Özel Rapor / PDF Stilleri */
+    .toolbar {
+        background: #fff;
+        border: 1px solid #eef0f3;
+        border-radius: 14px;
+        padding: 14px 20px;
+    }
+
+    .btn-outline-back {
+        background: #f3f4f6;
+        color: #4b5563;
+        border: 1px solid #e5e7eb;
+        font-weight: 500;
+        border-radius: 10px;
+    }
+
+        .btn-outline-back:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+    .btn-download-pdf {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(220,38,38,.25);
+    }
+
+        .btn-download-pdf:hover {
+            filter: brightness(1.05);
+            color: #fff;
+        }
+
+    /* PDF İçeriği */
+    #pdfContent {
+        background: #ffffff;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #1a1a1a;
+        border-radius: 4px;
+        padding: 40px;
+    }
+
+    .doc-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 3px double #000;
+        padding-bottom: 14px;
+        margin-bottom: 18px;
+    }
+
+        .doc-header .org-info h3 {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .02em;
+        }
+
+        .doc-header .org-info p {
+            margin: 2px 0 0;
+            font-size: .78rem;
+            color: #444;
+        }
+
+        .doc-header .doc-meta {
+            text-align: right;
+            font-size: .78rem;
+            color: #333;
+            line-height: 1.6;
+        }
+
+            .doc-header .doc-meta strong {
+                color: #000;
+            }
+
+    .doc-title {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+        .doc-title h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+            margin: 0;
+            text-decoration: underline;
+        }
+
+        .doc-title p {
+            margin: 4px 0 0;
+            font-size: .78rem;
+            color: #444;
+        }
+
+    .doc-info-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 26px;
+        font-size: .85rem;
+    }
+
+        .doc-info-table td {
+            border: 1px solid #000;
+            padding: 8px 12px;
+        }
+
+            .doc-info-table td.label {
+                background: #f0f0f0;
+                font-weight: 700;
+                width: 22%;
+            }
+
+    .doc-staff-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .82rem;
+        margin-bottom: 26px;
+    }
+
+        .doc-staff-table th {
+            border: 1px solid #000;
+            background: #f0f0f0;
+            padding: 8px 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: .74rem;
+            text-align: left;
+        }
+
+        .doc-staff-table td {
+            border: 1px solid #000;
+            padding: 8px 10px;
+        }
+
+        .doc-staff-table tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        .doc-staff-table .empty-row td {
+            text-align: center;
+            font-style: italic;
+            color: #555;
+            padding: 18px;
+        }
+
+    .doc-signature-area {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 50px;
+    }
+
+    .doc-signature-box {
+        width: 30%;
+        text-align: center;
+        font-size: .8rem;
+    }
+
+    .doc-signature-line {
+        border-top: 1px solid #000;
+        margin-top: 50px;
+        padding-top: 6px;
+    }
+
+    .doc-signature-name {
+        margin-top: 3px;
+        font-weight: 700;
+        font-size: .82rem;
+        color: #000;
+    }
+
+    .doc-footer {
+        margin-top: 25px;
+        border-top: 1px solid #000;
+        padding-top: 10px;
+        font-size: .7rem;
+        color: #444;
+        display: flex;
+        justify-content: space-between;
+    }
+</style>
+
+<div class="toolbar d-flex justify-content-between align-items-center mb-4">
+    <a asp-action="Index" class="btn btn-outline-back px-3">
+        <i class="bi bi-arrow-left me-1"></i> Geri Dön
+    </a>
+    <button id="downloadPdfBtn" class="btn btn-download-pdf px-4">
+        <i class="bi bi-file-earmark-pdf me-1"></i> Personel Listesini PDF İndir
+    </button>
+</div>
+
+<div id="pdfContent" class="card shadow-sm">
+    <div class="doc-header">
+        <div class="org-info">
+            <h3>İnsan Kaynakları Departmanı</h3>
+            <p>Departman ve Personel Yönetim Sistemi</p>
+        </div>
+        <div class="doc-meta">
+            <div><strong>Rapor No:</strong> DPT-@Model.Id.ToString("D4")-@DateTime.Now.ToString("yyyyMMdd")</div>
+            <div><strong>Düzenleme Tarihi:</strong> @DateTime.Now.ToString("dd.MM.yyyy HH:mm")</div>
+            <div><strong>Durum:</strong> Onaylı</div>
+        </div>
+    </div>
+
+    <div class="doc-title">
+        <h2>Departman Personel Listesi Raporu</h2>
+        <p>Kurum İçi Kadro ve Personel Dağılım Belgesi</p>
+    </div>
+
+    <table class="doc-info-table">
+        <tr>
+            <td class="label">Departman Adı</td>
+            <td>@Model.Ad</td>
+            <td class="label">Departman Yöneticisi</td>
+            <td class="font-weight-bold">@yoneticiAdSoyad</td>
+        </tr>
+        <tr>
+            <td class="label">Toplam Personel</td>
+            <td>@staffCount Kişi</td>
+            <td class="label">Rapor Tarihi</td>
+            <td>@DateTime.Now.ToString("dd.MM.yyyy")</td>
+        </tr>
+    </table>
+
+    <table class="doc-staff-table">
+        <thead>
+            <tr>
+                <th style="width: 5%;">#</th>
+                <th style="width: 35%;">Personel Adı Soyadı</th>
+                <th style="width: 35%;">E-Posta Adresi</th>
+                <th style="width: 25%;">Kayıt Durumu</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Personeller != null && Model.Personeller.Any())
+            {
+                int pCount = 0;
+                foreach (var p in Model.Personeller)
+                {
+                    pCount++;
+                    <tr>
+                        <td>@pCount</td>
+                        <!-- UserDto içindeki property isimleri (FirstName, LastName vb.) projendeki isimlendirmeye göre düzenlenebilir -->
+                        <td>@p.Ad @p.Soyad</td>
+                        <td>@(string.IsNullOrEmpty(p.Email) ? "-" : p.Email)</td>
+                        <td>Aktif Personel</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr class="empty-row">
+                    <td colspan="4">Bu departmana doğrudan bağlı personel bulunmamaktadır.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="doc-signature-area">
+        <div class="doc-signature-box">
+            <div class="doc-signature-line">İnsan Kaynakları Yetkilisi</div>
+        </div>
+        <div class="doc-signature-box">
+            <div class="doc-signature-line">
+                Departman Yöneticisi
+                @if (Model.Yonetici != null)
+                {
+                    <div class="doc-signature-name">@yoneticiAdSoyad</div>
+                }
+            </div>
+        </div>
+        <div class="doc-signature-box">
+            <div class="doc-signature-line">Genel Müdür Onayı</div>
+        </div>
+    </div>
+
+    <div class="doc-footer">
+        <span>Bu rapor sistemdeki güncel verilere göre otomatik oluşturulmuştur.</span>
+        <span>Sayfa 1/1</span>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+    document.getElementById('downloadPdfBtn').addEventListener('click', function () {
+        var element = document.getElementById('pdfContent');
+        var opt = {
+            margin: 0.5,
+            filename: '@pdfFileName',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
+    });
+</script>

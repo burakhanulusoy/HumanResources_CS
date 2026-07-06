@@ -12,12 +12,22 @@ namespace HumanResources.DataAccess.Repositories.DepartmentRepositories
 
         public Task<List<Departman>> GetDepartmentsWithUserAsync()
         {
-            return _table.Include(x => x.Yonetici).AsNoTracking().ToListAsync();
+            // Index sayfasýndaki PersonellerCount ve BirimlerCount'un doðru dolmasý için 
+            // buraya da Include ekliyoruz.
+            return _table.Include(x => x.Yonetici)
+                         .Include(x => x.Birimler)
+                         .Include(x => x.Personeller)
+                         .AsNoTracking()
+                         .ToListAsync();
         }
 
         public Task<Departman> GetDepartmentWithUserAsync(int id)
         {
-            return _table.Include(x=>x.Yonetici).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            // PDF'in olacaðý detay sayfasý için hem Yöneticiyi hem de Personelleri çekiyoruz.
+            return _table.Include(x => x.Yonetici)
+                         .Include(x => x.Personeller)
+                         .AsNoTracking()
+                         .FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

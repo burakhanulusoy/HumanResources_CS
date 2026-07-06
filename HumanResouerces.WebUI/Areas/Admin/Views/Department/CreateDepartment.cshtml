@@ -1,0 +1,50 @@
+﻿@model HumanResources.Business.DTOs.DepartmentDtos.CreateDepartmentDto
+@{
+    ViewData["Title"] = "Yeni Departman";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml"; // Doğru yol
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Yeni Departman Ekle</h6>
+    </div>
+    <div class="card-body">
+        <form asp-action="CreateDepartment" method="post" id="createForm">
+            <div class="form-group mb-3">
+                <label>Departman Adı</label>
+                <input type="text" asp-for="Ad" class="form-control"  />
+                <span asp-validation-for="Ad" class="text-danger font-weight-bold"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label>Yönetici ID</label>
+                <input type="number" asp-for="YoneticiId" class="form-control" />
+                <span asp-validation-for="YoneticiId" class="text-danger font-weight-bold"></span>
+            </div>
+
+            <button type="button" class="btn btn-success" onclick="submitCreateForm()">Kaydet</button>
+            <a asp-action="Index" class="btn btn-secondary">İptal</a>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function submitCreateForm() {
+        // Form validasyonunu kontrol et
+        const form = document.getElementById('createForm');
+        if (form.checkValidity()) {
+            Swal.fire({
+                title: 'Başarılı!',
+                text: 'Departman başarıyla eklendi.',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                form.submit();
+            });
+        } else {
+            form.reportValidity();
+        }
+    }
+</script>
