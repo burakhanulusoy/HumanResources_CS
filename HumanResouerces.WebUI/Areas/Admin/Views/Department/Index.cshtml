@@ -1,42 +1,454 @@
 ﻿@model List<HumanResources.Business.DTOs.DepartmentDtos.ResultDepartmentDto>
 @{
-    ViewData["Title"] = "Departmanlar";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml"; // Doğru yol
+    ViewData["Title"] = "Departman Yönetimi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int count = 0;
+    int totalUnits = Model?.Sum(d => d.BirimlerCount) ?? 0;
+    int totalStaff = Model?.Sum(d => d.PersonellerCount) ?? 0;
 }
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3 d-flex justify-content-between align-items-center">
-        <h6 class="m-0 font-weight-bold text-primary">Departman Listesi</h6>
-        <a asp-action="CreateDepartment" class="btn btn-primary btn-sm">
-            <i class="bi bi-plus-circle"></i> Yeni Departman Ekle
-        </a>
+<style>
+    /* ... Önceki CSS Kodların Aynı ... */
+    .stat-card {
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(16, 24, 40, .06);
+        padding: 1.1rem 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: #fff;
+        height: 100%;
+    }
+
+    .stat-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+
+        .stat-icon.teal {
+            background: #f0fdfa;
+            color: #0d9488;
+        }
+
+        .stat-icon.blue {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .stat-icon.purple {
+            background: #f5f3ff;
+            color: #7c3aed;
+        }
+
+    .stat-value {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #111827;
+        line-height: 1.1;
+        margin: 0;
+    }
+
+    .stat-label {
+        font-size: .78rem;
+        color: #6b7280;
+        margin: 2px 0 0;
+    }
+
+    .dept-card {
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(16, 24, 40, .06);
+        overflow: hidden;
+    }
+
+    .dept-header {
+        background: #fff;
+        border-bottom: 1px solid #eef0f3;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .dept-title {
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+    }
+
+        .dept-title .icon-wrap {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #14b8a6, #0d9488);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+        }
+
+    .dept-subtitle {
+        font-size: .82rem;
+        color: #6b7280;
+        margin: 2px 0 0;
+    }
+
+    .btn-add {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        border: none;
+        color: #fff;
+        border-radius: 10px;
+        padding: .55rem 1.1rem;
+        font-weight: 600;
+        transition: transform .15s ease, box-shadow .15s ease;
+        white-space: nowrap;
+    }
+
+        .btn-add:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(34, 197, 94, .35);
+        }
+
+    .search-wrap {
+        position: relative;
+    }
+
+        .search-wrap .bi-search {
+            position: absolute;
+            left: .85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+    .dept-search {
+        width: 260px;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        padding-left: 2.4rem;
+        background: #f9fafb;
+    }
+
+        .dept-search:focus {
+            background: #fff;
+            border-color: #5eead4;
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, .15);
+        }
+
+    .table-dept {
+        margin-bottom: 0;
+    }
+
+        .table-dept thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: .75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            border-bottom: 1px solid #eef0f3;
+            padding: .85rem 1rem;
+            white-space: nowrap;
+        }
+
+        .table-dept tbody td {
+            padding: .9rem 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+            color: #374151;
+        }
+
+        .table-dept tbody tr {
+            transition: background .12s ease;
+        }
+
+            .table-dept tbody tr:hover {
+                background: #f8faff;
+            }
+
+    .row-index {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: #f1f5f9;
+        color: #64748b;
+        font-size: .8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dept-name {
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .manager-badge {
+        background: #fffbeb;
+        color: #b45309;
+        font-size: .78rem;
+        font-weight: 600;
+        border-radius: 999px;
+        padding: .3rem .75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+    }
+
+        .manager-badge.empty {
+            background: #f8fafc;
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+    .unit-badge {
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: .78rem;
+        font-weight: 600;
+        border-radius: 999px;
+        padding: .3rem .75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+    }
+
+    .staff-badge {
+        background: #f5f3ff;
+        color: #7c3aed;
+        font-size: .78rem;
+        font-weight: 600;
+        border-radius: 999px;
+        padding: .3rem .75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+    }
+
+    .btn-action {
+        border: none;
+        border-radius: 8px;
+        padding: .4rem .8rem;
+        font-size: .8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        transition: transform .12s ease, box-shadow .12s ease;
+    }
+
+        .btn-action:hover {
+            transform: translateY(-1px);
+        }
+
+    .btn-units {
+        background: #f0fdfa;
+        color: #0d9488;
+    }
+
+        .btn-units:hover {
+            background: #ccfbf1;
+            color: #0f766e;
+            box-shadow: 0 4px 10px rgba(13, 148, 136, .18);
+        }
+
+    .btn-edit {
+        background: #eef2ff;
+        color: #4f46e5;
+    }
+
+        .btn-edit:hover {
+            background: #e0e7ff;
+            color: #4338ca;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, .18);
+        }
+
+    .btn-delete {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+        .btn-delete:hover {
+            background: #fee2e2;
+            color: #b91c1c;
+            box-shadow: 0 4px 10px rgba(220, 38, 38, .18);
+        }
+
+    /* YENİ EKLENEN BUTON TASARIMI (Personeller Butonu İçin) */
+    .btn-details {
+        background: #fdf4ff;
+        color: #c026d3;
+    }
+
+        .btn-details:hover {
+            background: #fae8ff;
+            color: #a21caf;
+            box-shadow: 0 4px 10px rgba(192, 38, 211, .18);
+        }
+
+    .empty-state {
+        padding: 3.5rem 1rem;
+        text-align: center;
+        color: #9ca3af;
+    }
+
+        .empty-state .bi {
+            font-size: 2.6rem;
+            color: #d1d5db;
+            display: block;
+            margin-bottom: .75rem;
+        }
+
+        .empty-state p {
+            margin-bottom: 1rem;
+            font-size: .95rem;
+        }
+
+    .no-result-row td {
+        text-align: center;
+        padding: 40px 20px;
+        color: #9ca3af;
+        font-style: italic;
+    }
+</style>
+
+<!-- Özet kartları -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <span class="stat-icon teal"><i class="bi bi-building"></i></span>
+            <div>
+                <p class="stat-value">@(Model?.Count ?? 0)</p>
+                <p class="stat-label">Toplam Departman</p>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <span class="stat-icon blue"><i class="bi bi-diagram-3"></i></span>
+            <div>
+                <p class="stat-value">@totalUnits</p>
+                <p class="stat-label">Toplam Birim</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <span class="stat-icon purple"><i class="bi bi-people"></i></span>
+            <div>
+                <p class="stat-value">@totalStaff</p>
+                <p class="stat-label">Toplam Personel</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Departman listesi -->
+<div class="card dept-card mb-4">
+    <div class="dept-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <h5 class="dept-title">
+            <span class="icon-wrap"><i class="bi bi-building"></i></span>
+            <span>
+                Departmanlar
+                <span class="dept-subtitle d-block">Kurumun departman yapısını yönetin</span>
+            </span>
+        </h5>
+        <div class="d-flex align-items-center gap-2">
+            <div class="search-wrap">
+                <i class="bi bi-search"></i>
+                <input type="text" id="deptSearch" class="form-control dept-search" placeholder="Departman veya yönetici ara..." />
+            </div>
+            <a class="btn btn-add" href="/Admin/Department/CreateDepartment">
+                <i class="bi bi-plus-lg me-1"></i> Yeni Departman
+            </a>
+        </div>
+    </div>
+    <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-dark">
+            <table class="table table-dept" id="deptTable">
+                <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Departman Adı</th>
-                        <th>Yöneticisi</th>
-                        <th class="text-center">Birim Sayısı</th>
-                        <th class="text-center">Personel Sayısı</th>
-                        <th class="text-center">İşlemler</th>
+                        <th style="width: 5%;">#</th>
+                        <th style="width: 20%;">Departman Adı</th>
+                        <th style="width: 20%;">Yönetici</th>
+                        <th style="width: 10%;">Birim</th>
+                        <th style="width: 10%;">Personel</th>
+                        <th style="width: 35%;" class="text-end pe-4">İşlemler</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach (var item in Model)
+                <tbody id="deptTableBody">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            count++;
+                            <tr>
+                                <td><span class="row-index">@count</span></td>
+                                <td><span class="dept-name">@item.Ad</span></td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.YoneticiAdSoyad))
+                                    {
+                                        <span class="manager-badge">
+                                            <i class="bi bi-person-badge"></i> @item.YoneticiAdSoyad
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="manager-badge empty">
+                                            <i class="bi bi-person-x"></i> Atanmadı
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="unit-badge">
+                                        <i class="bi bi-diagram-3"></i> @item.BirimlerCount
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="staff-badge">
+                                        <i class="bi bi-people"></i> @item.PersonellerCount
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <!-- YENİ BUTON: Personel Detayları / PDF Sayfasına Gider -->
+                                    <a href="/Admin/Department/DepartmentDetails/@item.Id" class="btn btn-action btn-details">
+                                        <i class="bi bi-people-fill"></i> Personeller
+                                    </a>
+
+                                    <a href="/Admin/Department/DepartmentUnits/@item.Id" class="btn btn-action btn-units">
+                                        <i class="bi bi-diagram-3"></i> Birimler
+                                    </a>
+                                    <a href="/Admin/Department/UpdateDepartment/@item.Id" class="btn btn-action btn-edit">
+                                        <i class="bi bi-pencil-square"></i> Düzenle
+                                    </a>
+                                    <button onclick="deleteDepartment(@item.Id, '@item.Ad', @item.BirimlerCount, @item.PersonellerCount)" class="btn btn-action btn-delete">
+                                        <i class="bi bi-trash3"></i> Sil
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
                     {
                         <tr>
-                            <td>@item.Id</td>
-                            <td class="font-weight-bold">@item.Ad</td>
-                            <td>@(string.IsNullOrEmpty(item.YoneticiAdSoyad) ? "Atanmadı" : item.YoneticiAdSoyad)</td>
-                            <td class="text-center"><span class="badge bg-info text-dark">@item.BirimlerCount Birim</span></td>
-                            <td class="text-center"><span class="badge bg-secondary">@item.PersonellerCount Personel</span></td>
-                            <td class="text-center">
-                                <a asp-action="DepartmentDetails" asp-route-id="@item.Id" class="btn btn-info btn-sm text-white">İncele / PDF</a>
-                                <a asp-action="UpdateDepartment" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Düzenle</a>
-                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(@item.Id, '@item.Ad')">Sil</button>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <i class="bi bi-building"></i>
+                                    <p>Henüz kayıtlı departman bulunmuyor.</p>
+                                    <a class="btn btn-add" href="/Admin/Department/CreateDepartment">
+                                        <i class="bi bi-plus-lg me-1"></i> İlk Departmanı Ekle
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -46,29 +458,60 @@
     </div>
 </div>
 
-<!-- SweetAlert2 kütüphanesinin projende olduğunu varsayarak CDN ekliyorum, varsa silebilirsin -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function confirmDelete(id, name) {
+    function deleteDepartment(id, name, unitCount, staffCount) {
+        let warningText = `<b>${name}</b> departmanını silmek üzeresiniz.<br>Bu işlem geri alınamaz!`;
+        if (unitCount > 0 || staffCount > 0) {
+            warningText = `<b>${name}</b> departmanında <b>${unitCount} birim</b> ve <b>${staffCount} personel</b> kayıtlı!<br>Silmek üzeresiniz, bu işlem geri alınamaz!`;
+        }
         Swal.fire({
-            title: 'Emin misiniz?',
-            text: `"${name}" adlı departmanı silmek üzeresiniz. Bu işlem geri alınamaz!`,
-            icon: 'warning',
+            title: "Emin misiniz?",
+            html: warningText,
+            icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Evet, Sil!',
-            cancelButtonText: 'İptal'
+            confirmButtonColor: "#dc2626",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: '<i class="bi bi-trash3 me-1"></i> Evet, sil',
+            cancelButtonText: "İptal",
+            reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
-                // Onaylanırsa ilgili route'a yönlendir
-                window.location.href = `/Admin/Department/DeleteDepartment/${id}`;
+                window.location.href = "/Admin/Department/DeleteDepartment/" + id;
             }
-        })
+        });
     }
 
-    // Eğer Controller'dan TempData["Success"] gibi bir mesaj dönüyorsan burada yakalayabilirsin:
-    // @@if(TempData["Success"] != null) { 
-    //    Swal.fire('Başarılı!', '@TempData["Success"]', 'success'); 
-    // }
+    // Anında arama (departman adı + yönetici adı)
+    const deptSearchInput = document.getElementById("deptSearch");
+    const deptBody = document.getElementById("deptTableBody");
+
+    deptSearchInput?.addEventListener("input", function () {
+        const term = this.value.toLowerCase().trim();
+        const rows = deptBody.querySelectorAll("tr");
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            if (row.querySelector(".empty-state") || row.classList.contains("no-result-row")) return;
+            const name = row.cells[1]?.textContent.toLowerCase() ?? "";
+            const manager = row.cells[2]?.textContent.toLowerCase() ?? "";
+            const match = name.includes(term) || manager.includes(term);
+            row.style.display = match ? "" : "none";
+            if (match) visibleCount++;
+        });
+
+        let noRow = deptBody.querySelector(".no-result-row");
+        if (visibleCount === 0 && term !== "") {
+            if (!noRow) {
+                noRow = document.createElement("tr");
+                noRow.className = "no-result-row";
+                noRow.innerHTML = `<td colspan="6"></td>`;
+                deptBody.appendChild(noRow);
+            }
+            noRow.style.display = "";
+            noRow.querySelector("td").textContent = `"${this.value}" ile eşleşen departman bulunamadı.`;
+        } else if (noRow) {
+            noRow.style.display = "none";
+        }
+    });
 </script>

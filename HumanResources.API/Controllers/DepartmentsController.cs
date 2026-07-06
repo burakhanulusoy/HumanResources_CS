@@ -64,5 +64,13 @@ namespace HumanResources.API.Controllers
 
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
         }
+
+        [HttpGet("GetDepartmentWithUnits/{id}")]
+        public async Task<IActionResult> GetDepartmentWithUnits(int id)
+        {
+            var response = await _departmentService.GetDepartmentWithUnitsAsync(id);
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
+
     }
 }

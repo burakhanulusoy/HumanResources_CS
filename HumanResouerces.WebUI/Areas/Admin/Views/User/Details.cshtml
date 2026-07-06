@@ -1,0 +1,295 @@
+﻿@model HumanResources.Business.DTOs.UserDtos.ResultUserDto
+@{
+    ViewData["Title"] = $"{Model?.Ad} {Model?.Soyad} - Personel Bilgi Formu";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    string adSoyad = Model != null ? $"{Model.Ad} {Model.Soyad}" : "Bilinmiyor";
+    string fotoUrl = (Model == null || string.IsNullOrEmpty(Model.FotografUrl)) ? "/assets/images/admin.png" : Model.FotografUrl;
+    string departmanBirim = Model != null ? $"{(Model.Departman?.Ad ?? "-")} / {(Model.Birim?.Ad ?? "-")}" : "-";
+    string pdfFileName = $"Personel_Bilgi_Formu_{Model?.Ad}_{Model?.Soyad}.pdf";
+}
+
+<style>
+    .action-toolbar {
+        background: #fff;
+        border: 1px solid #eef0f3;
+        border-radius: 14px;
+        padding: 14px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .btn-back {
+        background: #f3f4f6;
+        color: #4b5563;
+        border: 1px solid #e5e7eb;
+        font-weight: 500;
+        border-radius: 10px;
+        padding: .5rem 1rem;
+    }
+
+    .btn-pdf {
+        background: #dc2626;
+        color: #fff;
+        border: none;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: .5rem 1rem;
+        box-shadow: 0 4px 10px rgba(220,38,38,.25);
+    }
+
+    .form-container {
+        background: #ffffff;
+        max-width: 21cm;
+        margin: 0 auto;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        font-family: 'Times New Roman', Times, serif;
+        color: #333;
+        position: relative;
+    }
+
+    .form-doc-no {
+        text-align: right;
+        font-size: 11px;
+        padding: 5px 20px;
+        background: #e2e2e2;
+        display: inline-block;
+        float: right;
+        margin-top: 10px;
+        margin-right: 10px;
+        font-weight: bold;
+    }
+
+    .form-header {
+        background-color: #899eb1;
+        color: #0b1a3d;
+        padding: 30px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        clear: both;
+        margin-bottom: 30px;
+    }
+
+        .form-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .form-header .logo-area {
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+            .form-header .logo-area i {
+                font-size: 32px;
+                display: block;
+                margin-bottom: 5px;
+            }
+
+    .form-top-section {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 40px;
+        margin-bottom: 30px;
+    }
+
+    .form-grey-box {
+        background-color: #e6e7e9;
+        padding: 25px;
+        width: 65%;
+        border-radius: 2px;
+    }
+
+        .form-grey-box table {
+            width: 100%;
+        }
+
+        .form-grey-box td {
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+            .form-grey-box td:first-child {
+                font-weight: bold;
+                width: 35%;
+                color: #111;
+            }
+
+    .form-photo {
+        width: 140px;
+        height: 180px;
+        object-fit: cover;
+        border: 1px solid #ccc;
+        padding: 3px;
+        background: #fff;
+    }
+
+    .form-body {
+        padding: 0 40px;
+        margin-bottom: 50px;
+    }
+
+    .form-details-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 15px;
+    }
+
+        .form-details-table td {
+            vertical-align: top;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+            .form-details-table td.lbl {
+                font-weight: bold;
+                width: 20%;
+                color: #111;
+            }
+
+            .form-details-table td.val {
+                width: 30%;
+                padding-right: 15px;
+            }
+
+    .blood-badge {
+        border: 1px solid #ccc;
+        padding: 3px 10px;
+        border-radius: 4px;
+        display: inline-block;
+        background: #f9f9f9;
+    }
+
+    .form-signatures {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 40px 40px 40px;
+        text-align: center;
+        margin-top: 60px;
+    }
+
+    .sig-box {
+        width: 30%;
+        font-size: 13px;
+        font-weight: bold;
+        color: #111;
+    }
+
+    .sig-line {
+        border-top: 1px solid #999;
+        margin-top: 60px;
+        padding-top: 10px;
+    }
+</style>
+
+<div class="action-toolbar">
+    <button onclick="history.back()" class="btn-back"><i class="bi bi-arrow-left me-1"></i> Geri Dön</button>
+    <button id="downloadPdfBtn" class="btn-pdf"><i class="bi bi-file-earmark-pdf me-1"></i> Formu PDF İndir</button>
+</div>
+
+<div id="pdfContent" class="form-container">
+    <div class="form-doc-no">Doküman No &nbsp;&nbsp;&nbsp; IK-FRM-001</div>
+
+    <div class="form-header">
+        <h1>Personel Bilgi Formu</h1>
+        <div class="logo-area" style="display: flex; align-items: center; gap: 15px; color: #0b1a3d;">
+            <!-- Logo burada -->
+            <img src="~/assets/images/image_f9b8ff.png" alt="CS SAVUNMA Logo" style="height: 60px; width: auto;" />
+            <div style="text-align: left;">
+                <div style="font-size: 20px; font-weight: 800; letter-spacing: 0.5px;">CS SAVUNMA</div>
+                <div style="font-size: 11px; font-weight: 400; opacity: 0.8;">İnsan Kaynakları</div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model != null)
+    {
+        <div class="form-top-section">
+            <div class="form-grey-box">
+                <table>
+                    <tr><td>Adı Soyadı</td><td>@adSoyad</td></tr>
+                    <tr><td>Uyruğu</td><td>T.C.</td></tr>
+                    <tr><td>TC Kimlik No</td><td>@(string.IsNullOrEmpty(Model.TcKimlikNo) ? "Belirtilmedi" : Model.TcKimlikNo)</td></tr>
+                    <tr><td colspan="2"><hr style="border-top: 1px solid #ccc; margin: 15px 0;" /></td></tr>
+                    <tr><td>Görevi / Unvan</td><td>@(string.IsNullOrEmpty(Model.PersonelTipi) ? "Personel" : Model.PersonelTipi)</td></tr>
+                    <tr><td>Departman / Birim</td><td>@departmanBirim</td></tr>
+                </table>
+            </div>
+            <div>
+                <img src="@fotoUrl" class="form-photo" alt="Personel Fotoğrafı" />
+            </div>
+        </div>
+
+        <div class="form-body">
+            <table class="form-details-table">
+                <tr>
+                    <td class="lbl">Cinsiyeti</td>
+                    <td class="val">@(string.IsNullOrEmpty(Model.Cinsiyet) ? "-" : Model.Cinsiyet)</td>
+                    <td class="lbl">Email</td>
+                    <td class="val">@(string.IsNullOrEmpty(Model.Email) ? "-" : Model.Email)</td>
+                </tr>
+                <tr>
+                    <td class="lbl">Doğum Tarihi</td>
+                    <td class="val">@(Model.DogumTarihi?.ToString("dd/MM/yyyy") ?? "-")</td>
+                    <td class="lbl">Cep Telefon</td>
+                    <td class="val">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "-" : Model.PhoneNumber)</td>
+                </tr>
+                <tr>
+                    <td class="lbl">Kan Grubu</td>
+                    <td class="val">@(!string.IsNullOrEmpty(Model.KanGrubu) ? Model.KanGrubu : "-")</td>
+                    <td class="lbl">Ev Telefon</td>
+                    <td class="val">-</td>
+                </tr>
+                <tr>
+                    <td class="lbl">Medeni Durum</td>
+                    <td class="val">@(string.IsNullOrEmpty(Model.MedeniDurum) ? "-" : Model.MedeniDurum)</td>
+                    <td class="lbl" rowspan="2">Adresi</td>
+                    <td class="val" rowspan="2">@(string.IsNullOrEmpty(Model.Adres) ? "-" : Model.Adres)</td>
+                </tr>
+                <tr>
+                    <td class="lbl">İşe Giriş</td>
+                    <td class="val">@(Model.IseGirisTarihi?.ToString("dd/MM/yyyy") ?? "-")</td>
+                </tr>
+                <tr>
+                    <td class="lbl">SGK Sicil No</td>
+                    <td class="val">@(string.IsNullOrEmpty(Model.SgkSicilNo) ? "-" : Model.SgkSicilNo)</td>
+                    <td class="lbl">Acil Durum</td>
+                    <td class="val">@Model.AcilDurumKisiAdSoyad <br /> @Model.AcilDurumTelefonu</td>
+                </tr>
+                <tr>
+                    <td class="lbl">Bağlı Amir</td>
+                    <td class="val">@(Model.AmirAdSoyad ?? "-")</td>
+                    <td class="lbl">Vardiyası</td>
+                    <td class="val">@(Model.VardiyaAciklama ?? "-")</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="form-signatures">
+            <div class="sig-box"><div class="sig-line">Hazırlayanın İmzası</div></div>
+            <div class="sig-box"><div class="sig-line">Departman Yöneticisi</div></div>
+            <div class="sig-box"><div class="sig-line">İK Müdürü</div></div>
+        </div>
+    }
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+    document.getElementById('downloadPdfBtn').addEventListener('click', function () {
+        var element = document.getElementById('pdfContent');
+        var opt = {
+            margin:       [0.2, 0.2, 0.2, 0.2],
+            filename:     '@pdfFileName',
+            image:        { type: 'jpeg', quality: 1 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
+    });
+</script>

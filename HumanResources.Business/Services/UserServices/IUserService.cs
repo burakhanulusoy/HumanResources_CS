@@ -15,5 +15,9 @@ namespace HumanResources.Business.Services.UserServices
         // Mevcutların altına şu satırı ekle:
         Task<BaseResult<List<ResultUserDto>>> GetAllUsersForReportAsync();
 
+        Task<BaseResult<List<UserDto>>> GetUsersByRoleAsync(string roleName);
+
+
+        Task<BaseResult<List<ResultUserDto>>> GetUsersByUnitIdAsync(int unitId);
     }
 }

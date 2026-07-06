@@ -1,0 +1,260 @@
+﻿@model HumanResouerces.WebUI.DTOs.DepartmentDtos.DepartmentUnitsDto
+@{
+    ViewData["Title"] = $"{Model.Ad} - Birimler";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int count = 0;
+    int totalStaff = Model.Birimler?.Sum(b => b.PersonellerCount) ?? 0;
+}
+
+<style>
+    .toolbar {
+        background: #fff;
+        border: 1px solid #eef0f3;
+        border-radius: 14px;
+        padding: 14px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .btn-outline-back {
+        background: #f3f4f6;
+        color: #4b5563;
+        border: 1px solid #e5e7eb;
+        font-weight: 500;
+        border-radius: 10px;
+        padding: .5rem 1rem;
+    }
+
+        .btn-outline-back:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+    .dept-context {
+        display: flex;
+        align-items: center;
+        gap: .8rem;
+    }
+
+        .dept-context .icon-wrap {
+            width: 42px;
+            height: 42px;
+            border-radius: 11px;
+            background: linear-gradient(135deg, #14b8a6, #0d9488);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .dept-context h5 {
+            margin: 0;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .dept-context .meta {
+            font-size: .8rem;
+            color: #6b7280;
+            margin-top: 2px;
+            display: flex;
+            gap: .8rem;
+            flex-wrap: wrap;
+        }
+
+            .dept-context .meta span {
+                display: inline-flex;
+                align-items: center;
+                gap: .3rem;
+            }
+
+    .units-card {
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(16, 24, 40, .06);
+        overflow: hidden;
+    }
+
+    .table-units {
+        margin-bottom: 0;
+    }
+
+        .table-units thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: .75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            border-bottom: 1px solid #eef0f3;
+            padding: .85rem 1rem;
+            white-space: nowrap;
+        }
+
+        .table-units tbody td {
+            padding: .9rem 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+            color: #374151;
+        }
+
+        .table-units tbody tr {
+            transition: background .12s ease;
+        }
+
+            .table-units tbody tr:hover {
+                background: #f8faff;
+            }
+
+    .row-index {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: #f1f5f9;
+        color: #64748b;
+        font-size: .8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .unit-name {
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .staff-badge {
+        background: #f5f3ff;
+        color: #7c3aed;
+        font-size: .78rem;
+        font-weight: 600;
+        border-radius: 999px;
+        padding: .3rem .75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+    }
+
+        .staff-badge.empty {
+            background: #f8fafc;
+            color: #94a3b8;
+        }
+
+    .btn-inspect {
+        border: none;
+        border-radius: 8px;
+        padding: .4rem .9rem;
+        font-size: .8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        background: #ecfeff;
+        color: #0891b2;
+        transition: transform .12s ease, box-shadow .12s ease;
+    }
+
+        .btn-inspect:hover {
+            transform: translateY(-1px);
+            background: #cffafe;
+            color: #0e7490;
+            box-shadow: 0 4px 10px rgba(8, 145, 178, .18);
+        }
+
+    .empty-state {
+        padding: 3.5rem 1rem;
+        text-align: center;
+        color: #9ca3af;
+    }
+
+        .empty-state .bi {
+            font-size: 2.6rem;
+            color: #d1d5db;
+            display: block;
+            margin-bottom: .75rem;
+        }
+</style>
+
+<div class="toolbar mb-4">
+    <div class="dept-context">
+        <span class="icon-wrap"><i class="bi bi-building"></i></span>
+        <div>
+            <h5>@Model.Ad</h5>
+            <div class="meta">
+                <span><i class="bi bi-person-badge"></i> @(string.IsNullOrEmpty(Model.YoneticiAdSoyad) ? "Yönetici atanmadı" : Model.YoneticiAdSoyad)</span>
+                <span><i class="bi bi-diagram-3"></i> @(Model.Birimler?.Count ?? 0) Birim</span>
+                <span><i class="bi bi-people"></i> @totalStaff Personel</span>
+            </div>
+        </div>
+    </div>
+    <a href="/Admin/Department/Index" class="btn btn-outline-back">
+        <i class="bi bi-arrow-left me-1"></i> Departmanlara Dön
+    </a>
+</div>
+
+<div class="card units-card mb-4">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-units">
+                <thead>
+                    <tr>
+                        <th style="width: 6%;">#</th>
+                        <th style="width: 54%;">Birim Adı</th>
+                        <th style="width: 20%;">Personel Sayısı</th>
+                        <th style="width: 20%;" class="text-end pe-4">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Birimler != null && Model.Birimler.Any())
+                    {
+                        foreach (var b in Model.Birimler)
+                        {
+                            count++;
+                            <tr>
+                                <td><span class="row-index">@count</span></td>
+                                <td><span class="unit-name">@b.Ad</span></td>
+                                <td>
+                                    @if (b.PersonellerCount > 0)
+                                    {
+                                        <span class="staff-badge">
+                                            <i class="bi bi-people"></i> @b.PersonellerCount kişi
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="staff-badge empty">
+                                            <i class="bi bi-person-dash"></i> Personel yok
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <!-- BURASI DÜZELTİLDİ -->
+                                    <a href="/Admin/User/UnitUsers/@b.Id" class="btn-inspect">
+                                        <i class="bi bi-eye"></i> Personelleri İncele
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4">
+                                <div class="empty-state">
+                                    <i class="bi bi-diagram-3"></i>
+                                    <p>Bu departmana bağlı birim bulunmuyor.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

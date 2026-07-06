@@ -1,7 +1,7 @@
 using FluentValidation;
 using HumanResources.Business.Base;
 using HumanResources.Business.DTOs.UserDtos;
-using HumanResources.Business.Services.FileServices; // EKLENDÝ: IFileService için
+using HumanResources.Business.Services.FileServices;
 using HumanResources.Entity.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
@@ -12,20 +12,17 @@ namespace HumanResources.Business.Services.UserServices
     public class UserService(UserManager<AppUser> _userManager
                             , IValidator<CreateUserDto> _createValidator
                             , IValidator<UpdateUserDto> _updateValidator
-                            , IFileService _fileService) : IUserService // EKLENDÝ: IFileService dependency
+                            , IFileService _fileService) : IUserService
     {
-
         public async Task<BaseResult<object>> CreateAsync(CreateUserDto createDto)
         {
             var validationResult = await _createValidator.ValidateAsync(createDto);
-
             if (!validationResult.IsValid)
             {
                 return BaseResult<object>.Fail(validationResult.Errors);
             }
 
             var user = createDto.Adapt<AppUser>();
-
             user.IseGirisTarihi = DateTime.UtcNow;
 
             if (user.DogumTarihi != default)
@@ -39,27 +36,22 @@ namespace HumanResources.Business.Services.UserServices
             // --- FOTOÐRAF YÜKLEME ---
             if (createDto.Fotograf != null)
             {
-                // Kullanýcý id'si henüz oluþmadýðý için UserName üzerinden isimlendiriyoruz
                 string customName = $"Profil_{createDto.UserName}_{DateTime.Now:yyyyMMdd}";
                 user.FotografUrl = await _fileService.UploadFileAsync(createDto.Fotograf, "profiles", customName);
             }
 
             var result = await _userManager.CreateAsync(user, createDto.Password);
-
             if (!result.Succeeded)
             {
-                // Identity hatalarýný string listesine çeviriyoruz
                 return BaseResult<object>.Fail(result.Errors);
             }
 
             return BaseResult<object>.Success(new { Message = "Kullanýcý baþarýyla oluþturuldu." });
         }
 
-
         public async Task<BaseResult<object>> DeleteAsync(int id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
-
             if (user is null)
             {
                 return BaseResult<object>.Fail("User Not Found");
@@ -69,7 +61,6 @@ namespace HumanResources.Business.Services.UserServices
             user.SilindiMi = true;
 
             var result = await _userManager.UpdateAsync(user);
-
             if (!result.Succeeded)
             {
                 return BaseResult<object>.Fail(result.Errors);
@@ -77,7 +68,6 @@ namespace HumanResources.Business.Services.UserServices
 
             return BaseResult<object>.Success(new { Message = "Deleted Success" });
         }
-
 
         public async Task<BaseResult<List<UserDto>>> GetAllAsync()
         {
@@ -87,25 +77,7 @@ namespace HumanResources.Business.Services.UserServices
               .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null);
 
             var mappedItem = items.Adapt<List<UserDto>>();
-
             return BaseResult<List<UserDto>>.Success(mappedItem);
-        }
-
-        public async Task<BaseResult<List<ResultUserDto>>> GetAllUserWithDepartmentAndUnitAsync()
-        {
-            var users = await _userManager.Users
-               .Include(u => u.Amir)
-               .Include(u => u.Departman)
-               .Include(u => u.Birim)
-               .AsNoTracking()
-               .ToListAsync();
-
-            TypeAdapterConfig<AppUser, ResultUserDto>.NewConfig()
-                .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null);
-
-            var userDtos = users.Adapt<List<ResultUserDto>>();
-
-            return BaseResult<List<ResultUserDto>>.Success(userDtos);
         }
 
         public async Task<BaseResult<UserDto>> GetByIdAsync(int id)
@@ -116,15 +88,79 @@ namespace HumanResources.Business.Services.UserServices
               .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null);
 
             var mappedItem = items.Adapt<UserDto>();
-
             return BaseResult<UserDto>.Success(mappedItem);
         }
 
+        public async Task<BaseResult<object>> UpdateAsync(UpdateUserDto updateDto)
+        {
+            var validationResult = await _updateValidator.ValidateAsync(updateDto);
+            if (!validationResult.IsValid)
+            {
+                return BaseResult<object>.Fail(validationResult.Errors);
+            }
+
+            var user = await _userManager.FindByIdAsync(updateDto.Id.ToString());
+            if (user is null)
+            {
+                return BaseResult<object>.Fail("User Not Found");
+            }
+
+            updateDto.Adapt(user);
+
+            if (updateDto.Fotograf != null)
+            {
+                if (!string.IsNullOrEmpty(user.FotografUrl))
+                {
+                    _fileService.DeleteFile(user.FotografUrl);
+                }
+                string customName = $"Profil_{user.UserName}_{DateTime.Now:yyyyMMdd}";
+                user.FotografUrl = await _fileService.UploadFileAsync(updateDto.Fotograf, "profiles", customName);
+            }
+
+            if (user.DogumTarihi != default)
+            {
+                user.DogumTarihi = DateTime.SpecifyKind(user.DogumTarihi, DateTimeKind.Utc);
+            }
+
+            user.IstenAyrilisTarihi = null;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return BaseResult<object>.Fail(result.Errors);
+            }
+
+            return BaseResult<object>.Success();
+        }
+
+        // --- ÝLÝÞKÝLÝ (DEPARTMENT, BÝRÝM, VARDÝYA) METOTLAR ---
+
+        // 1. EKSÝK OLAN METOT (CS0535 Hatasýnýn Çözümü)
+        public async Task<BaseResult<List<ResultUserDto>>> GetAllUserWithDepartmentAndUnitAsync()
+        {
+            var users = await _userManager.Users
+                .Include(u => u.Amir)
+                .Include(u => u.Departman)
+                .Include(u => u.Birim)
+                .Include(u => u.Vardiya)
+                .AsNoTracking()
+                .ToListAsync();
+
+            TypeAdapterConfig<AppUser, ResultUserDto>.NewConfig()
+                .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null)
+                .Map(dest => dest.VardiyaAciklama, src => src.Vardiya != null ? src.Vardiya.Aciklama : null);
+
+            var userDtos = users.Adapt<List<ResultUserDto>>();
+            return BaseResult<List<ResultUserDto>>.Success(userDtos);
+        }
+
+        // 2. TEK KULLANICI GETÝREN METOT (ÇÝFT KOPYASI SÝLÝNDÝ - CS0111 Çözümü)
         public async Task<BaseResult<ResultUserDto>> GetUserWithDepartmentAndUnitAsync(int id)
         {
             var user = await _userManager.Users
                 .Include(u => u.Departman)
                 .Include(u => u.Birim)
+                .Include(u => u.Amir)
+                .Include(u => u.Vardiya)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == id);
 
@@ -134,12 +170,34 @@ namespace HumanResources.Business.Services.UserServices
             }
 
             TypeAdapterConfig<AppUser, ResultUserDto>.NewConfig()
-              .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null);
+              .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null)
+              .Map(dest => dest.VardiyaAciklama, src => src.Vardiya != null ? src.Vardiya.Aciklama : null);
 
             var userDto = user.Adapt<ResultUserDto>();
-
             return BaseResult<ResultUserDto>.Success(userDto);
         }
+
+        // 3. BÝRÝME GÖRE PERSONEL GETÝREN METOT (ÇÝFT KOPYASI SÝLÝNDÝ - CS0111 Çözümü)
+        public async Task<BaseResult<List<ResultUserDto>>> GetUsersByUnitIdAsync(int unitId)
+        {
+            var users = await _userManager.Users
+                .Include(u => u.Departman)
+                .Include(u => u.Birim)
+                .Include(u => u.Amir)
+                .Include(u => u.Vardiya)
+                .Where(u => u.BirimId == unitId && !u.SilindiMi)
+                .AsNoTracking()
+                .ToListAsync();
+
+            TypeAdapterConfig<AppUser, ResultUserDto>.NewConfig()
+                .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null)
+                .Map(dest => dest.VardiyaAciklama, src => src.Vardiya != null ? src.Vardiya.Aciklama : null);
+
+            var mappedUsers = users.Adapt<List<ResultUserDto>>();
+            return BaseResult<List<ResultUserDto>>.Success(mappedUsers);
+        }
+
+        // --- DÝÐER METOTLAR ---
 
         public async Task<BaseResult<ResultUserDto>> LoginUserAsync(LoginUserDto loginUserDto)
         {
@@ -155,13 +213,11 @@ namespace HumanResources.Business.Services.UserServices
             }
 
             var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, loginUserDto.Password);
-
             if (!isPasswordCorrect)
             {
                 return BaseResult<ResultUserDto>.Fail("Kullanýcý adý veya þifre hatalý.");
             }
 
-            // MAPSTER AYARLARI
             TypeAdapterConfig<AppUser, ResultUserDto>.NewConfig()
               .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null)
               .Map(dest => dest.Ad, src => src.Departman != null ? src.Departman.Ad : null)
@@ -169,65 +225,14 @@ namespace HumanResources.Business.Services.UserServices
 
             var userDto = user.Adapt<ResultUserDto>();
 
-            // DEÐÝÞÝKLÝK BURADA: Kullanýcýnýn rollerini çekip DTO'ya ekliyoruz
             var userRoles = await _userManager.GetRolesAsync(user);
             userDto.Roller = userRoles;
 
             return BaseResult<ResultUserDto>.Success(userDto);
         }
 
-        public async Task<BaseResult<object>> UpdateAsync(UpdateUserDto updateDto)
-        {
-            var validationResult = await _updateValidator.ValidateAsync(updateDto);
-
-            if (!validationResult.IsValid)
-            {
-                return BaseResult<object>.Fail(validationResult.Errors);
-            }
-
-            var user = await _userManager.FindByIdAsync(updateDto.Id.ToString());
-
-            if (user is null)
-            {
-                return BaseResult<object>.Fail("User Not Found");
-            }
-
-            updateDto.Adapt(user);
-
-            if (updateDto.Fotograf != null)
-            {
-                if (!string.IsNullOrEmpty(user.FotografUrl))
-                {
-                    _fileService.DeleteFile(user.FotografUrl); // Eski fotoðrafý sunucudan temizle
-                }
-
-                string customName = $"Profil_{user.UserName}_{DateTime.Now:yyyyMMdd}";
-                user.FotografUrl = await _fileService.UploadFileAsync(updateDto.Fotograf, "profiles", customName);
-            }
-
-            if (user.DogumTarihi != default)
-            {
-                user.DogumTarihi = DateTime.SpecifyKind(user.DogumTarihi, DateTimeKind.Utc);
-            }
-
-            user.IstenAyrilisTarihi = null;
-
-            var result = await _userManager.UpdateAsync(user);
-
-            if (!result.Succeeded)
-            {
-                return BaseResult<object>.Fail(result.Errors);
-            }
-
-            return BaseResult<object>.Success();
-        }
-
-
-
         public async Task<BaseResult<List<ResultUserDto>>> GetSubordinatesAsync(int amirId)
         {
-            // AmirId'si gönderilen ID'ye eþit olan VE silinmemiþ personelleri getiriyoruz.
-            // Þýk görünmesi için Departman ve Birim adlarýný da Include ediyoruz.
             var subordinates = await _userManager.Users
                 .Include(u => u.Departman)
                 .Include(u => u.Birim)
@@ -241,13 +246,11 @@ namespace HumanResources.Business.Services.UserServices
             }
 
             var mappedSubordinates = subordinates.Adapt<List<ResultUserDto>>();
-
             return BaseResult<List<ResultUserDto>>.Success(mappedSubordinates);
         }
 
         public async Task<BaseResult<List<ResultUserDto>>> GetAllUsersForReportAsync()
         {
-            // Raporlama için özel: IgnoreQueryFilters() ile silinenleri/ayrýlanlarý da çeker
             var users = await _userManager.Users
                 .IgnoreQueryFilters()
                 .Include(u => u.Amir)
@@ -260,11 +263,14 @@ namespace HumanResources.Business.Services.UserServices
                 .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null);
 
             var userDtos = users.Adapt<List<ResultUserDto>>();
-
             return BaseResult<List<ResultUserDto>>.Success(userDtos);
         }
 
-
-
+        public async Task<BaseResult<List<UserDto>>> GetUsersByRoleAsync(string roleName)
+        {
+            var users = await _userManager.GetUsersInRoleAsync(roleName);
+            var mapped = users.Adapt<List<UserDto>>();
+            return BaseResult<List<UserDto>>.Success(mapped);
+        }
     }
 }

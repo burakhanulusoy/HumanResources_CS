@@ -9,6 +9,7 @@ namespace HumanResources.DataAccess.Repositories.DepartmentRepositories
 
         Task<List<Departman>> GetDepartmentsWithUserAsync();
         Task<Departman> GetDepartmentWithUserAsync(int id);
+        Task<Departman> GetDepartmentWithUnitsAsync(int id);
 
 
     }

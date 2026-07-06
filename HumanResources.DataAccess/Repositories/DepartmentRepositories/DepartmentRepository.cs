@@ -29,5 +29,14 @@ namespace HumanResources.DataAccess.Repositories.DepartmentRepositories
                          .AsNoTracking()
                          .FirstOrDefaultAsync(x => x.Id == id);
         }
+        public Task<Departman> GetDepartmentWithUnitsAsync(int id)
+        {
+            return _table.Include(x => x.Yonetici)
+                         .Include(x => x.Birimler)
+                             .ThenInclude(b => b.Personeller)   // her birimin kişi sayısı için
+                         .AsNoTracking()
+                         .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
     }
 }

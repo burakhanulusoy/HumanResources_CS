@@ -1,4 +1,5 @@
 using HumanResouerces.WebUI.Base;
+using HumanResouerces.WebUI.DTOs.DepartmentDtos;
 using HumanResouerces.WebUI.Exceptions;
 using HumanResources.Business.DTOs.DepartmentDtos;
 
@@ -53,5 +54,12 @@ namespace HumanResources.WebUI.Services.DepartmentServices
         {
             return await _client.GetFromJsonAsync<BaseResult<ResultDepartmentWithUserDto>>($"departments/GetDepartmentWithUser/{id}");
         }
+
+
+        public async Task<BaseResult<DepartmentUnitsDto>> GetDepartmentWithUnitsAsync(int id)
+        {
+            return await _client.GetFromJsonAsync<BaseResult<DepartmentUnitsDto>>($"departments/GetDepartmentWithUnits/{id}");
+        }
+
     }
 }

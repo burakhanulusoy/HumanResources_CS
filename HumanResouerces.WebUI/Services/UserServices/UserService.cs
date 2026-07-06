@@ -103,5 +103,16 @@ namespace HumanResources.WebUI.Services.UserServices
         {
             return await _client.GetFromJsonAsync<BaseResult<List<ResultUserDto>>>($"users/GetSubordinates/{amirId}");
         }
+
+        public async Task<BaseResult<List<UserDto>>> GetUsersByRoleAsync(string roleName)
+        {
+            return await _client.GetFromJsonAsync<BaseResult<List<UserDto>>>($"users/GetUsersByRole/{roleName}");
+        }
+
+        // HumanResources.WebUI.Services.UserServices.UserService içerisine eklenecek:
+        public async Task<BaseResult<List<ResultUserDto>>> GetUsersByUnitIdAsync(int unitId)
+        {
+            return await _client.GetFromJsonAsync<BaseResult<List<ResultUserDto>>>($"users/GetUsersByUnit/{unitId}");
+        }
     }
 }

@@ -8,6 +8,7 @@ namespace HumanResources.Business.Services.DepartmentServices
     {
         Task<BaseResult<List<ResultDepartmentWithUserDto>>> GetDepartmentsWithUserAsync();
         Task<BaseResult<ResultDepartmentWithUserDto>> GetDepartmentWithUserAsync(int  id);
+        Task<BaseResult<DepartmentUnitsDto>> GetDepartmentWithUnitsAsync(int id);
 
 
     }

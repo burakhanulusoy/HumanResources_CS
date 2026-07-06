@@ -78,6 +78,20 @@ namespace HumanResources.API.Controllers
             var response = await _userService.GetSubordinatesAsync(amirId);
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
         }
+        [HttpGet("GetUsersByRole/{roleName}")]
+        public async Task<IActionResult> GetUsersByRole(string roleName)
+        {
+            var response = await _userService.GetUsersByRoleAsync(roleName);
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
+
+        // HumanResources.API.Controllers.UsersController içerisine eklenecek:
+        [HttpGet("GetUsersByUnit/{unitId}")]
+        public async Task<IActionResult> GetUsersByUnit(int unitId)
+        {
+            var response = await _userService.GetUsersByUnitIdAsync(unitId);
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
 
     }
 }

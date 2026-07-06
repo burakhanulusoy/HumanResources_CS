@@ -1,0 +1,311 @@
+﻿@model List<HumanResources.Business.DTOs.UserDtos.ResultUserDto>
+@{
+    // Birim adını doğrudan modelin içindeki ilk kayıttan çekiyoruz
+    string birimAd = Model != null && Model.Any() ? Model.First().Birim?.Ad : "İlgili Birim";
+
+    ViewData["Title"] = $"{birimAd} - Personeller";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int pCount = 0;
+}
+
+<style>
+    .toolbar {
+        background: #fff;
+        border: 1px solid #eef0f3;
+        border-radius: 14px;
+        padding: 14px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-outline-back {
+        background: #f3f4f6;
+        color: #4b5563;
+        border: 1px solid #e5e7eb;
+        font-weight: 500;
+        border-radius: 10px;
+        padding: .5rem 1rem;
+        transition: background .15s ease;
+    }
+
+        .btn-outline-back:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+    .unit-context {
+        display: flex;
+        align-items: center;
+        gap: .8rem;
+    }
+
+        .unit-context .icon-wrap {
+            width: 42px;
+            height: 42px;
+            border-radius: 11px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .unit-context h5 {
+            margin: 0;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .unit-context .meta {
+            font-size: .8rem;
+            color: #6b7280;
+            margin-top: 2px;
+            display: flex;
+            gap: .8rem;
+            flex-wrap: wrap;
+        }
+
+            .unit-context .meta span {
+                display: inline-flex;
+                align-items: center;
+                gap: .3rem;
+            }
+
+    .staff-card {
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(16, 24, 40, .06);
+        overflow: hidden;
+    }
+
+    .table-staff {
+        margin-bottom: 0;
+    }
+
+        .table-staff thead th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: .75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            border-bottom: 1px solid #eef0f3;
+            padding: .85rem 1rem;
+        }
+
+        .table-staff tbody td {
+            padding: .9rem 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+            color: #374151;
+        }
+
+        .table-staff tbody tr:hover {
+            background: #f8faff;
+        }
+
+    .row-index {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: #f1f5f9;
+        color: #64748b;
+        font-size: .8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .staff-name {
+        font-weight: 700;
+        color: #111827;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .staff-contact {
+        font-size: 12.5px;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 2px;
+    }
+
+    .role-badge {
+        background: #f5f3ff;
+        color: #7c3aed;
+        font-size: .75rem;
+        font-weight: 600;
+        border-radius: 999px;
+        padding: .3rem .75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+    }
+
+    .dept-badge {
+        background: #f0fdfa;
+        color: #0d9488;
+        font-size: .75rem;
+        font-weight: 600;
+        border-radius: 999px;
+        padding: .3rem .75rem;
+        display: inline-flex;
+        align-items: center;
+        width: fit-content;
+    }
+
+    .unit-badge {
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: .75rem;
+        font-weight: 600;
+        border-radius: 999px;
+        padding: .3rem .75rem;
+        display: inline-flex;
+        align-items: center;
+        width: fit-content;
+        margin-top: 4px;
+    }
+
+    .btn-profile {
+        background: #ecfeff;
+        color: #0891b2;
+        border: none;
+        border-radius: 8px;
+        padding: .4rem .9rem;
+        font-size: .8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        transition: transform .12s ease, box-shadow .12s ease;
+    }
+
+        .btn-profile:hover {
+            background: #cffafe;
+            color: #0e7490;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(8, 145, 178, .18);
+        }
+
+    .empty-state {
+        padding: 3.5rem 1rem;
+        text-align: center;
+        color: #9ca3af;
+    }
+
+        .empty-state .bi {
+            font-size: 2.6rem;
+            color: #d1d5db;
+            display: block;
+            margin-bottom: .75rem;
+        }
+</style>
+
+<div class="toolbar mb-4">
+    <div class="unit-context">
+        <span class="icon-wrap"><i class="bi bi-diagram-3"></i></span>
+        <div>
+            <h5>@birimAd - Personel Listesi</h5>
+            <div class="meta">
+                <span><i class="bi bi-people"></i> Toplam @(Model?.Count ?? 0) Personel Kayıtlı</span>
+            </div>
+        </div>
+    </div>
+    <button onclick="history.back()" class="btn btn-outline-back">
+        <i class="bi bi-arrow-left me-1"></i> Birimlere Dön
+    </button>
+</div>
+
+<div class="card staff-card mb-4">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-staff">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;" class="text-center">#</th>
+                        <th style="width: 30%;">Personel & İletişim</th>
+                        <th style="width: 25%;">Departman & Birim</th>
+                        <th style="width: 20%;">Bağlı Olduğu Amir</th>
+                        <th style="width: 20%;" class="text-end pe-4">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var user in Model)
+                        {
+                            pCount++;
+                            <tr>
+                                <td class="text-center"><span class="row-index">@pCount</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="@(string.IsNullOrEmpty(user.FotografUrl) ? "/assets/images/admin.png" : user.FotografUrl)"
+                                             class="rounded-circle shadow-sm" style="width: 48px; height: 48px; object-fit: cover;" alt="Profil">
+                                        <div>
+                                            <span class="staff-name">@user.Ad @user.Soyad</span>
+                                            <!-- Email Alanı -->
+                                            <span class="staff-contact">
+                                                <i class="bi bi-envelope"></i> @(string.IsNullOrEmpty(user.Email) ? "-" : user.Email)
+                                            </span>
+                                            <!-- Telefon Alanı (DTO'dan gelen PhoneNumber) -->
+                                            <span class="staff-contact">
+                                                <i class="bi bi-telephone"></i> @(string.IsNullOrEmpty(user.PhoneNumber) ? "-" : user.PhoneNumber)
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <!-- Departman Adı -->
+                                        <span class="dept-badge">
+                                            <i class="bi bi-building me-1"></i> @(string.IsNullOrEmpty(user.Departman?.Ad) ? "Belirtilmedi" : user.Departman.Ad)
+                                        </span>
+                                        <!-- Birim Adı -->
+                                        <span class="unit-badge">
+                                            <i class="bi bi-diagram-3 me-1"></i> @(string.IsNullOrEmpty(user.Birim?.Ad) ? "Belirtilmedi" : user.Birim.Ad)
+                                        </span>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(user.AmirAdSoyad))
+                                    {
+                                        <span class="role-badge">
+                                            <i class="bi bi-person-badge"></i> @user.AmirAdSoyad
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted fst-italic fs-13"><i class="bi bi-person-dash me-1"></i>Amir Atanmadı</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a href="/Admin/User/Details/@user.Id" class="btn-profile">
+                                        <i class="bi bi-person-lines-fill"></i> Profili İncele
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <i class="bi bi-people"></i>
+                                    <p class="mb-0">Bu birime henüz herhangi bir personel atanmamıştır.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -51,5 +51,8 @@ namespace HumanResources.Business.DTOs.UserDtos
         public string? AmirAdSoyad { get; set; } // Sadece ekranda göstermek için adýný tut yeter
                                                  // Diðer özelliklerin altýna ekle:
         public IList<string> Roller { get; set; }
+
+        public int? VardiyaId { get; set; }
+        public string? VardiyaAciklama { get; set; }
     }
 }

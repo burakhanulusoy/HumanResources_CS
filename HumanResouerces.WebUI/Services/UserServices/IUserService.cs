@@ -9,5 +9,9 @@ namespace HumanResources.WebUI.Services.UserServices
         Task<BaseResult<List<ResultUserDto>>> GetAllWithDepartmentAndUnitAsync();
         Task<BaseResult<ResultUserDto>> GetByIdWithDepartmentAndUnitAsync(int id);
         Task<BaseResult<List<ResultUserDto>>> GetSubordinatesAsync(int amirId);
+
+        Task<BaseResult<List<UserDto>>> GetUsersByRoleAsync(string roleName);
+        Task<BaseResult<List<ResultUserDto>>> GetUsersByUnitIdAsync(int unitId);
+
     }
 }

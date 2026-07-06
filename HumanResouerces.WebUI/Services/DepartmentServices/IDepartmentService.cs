@@ -1,4 +1,5 @@
 ﻿using HumanResouerces.WebUI.Base;
+using HumanResouerces.WebUI.DTOs.DepartmentDtos;
 using HumanResources.Business.DTOs.DepartmentDtos;
 using HumanResources.WebUI.Services.GenericServices;
 
@@ -8,5 +9,7 @@ namespace HumanResources.WebUI.Services.DepartmentServices
     {
         Task<BaseResult<List<ResultDepartmentWithUserDto>>> GetDepartmentsWithUserAsync();
         Task<BaseResult<ResultDepartmentWithUserDto>> GetDepartmentWithUserAsync(int id);
+        Task<BaseResult<DepartmentUnitsDto>> GetDepartmentWithUnitsAsync(int id);
+
     }
 }

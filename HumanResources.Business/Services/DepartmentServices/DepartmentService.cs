@@ -163,5 +163,18 @@ namespace HumanResources.Business.Services.DepartmentServices
             return result ? BaseResult<object>.Success() : BaseResult<object>.Fail("Updated Failed");
 
         }
+
+
+        public async Task<BaseResult<DepartmentUnitsDto>> GetDepartmentWithUnitsAsync(int id)
+        {
+            var department = await _departmentRepository.GetDepartmentWithUnitsAsync(id);
+            if (department is null)
+            {
+                return BaseResult<DepartmentUnitsDto>.Fail("Department Not Found");
+            }
+            return BaseResult<DepartmentUnitsDto>.Success(department.Adapt<DepartmentUnitsDto>());
+        }
+
+
     }
 }
