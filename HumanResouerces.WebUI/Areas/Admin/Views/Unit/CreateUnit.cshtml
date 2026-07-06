@@ -1,0 +1,202 @@
+﻿@model HumanResources.Business.DTOs.UnitDtos.CreateUnitDto
+@{
+    ViewData["Title"] = "Yeni Birim Ekle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var departmanlar = ViewBag.Departmanlar as List<HumanResources.Business.DTOs.DepartmentDtos.ResultDepartmentDto>;
+}
+
+<style>
+    .unit-form-card {
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(16, 24, 40, .06);
+        overflow: hidden;
+        max-width: 720px;
+        margin: 0 auto;
+    }
+
+    .unit-form-header {
+        background: #fff;
+        border-bottom: 1px solid #eef0f3;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: .8rem;
+    }
+
+        .unit-form-header .icon-wrap {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            flex-shrink: 0;
+        }
+
+    .unit-form-title {
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+    }
+
+    .unit-form-subtitle {
+        font-size: .82rem;
+        color: #6b7280;
+        margin: 2px 0 0;
+    }
+
+    .unit-form-body {
+        padding: 1.75rem;
+    }
+
+    .unit-label {
+        font-weight: 600;
+        color: #374151;
+        font-size: .88rem;
+        margin-bottom: .4rem;
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+    }
+
+        .unit-label .bi {
+            color: #2563eb;
+            font-size: .95rem;
+        }
+
+    .unit-input,
+    select.unit-input {
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: .65rem .9rem;
+        background: #f9fafb;
+        transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+
+        .unit-input:focus {
+            background: #fff;
+            border-color: #93c5fd;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
+        }
+
+    .unit-hint {
+        font-size: .78rem;
+        color: #9ca3af;
+        margin-top: .35rem;
+    }
+
+    .unit-actions {
+        border-top: 1px solid #f1f5f9;
+        margin-top: 1.75rem;
+        padding-top: 1.25rem;
+    }
+
+    .btn-cancel {
+        border-radius: 10px;
+        padding: .6rem 1.3rem;
+        font-weight: 600;
+        background: #f3f4f6;
+        color: #4b5563;
+        border: none;
+        transition: background .15s ease;
+    }
+
+        .btn-cancel:hover {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+    .btn-create {
+        border-radius: 10px;
+        padding: .6rem 1.4rem;
+        font-weight: 600;
+        border: none;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+        .btn-create:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(34, 197, 94, .35);
+        }
+</style>
+
+<div class="card unit-form-card mb-4">
+    <div class="unit-form-header">
+        <span class="icon-wrap"><i class="bi bi-diagram-3"></i></span>
+        <div>
+            <h5 class="unit-form-title">Yeni Birim Ekle</h5>
+            <p class="unit-form-subtitle">Bir departmana bağlı yeni birim tanımlayın</p>
+        </div>
+    </div>
+    <div class="card-body unit-form-body">
+        <form method="post" id="createForm" novalidate>
+            <div class="mb-4">
+                <label class="unit-label"><i class="bi bi-tag"></i> Birim Adı</label>
+                <input type="text" placeholder="Örn: Yazılım Geliştirme, Muhasebe vb." asp-for="Ad" class="form-control unit-input" maxlength="100" required />
+                <span class="text-danger small" asp-validation-for="Ad"></span>
+                <p class="unit-hint">Listelerde ve raporlarda görünecek kısa ve açık bir isim seçin.</p>
+            </div>
+            <div class="mb-2">
+                <label class="unit-label"><i class="bi bi-building"></i> Bağlı Departman</label>
+                <select asp-for="DepartmanId" class="form-select unit-input" required>
+                    <option value="">— Departman seçiniz —</option>
+                    @if (departmanlar != null)
+                    {
+                        foreach (var d in departmanlar)
+                        {
+                            <option value="@d.Id">@d.Ad</option>
+                        }
+                    }
+                </select>
+                <span class="text-danger small" asp-validation-for="DepartmanId"></span>
+                <p class="unit-hint">Birimin hangi departmana bağlı olacağını belirtin.</p>
+            </div>
+
+            <div class="unit-actions d-flex justify-content-end">
+                <a href="/Admin/Unit/Index" class="btn btn-cancel me-2">
+                    <i class="bi bi-x-lg me-1"></i> İptal
+                </a>
+                <button type="submit" class="btn btn-create">
+                    <i class="bi bi-check-lg"></i> Oluştur
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.getElementById('createForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var form = this;
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        Swal.fire({
+            title: "Emin misiniz?",
+            text: "Bu birimi eklemek istediğinize emin misiniz?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#16a34a",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Evet, ekle",
+            cancelButtonText: "İptal",
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+</script>

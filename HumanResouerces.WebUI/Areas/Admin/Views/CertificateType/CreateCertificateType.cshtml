@@ -1,0 +1,221 @@
+﻿@model HumanResources.Business.DTOs.CertificateTypeDtos.CreateCertificateTypeDto
+@{
+    ViewData["Title"] = "Yeni Sertifika Türü Ekle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .ct-form-card {
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(16, 24, 40, .06);
+        overflow: hidden;
+        max-width: 720px;
+        margin: 0 auto;
+    }
+
+    .ct-form-header {
+        background: #fff;
+        border-bottom: 1px solid #eef0f3;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: .8rem;
+    }
+
+        .ct-form-header .icon-wrap {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            flex-shrink: 0;
+        }
+
+    .ct-form-title {
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+    }
+
+    .ct-form-subtitle {
+        font-size: .82rem;
+        color: #6b7280;
+        margin: 2px 0 0;
+    }
+
+    .ct-form-body {
+        padding: 1.75rem;
+    }
+
+    .ct-label {
+        font-weight: 600;
+        color: #374151;
+        font-size: .88rem;
+        margin-bottom: .4rem;
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+    }
+
+        .ct-label .bi {
+            color: #6366f1;
+            font-size: .95rem;
+        }
+
+    .ct-input,
+    textarea.ct-input {
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: .65rem .9rem;
+        background: #f9fafb;
+        transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+
+        .ct-input:focus {
+            background: #fff;
+            border-color: #a5b4fc;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, .15);
+        }
+
+    .ct-hint {
+        font-size: .78rem;
+        color: #9ca3af;
+        margin-top: .35rem;
+    }
+
+    .ct-char-count {
+        font-size: .75rem;
+        color: #9ca3af;
+        text-align: end;
+        margin-top: .25rem;
+    }
+
+    .ct-actions {
+        border-top: 1px solid #f1f5f9;
+        margin-top: 1.75rem;
+        padding-top: 1.25rem;
+    }
+
+    .btn-cancel {
+        border-radius: 10px;
+        padding: .6rem 1.3rem;
+        font-weight: 600;
+        background: #f3f4f6;
+        color: #4b5563;
+        border: none;
+        transition: background .15s ease;
+    }
+
+        .btn-cancel:hover {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+    .btn-create {
+        border-radius: 10px;
+        padding: .6rem 1.4rem;
+        font-weight: 600;
+        border: none;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+        .btn-create:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(34, 197, 94, .35);
+        }
+
+    .field-invalid {
+        border-color: #fca5a5 !important;
+        background: #fff5f5 !important;
+    }
+</style>
+
+<div class="card ct-form-card mb-4">
+    <div class="ct-form-header">
+        <span class="icon-wrap"><i class="bi bi-patch-plus"></i></span>
+        <div>
+            <h5 class="ct-form-title">Yeni Sertifika Türü Ekle</h5>
+            <p class="ct-form-subtitle">Personel sertifikalarını sınıflandırmak için yeni bir tür tanımlayın</p>
+        </div>
+    </div>
+    <div class="card-body ct-form-body">
+        <form method="post" id="createForm" novalidate>
+            <div class="mb-4">
+                <label class="ct-label"><i class="bi bi-tag"></i> Sertifika Türü Adı</label>
+                <input type="text" placeholder="Örn: Yabancı Dil, İSG vb." asp-for="Ad" class="form-control ct-input" maxlength="100" required />
+                <span class="text-danger small" asp-validation-for="Ad"></span>
+                <p class="ct-hint">Listelerde ve raporlarda görünecek kısa ve açık bir isim seçin.</p>
+            </div>
+            <div class="mb-2">
+                <label class="ct-label"><i class="bi bi-card-text"></i> Açıklama <span class="text-muted fw-normal">(opsiyonel)</span></label>
+                <textarea rows="4" placeholder="Sertifika türü hakkında kısa bir açıklama girebilirsiniz..." asp-for="Aciklama" class="form-control ct-input" id="aciklamaInput" maxlength="500"></textarea>
+                <span class="text-danger small" asp-validation-for="Aciklama"></span>
+                <div class="ct-char-count"><span id="charCount">0</span>/500</div>
+            </div>
+
+            <div class="ct-actions d-flex justify-content-end">
+                <a href="/Admin/CertificateType/Index" class="btn btn-cancel me-2">
+                    <i class="bi bi-x-lg me-1"></i> İptal
+                </a>
+                <button type="submit" class="btn btn-create">
+                    <i class="bi bi-check-lg"></i> Oluştur
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const aciklamaInput = document.getElementById('aciklamaInput');
+    const charCount = document.getElementById('charCount');
+    if (aciklamaInput) {
+        charCount.textContent = aciklamaInput.value.length;
+        aciklamaInput.addEventListener('input', () => {
+            charCount.textContent = aciklamaInput.value.length;
+        });
+    }
+
+    document.getElementById('createForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var form = this;
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        Swal.fire({
+            title: "Emin misiniz?",
+            text: "Bu sertifika türünü eklemek istediğinize emin misiniz?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#16a34a",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Evet, ekle",
+            cancelButtonText: "İptal",
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "Ekleniyor...",
+                    text: "Sertifika türü kaydediliyor.",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 1200
+                }).then(() => {
+                    form.submit();
+                });
+            }
+        });
+    });
+</script>

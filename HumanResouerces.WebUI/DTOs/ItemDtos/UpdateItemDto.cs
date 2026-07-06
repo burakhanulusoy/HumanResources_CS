@@ -1,4 +1,4 @@
-using HumanResources.Entity.Enums;
+using HumanResouerces.WebUI.Enums;
 
 namespace HumanResources.Business.DTOs.ItemDtos
 {

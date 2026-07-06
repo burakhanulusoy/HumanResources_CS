@@ -1,4 +1,4 @@
-namespace HumanResources.Entity.Enums
+namespace HumanResouerces.WebUI.Enums
 {
     public enum ApplicationStatus //basþvuru durumu
     {

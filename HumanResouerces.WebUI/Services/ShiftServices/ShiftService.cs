@@ -28,6 +28,11 @@ namespace HumanResources.WebUI.Services.ShiftServices
             return await _client.GetFromJsonAsync<BaseResult<List<ResultShiftDto>>>("shifts");
         }
 
+        public async Task<BaseResult<ResultShiftDto>> GetById2Async(int id)
+        {
+            return await _client.GetFromJsonAsync<BaseResult<ResultShiftDto>>($"shifts/{id}");
+        }
+
         public async Task<BaseResult<UpdateShiftDto>> GetByIdAsync(int id)
         {
             return await _client.GetFromJsonAsync<BaseResult<UpdateShiftDto>>($"shifts/{id}");
@@ -41,5 +46,8 @@ namespace HumanResources.WebUI.Services.ShiftServices
 
             return result.IsFailure ? throw new ApiValidationException(result.Errors) : result;
         }
+
+      
+
     }
 }

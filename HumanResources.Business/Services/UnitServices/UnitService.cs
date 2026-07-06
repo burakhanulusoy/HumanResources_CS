@@ -98,6 +98,16 @@ namespace HumanResources.Business.Services.UnitServices
 
         }
 
+        public async Task<BaseResult<UnitWithUserDto>> GetUnitWithUsersAsync(int unitId)
+        {
+            var unit = await _unitReposirory.GetUnitWithUsersAsync(unitId);
+            if (unit is null)
+            {
+                return BaseResult<UnitWithUserDto>.Fail("Unit Not Found");
+            }
+            return BaseResult<UnitWithUserDto>.Success(unit.Adapt<UnitWithUserDto>());
+        }
+
         public async Task<BaseResult<object>> UpdateAsync(UpdateUnitDto updateDto)
         {
             var item = updateDto.Adapt<Birim>();

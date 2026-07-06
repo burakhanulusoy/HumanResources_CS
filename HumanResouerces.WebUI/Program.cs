@@ -1,8 +1,13 @@
+using HumanResouerces.WebUI.Extensions;
 using HumanResouerces.WebUI.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddHttpClientService(builder.Configuration);
+
+
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<ValidationExceptionFilter>();
@@ -29,6 +34,13 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+
+app.MapControllerRoute(
+            name: "areas",
+            pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+          );
+
 
 app.MapControllerRoute(
     name: "default",

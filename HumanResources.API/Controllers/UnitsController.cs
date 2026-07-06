@@ -54,7 +54,12 @@ namespace HumanResources.API.Controllers
         }
 
 
-
+        [HttpGet("GetUnitWithUsers/{id}")]
+        public async Task<IActionResult> GetUnitWithUsers(int id)
+        {
+            var response = await _unitService.GetUnitWithUsersAsync(id);
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
 
 
     }

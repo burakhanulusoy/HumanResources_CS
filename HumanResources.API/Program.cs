@@ -1,5 +1,7 @@
 using HumanResources.Business.Extensions;
+using HumanResources.Business.Mappings;
 using HumanResources.DataAccess.Extensions;
+using Mapster;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRepositoriesExt(builder.Configuration)
                 .AddServiceExt(builder.Configuration);
 
+TypeAdapterConfig.GlobalSettings.Scan(typeof(UnitMappingConfig).Assembly);
 
 
 builder.Services.AddControllers();

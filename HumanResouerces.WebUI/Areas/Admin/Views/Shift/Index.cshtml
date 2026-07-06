@@ -1,0 +1,297 @@
+﻿@model List<HumanResources.Business.DTOs.ShiftDtos.ResultShiftDto>
+@{
+    ViewData["Title"] = "Vardiya Yönetimi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int count = 0;
+}
+
+<style>
+    .shift-card {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid #eef0f3;
+    }
+
+        .shift-card .card-header {
+            background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%);
+            border-bottom: 1px solid #eef0f3;
+        }
+
+            .shift-card .card-header h5 {
+                color: #2c3e50;
+            }
+
+                .shift-card .card-header h5 svg {
+                    color: #6366f1;
+                    margin-right: 8px;
+                }
+
+    .btn-soft-success {
+        background-color: #e8f9ee;
+        color: #16a34a;
+        border: 1px solid #bbf3cf;
+        font-weight: 500;
+        transition: all .2s ease;
+    }
+
+        .btn-soft-success:hover {
+            background-color: #16a34a;
+            color: #fff;
+        }
+
+    .btn-soft-warning {
+        background-color: #fff6e5;
+        color: #b45309;
+        border: 1px solid #fde4a6;
+        font-weight: 500;
+        transition: all .2s ease;
+    }
+
+        .btn-soft-warning:hover {
+            background-color: #d97706;
+            color: #fff;
+        }
+
+    .shift-table thead th {
+        background-color: #f8f9fc;
+        color: #6b7280;
+        font-size: .8rem;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        font-weight: 600;
+        border-bottom: 2px solid #eef0f3;
+    }
+
+    .shift-table tbody tr {
+        transition: background-color .15s ease;
+    }
+
+        .shift-table tbody tr:hover {
+            background-color: #f9fafc;
+        }
+
+    .time-badge {
+        background-color: #eef2ff;
+        color: #4338ca;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: .85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .break-badge {
+        background-color: #f3f4f6;
+        color: #6b7280;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: .8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .staff-badge {
+        background-color: #ecfdf5;
+        color: #059669;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: .8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .empty-state {
+        padding: 60px 20px;
+        text-align: center;
+    }
+
+        .empty-state svg {
+            color: #d1d5db;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            color: #9ca3af;
+            font-size: .95rem;
+        }
+
+    /* --- İşlemler buton grubu --- */
+    .action-group {
+        display: inline-flex;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #fff;
+    }
+
+        .action-group .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 12px;
+            font-size: .8rem;
+            font-weight: 500;
+            color: #6b7280;
+            background: #fff;
+            border: none;
+            border-right: 1px solid #e5e7eb;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all .15s ease;
+            line-height: 1;
+        }
+
+            .action-group .action-btn:last-child {
+                border-right: none;
+            }
+
+            .action-group .action-btn svg {
+                width: 14px;
+                height: 14px;
+                flex-shrink: 0;
+            }
+
+            .action-group .action-btn.view:hover {
+                background-color: #eff6ff;
+                color: #2563eb;
+            }
+
+            .action-group .action-btn.edit:hover {
+                background-color: #eef2ff;
+                color: #4f46e5;
+            }
+
+            .action-group .action-btn.delete:hover {
+                background-color: #fef2f2;
+                color: #dc2626;
+            }
+
+    @@media (max-width: 991px) {
+        .action-group .action-btn span.label {
+            display: none;
+        }
+
+        .action-group .action-btn {
+            padding: 8px 10px;
+        }
+    }
+</style>
+
+<div class="card shift-card shadow-sm mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h5 class="mb-0 fw-bold d-flex align-items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+            Sabit Vardiya Şablonları
+        </h5>
+        <div class="d-flex gap-2">
+            <a href="/Admin/Shift/ShiftListReport" class="btn btn-soft-warning">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
+                Vardiya Listesini PDF Al
+            </a>
+            <a href="/Admin/Shift/CreateShift" class="btn btn-soft-success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                Yeni Vardiya
+            </a>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table shift-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;" class="py-3">#</th>
+                        <th style="width: 25%;" class="py-3">Vardiya Adı</th>
+                        <th style="width: 20%;" class="py-3">Çalışma Saatleri</th>
+                        <th style="width: 15%;" class="py-3">Mola</th>
+                        <th style="width: 15%;" class="py-3">Atanan Personel</th>
+                        <th style="width: 20%;" class="text-center py-3">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            count++;
+                            <tr>
+                                <td class="py-3 fw-bold text-muted">@count</td>
+                                <td class="py-3 fw-semibold text-dark">@item.Aciklama</td>
+                                <td class="py-3">
+                                    <span class="time-badge">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                                        @item.BaslangicSaati.ToString(@"hh\:mm") - @item.BitisSaati.ToString(@"hh\:mm")
+                                    </span>
+                                </td>
+                                <td class="py-3">
+                                    <span class="break-badge">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1" /><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4Z" /><line x1="6" y1="1" x2="6" y2="4" /><line x1="10" y1="1" x2="10" y2="4" /><line x1="14" y1="1" x2="14" y2="4" /></svg>
+                                        @item.AraDinlenmeSuresiDk dk
+                                    </span>
+                                </td>
+                                <td class="py-3">
+                                    <span class="staff-badge">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                                        @(item.Personeller?.Count ?? 0) Kişi
+                                    </span>
+                                </td>
+                                <td class="text-center py-3">
+                                    <div class="action-group">
+                                        <a href="/Admin/Shift/Details/@item.Id" class="action-btn view" title="Detaylı İncele">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" /><circle cx="12" cy="12" r="3" /></svg>
+                                            <span class="label">İncele</span>
+                                        </a>
+                                        <a href="/Admin/Shift/UpdateShift/@item.Id" class="action-btn edit" title="Düzenle">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z" /></svg>
+                                            <span class="label">Düzenle</span>
+                                        </a>
+                                        <button onclick="deleteShift(@item.Id)" class="action-btn delete" title="Sil">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+                                            <span class="label">Sil</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /><line x1="9" y1="16" x2="15" y2="16" /></svg>
+                                    <p>Kayıtlı vardiya bulunmamaktadır.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function deleteShift(id) {
+        Swal.fire({
+            title: "Emin misiniz?",
+            text: "Bu vardiyayı sildiğinizde geri alamazsınız!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Evet, sil!",
+            cancelButtonText: "İptal"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({ title: "Silindi!", text: "Kayıt başarıyla silindi.", icon: "success", showConfirmButton: false, timer: 1500 })
+                .then(() => { window.location.href = "/Admin/Shift/DeleteShift/" + id; });
+            }
+        });
+    }
+</script>

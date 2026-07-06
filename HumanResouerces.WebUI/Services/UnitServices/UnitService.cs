@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using HumanResouerces.WebUI.Base;
 using HumanResources.Business.DTOs.UnitDtos;
 using HumanResouerces.WebUI.Exceptions;
+using HumanResouerces.WebUI.DTOs.UnitDtos;
 
 namespace HumanResources.WebUI.Services.UnitServices
 {
@@ -40,6 +41,11 @@ namespace HumanResources.WebUI.Services.UnitServices
             var result = await response.Content.ReadFromJsonAsync<BaseResult<object>>();
 
             return result.IsFailure ? throw new ApiValidationException(result.Errors) : result;
+        }
+
+        public async Task<BaseResult<UnitWithUserDto>> GetUnitWithUsersAsync(int unitId)
+        {
+            return await _client.GetFromJsonAsync<BaseResult<UnitWithUserDto>>($"units/GetUnitWithUsers/{unitId}");
         }
     }
 }

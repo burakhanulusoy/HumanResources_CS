@@ -1,6 +1,8 @@
+using HumanResouerces.WebUI.Base;
+
 namespace HumanResources.Business.DTOs.UserDtos
 {
-    public class UserDto
+    public class UserDto:BaseDto
     {
         // IdentityUser'dan Gelen Temel Özellikler
         public string? UserName { get; set; }

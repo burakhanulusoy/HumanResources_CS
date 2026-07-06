@@ -2,6 +2,97 @@
 @{
     Layout = null;
 }
+
+@* Views/Shared/Components/HeroSection/Default.cshtml *@
+
+<!-- Tailwind CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script type="module" src="https://unpkg.com/@@splinetool/viewer@1.9.5/build/spline-viewer.js"></script>
+
+<style>
+    /* Tam ekran garantisi ve kenar boşluklarını sıfırlama */
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #050505; /* Kenarlarda beyazlık kalmaması için */
+        overflow-x: hidden;
+    }
+
+    /* Arka plan ışık efekti ve ızgara deseni */
+    .hero-bg {
+        background-color: #050505;
+        background-image: radial-gradient(circle at 15% 50%, rgba(30, 40, 60, 0.4), transparent 50%), radial-gradient(circle at 85% 30%, rgba(20, 20, 20, 0.8), transparent 50%), linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+    }
+
+    /* 3D Model kapsayıcısı */
+    spline-viewer {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<!-- Tam Ekran (100vh) Kapsayıcı -->
+<div class="relative w-screen h-screen flex flex-col md:flex-row hero-bg text-white -ml-[calc(50vw-50%)] left-[50%] right-[50%]">
+
+    <!-- Sol İçerik (Kişisel Bilgiler & Rozetler) -->
+    <div class="relative z-10 flex-1 flex flex-col justify-center px-8 md:px-16 lg:px-24 xl:px-32">
+
+        <!-- Status Badge -->
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 w-max mb-8 backdrop-blur-sm shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="text-sm text-neutral-300 font-medium tracking-wide">Yeni projelere açık</span>
+        </div>
+
+        <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-4 leading-tight">
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-neutral-100 to-neutral-500">Burak Han</span>
+            <br />
+            <span class="text-white">Ulusoy</span>
+        </h1>
+
+        <h2 class="text-2xl md:text-3xl text-neutral-400 font-light mb-6 flex items-center gap-3">
+            Full Stack Developer
+        </h2>
+
+        <p class="text-neutral-400 max-w-xl text-lg md:text-xl leading-relaxed mb-8 font-light">
+            .NET ekosisteminde yüksek performanslı arka uç sistemleri inşa ediyor, mimari sınırları net çizilmiş, temiz ve sürdürülebilir kod prensipleriyle modern web uygulamaları geliştiriyorum.
+        </p>
+
+        <!-- Tech Stack Rozetleri -->
+        <div class="flex flex-wrap gap-2 mb-10">
+            <span class="px-4 py-1.5 text-sm font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg backdrop-blur-sm">C# / .NET Core</span>
+            <span class="px-4 py-1.5 text-sm font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-lg backdrop-blur-sm">CQRS & MediatR</span>
+            <span class="px-4 py-1.5 text-sm font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg backdrop-blur-sm">Clean Architecture</span>
+            <span class="px-4 py-1.5 text-sm font-medium bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 rounded-lg backdrop-blur-sm">React / Tailwind</span>
+        </div>
+
+        <!-- Yönlendirme Butonları -->
+        <div class="flex flex-wrap gap-4">
+            <a href="#projeler" class="px-8 py-3.5 bg-white text-black font-semibold rounded-xl hover:bg-neutral-200 hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                Projelerimi İncele
+            </a>
+            <a href="#iletisim" class="px-8 py-3.5 bg-neutral-900 border border-neutral-700 text-white font-semibold rounded-xl hover:bg-neutral-800 transition-all flex items-center gap-2 group">
+                İletişime Geç
+                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </a>
+        </div>
+    </div>
+    <!-- Sağ İçerik (3D Spline Animasyonu) -->
+    <div class="relative z-0 flex-1 h-[50vh] md:h-screen">
+        <!-- 3D modelin sol kenarıyla arka planı yumuşakça birleştiren gradient efekti -->
+        <div class="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#050505] to-transparent z-10 pointer-events-none hidden md:block"></div>
+        <!-- Buradaki url kısmını robotun kendi linkiyle değiştirmelisin -->
+        <!-- Sadece url içindeki adresi değiştirmen yeterli -->
+        <spline-viewer class="w-full h-full"
+                       url="https://21st.dev/@@serafim/components/splite">
+        </spline-viewer>
+    </div>
+</div>
+
+@* 
+
 <!DOCTYPE html>
 
 <html class="dark" lang="tr">
@@ -220,6 +311,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Footer -->
         <footer class="bg-black/40 backdrop-blur-xl border-t border-white/5 flex flex-col justify-center items-center w-full px-margin-desktop py-6 gap-stack-sm mt-auto shrink-0 relative">
             <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-[1px] bg-tertiary/30"></div>
@@ -237,4 +329,4 @@
         </footer>
     </div>
 </body>
-</html>
+</html> *@

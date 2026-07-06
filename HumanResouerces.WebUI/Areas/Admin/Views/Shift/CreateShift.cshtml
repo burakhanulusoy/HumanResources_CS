@@ -1,0 +1,418 @@
+﻿@model HumanResources.Business.DTOs.ShiftDtos.CreateShiftDto
+@{
+    ViewData["Title"] = "Yeni Vardiya Ekle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var userList = ViewBag.Users as List<HumanResources.Business.DTOs.UserDtos.UserDto>;
+    var shiftTimes = ViewBag.ShiftTimes as Dictionary<int, string>;
+}
+
+<style>
+    .form-card {
+        border-radius: 16px;
+        border: 1px solid #eef0f3;
+        overflow: hidden;
+    }
+
+        .form-card .card-header {
+            background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%);
+            border-bottom: 1px solid #eef0f3;
+        }
+
+            .form-card .card-header h5 {
+                color: #2c3e50;
+            }
+
+                .form-card .card-header h5 svg {
+                    color: #6366f1;
+                    margin-right: 8px;
+                }
+
+    .section-label {
+        font-size: .8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: #6b7280;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .section-label svg {
+            width: 15px;
+            height: 15px;
+            color: #6366f1;
+        }
+
+    .field-icon-input {
+        position: relative;
+    }
+
+        .field-icon-input svg {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            color: #9ca3af;
+            pointer-events: none;
+        }
+
+        .field-icon-input .form-control {
+            padding-left: 38px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+            .field-icon-input .form-control:focus {
+                border-color: #6366f1;
+                box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+            }
+
+    .info-hint {
+        background-color: #eff6ff;
+        border: 1px solid #dbeafe;
+        color: #1d4ed8;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: .82rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .info-hint svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+    .user-picker {
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .user-search-wrap {
+        position: relative;
+        padding: 12px;
+        border-bottom: 1px solid #eef0f3;
+        background: #fafbfc;
+    }
+
+        .user-search-wrap svg {
+            position: absolute;
+            left: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 15px;
+            height: 15px;
+            color: #9ca3af;
+        }
+
+        .user-search-wrap input {
+            padding-left: 36px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+    .user-list {
+        max-height: 320px;
+        overflow-y: auto;
+    }
+
+    .user-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 1px solid #f3f4f6;
+        cursor: pointer;
+        transition: background-color .15s ease;
+    }
+
+        .user-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-item:hover {
+            background-color: #f9fafc;
+        }
+
+        .user-item.checked {
+            background-color: #eef2ff;
+        }
+
+        .user-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+            border: 1.5px solid #d1d5db;
+            cursor: pointer;
+            accent-color: #6366f1;
+            flex-shrink: 0;
+        }
+
+    .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #818cf8, #6366f1);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: .8rem;
+        flex-shrink: 0;
+    }
+
+    .user-info {
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: #1f2937;
+        font-size: .9rem;
+    }
+
+    .status-badge {
+        font-size: .72rem;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 20px;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        flex-shrink: 0;
+    }
+
+    .status-free {
+        background-color: #ecfdf5;
+        color: #059669;
+    }
+
+    .status-busy {
+        background-color: #fff7ed;
+        color: #c2410c;
+    }
+
+    .status-badge svg {
+        width: 11px;
+        height: 11px;
+    }
+
+    .user-picker-footer {
+        padding: 10px 16px;
+        background: #fafbfc;
+        border-top: 1px solid #eef0f3;
+        font-size: .8rem;
+        color: #6b7280;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #selectedCount {
+        font-weight: 700;
+        color: #4f46e5;
+    }
+
+    .btn-soft-secondary {
+        background-color: #f3f4f6;
+        color: #4b5563;
+        border: 1px solid #e5e7eb;
+        font-weight: 500;
+    }
+
+        .btn-soft-secondary:hover {
+            background-color: #e5e7eb;
+            color: #1f2937;
+        }
+
+    .btn-gradient-success {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        box-shadow: 0 4px 10px rgba(22,163,74,.25);
+        transition: all .2s ease;
+    }
+
+        .btn-gradient-success:hover {
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+            color: #fff;
+        }
+</style>
+
+<div class="card form-card shadow-sm mb-4">
+    <div class="card-header py-3">
+        <h5 class="mb-0 fw-bold d-flex align-items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /><line x1="12" y1="14" x2="12" y2="18" /><line x1="10" y1="16" x2="14" y2="16" /></svg>
+            Yeni Vardiya Oluştur
+        </h5>
+    </div>
+    <div class="card-body p-4">
+        <form method="post" id="shiftForm">
+            <div class="row">
+                <div class="col-md-12 mb-4">
+                    <div class="section-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
+                        Vardiya Adı / Açıklaması
+                    </div>
+                    <input type="text" asp-for="Aciklama" class="form-control form-control-lg" style="border-radius:10px;" placeholder="Örn: Gündüz Vardiyası" required />
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="section-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                        Başlangıç Saati
+                    </div>
+                    <div class="field-icon-input">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                        <input type="time" asp-for="BaslangicSaati" class="form-control" required />
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="section-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                        Bitiş Saati
+                    </div>
+                    <div class="field-icon-input">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                        <input type="time" asp-for="BitisSaati" class="form-control" required />
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="section-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1" /><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4Z" /><line x1="6" y1="1" x2="6" y2="4" /><line x1="10" y1="1" x2="10" y2="4" /><line x1="14" y1="1" x2="14" y2="4" /></svg>
+                        Mola (Dakika)
+                    </div>
+                    <div class="field-icon-input">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1" /><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4Z" /><line x1="6" y1="1" x2="6" y2="4" /><line x1="10" y1="1" x2="10" y2="4" /><line x1="14" y1="1" x2="14" y2="4" /></svg>
+                        <input type="number" asp-for="AraDinlenmeSuresiDk" class="form-control" value="60" required />
+                    </div>
+                </div>
+
+                <div class="col-md-12 mb-2">
+                    <div class="section-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                        Personel Ataması
+                    </div>
+
+                    <div class="info-hint mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
+                        Birden fazla personel seçebilirsiniz. Turuncu rozetli personel zaten başka bir vardiyaya atanmıştır.
+                    </div>
+
+                    <div class="user-picker">
+                        <div class="user-search-wrap">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+                            <input type="text" id="userSearch" class="form-control" placeholder="Personel adına göre ara..." />
+                        </div>
+                        <div class="user-list" id="userList">
+                            @if (userList != null)
+                            {
+                                foreach (var u in userList)
+                                {
+                                    bool hasShift = u.VardiyaId.HasValue;
+                                    var initials = $"{(u.Ad?.Length > 0 ? u.Ad[0] : ' ')}{(u.Soyad?.Length > 0 ? u.Soyad[0] : ' ')}".ToUpper();
+                                    string? shiftLabel = null;
+                                    if (hasShift)
+                                    {
+                                        shiftLabel = (shiftTimes != null && shiftTimes.ContainsKey(u.VardiyaId!.Value))
+                                        ? shiftTimes[u.VardiyaId!.Value]
+                                        : u.VardiyaAciklama;
+                                    }
+                                    <label class="user-item" data-name="@($"{u.Ad} {u.Soyad}".ToLower())">
+                                        <input type="checkbox" name="PersonelIds" value="@u.Id" />
+                                        <div class="user-avatar">@initials</div>
+                                        <div class="user-info">
+                                            <div class="user-name">@u.Ad @u.Soyad</div>
+                                        </div>
+                                        @if (hasShift)
+                                        {
+                                            <span class="status-badge status-busy">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                                                @shiftLabel
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status-badge status-free">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                                                Müsait
+                                            </span>
+                                        }
+                                    </label>
+                                }
+                            }
+                        </div>
+                        <div class="user-picker-footer">
+                            <span><span id="selectedCount">0</span> personel seçildi</span>
+                            <span id="noResults" style="display:none;">Sonuç bulunamadı</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-end mt-4">
+                <a href="/Admin/Shift/Index" class="btn btn-soft-secondary px-4 me-2">İptal</a>
+                <button type="submit" class="btn btn-gradient-success px-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
+                    Kaydet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const userItems = document.querySelectorAll('.user-item');
+    const selectedCountEl = document.getElementById('selectedCount');
+    const noResultsEl = document.getElementById('noResults');
+
+    function updateSelectedCount() {
+        const checked = document.querySelectorAll('.user-item input[type="checkbox"]:checked').length;
+        selectedCountEl.textContent = checked;
+    }
+
+    userItems.forEach(item => {
+        const checkbox = item.querySelector('input[type="checkbox"]');
+        checkbox.addEventListener('change', function () {
+            item.classList.toggle('checked', this.checked);
+            updateSelectedCount();
+        });
+    });
+
+    document.getElementById('userSearch').addEventListener('input', function () {
+        const val = this.value.toLowerCase().trim();
+        let visibleCount = 0;
+        userItems.forEach(item => {
+            const match = item.dataset.name.includes(val);
+            item.style.display = match ? '' : 'none';
+            if (match) visibleCount++;
+        });
+        noResultsEl.style.display = visibleCount === 0 ? 'inline' : 'none';
+    });
+
+    document.getElementById('shiftForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        Swal.fire({
+            title: "Emin misiniz?",
+            text: "Vardiya oluşturulacak.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Evet",
+            cancelButtonText: "İptal"
+        }).then(res => { if (res.isConfirmed) this.submit(); });
+    });
+</script>

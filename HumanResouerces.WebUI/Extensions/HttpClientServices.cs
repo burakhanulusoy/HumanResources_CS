@@ -24,7 +24,7 @@ namespace HumanResouerces.WebUI.Extensions
             var apiOptions = configuration.GetSection(nameof(ApiOptions)).Get<ApiOptions>();
 
             // API tarafındaki routelar "api/[controller]" olduğu için base adrese /api/ ekliyoruz.
-            // Örn: https://localhost:7006/api/
+            // Örn: https://localhost:7018/api/
             string apiBaseUrl = $"{apiOptions.baseUrl}/api/";
 
             services.AddHttpClient<ICertificateService, CertificateService>(options =>

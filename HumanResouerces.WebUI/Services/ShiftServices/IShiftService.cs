@@ -6,5 +6,6 @@ namespace HumanResources.WebUI.Services.ShiftServices
 {
     public interface IShiftService : IGenericService<ResultShiftDto, CreateShiftDto, UpdateShiftDto>
     {
+        Task<BaseResult<ResultShiftDto>> GetById2Async(int id);
     }
 }

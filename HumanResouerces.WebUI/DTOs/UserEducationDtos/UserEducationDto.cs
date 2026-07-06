@@ -1,7 +1,7 @@
 using HumanResouerces.WebUI.Base;
+using HumanResouerces.WebUI.Enums;
 using HumanResources.Business.DTOs.EducationDtos;
 using HumanResources.Business.DTOs.UserDtos;
-using HumanResources.Entity.Enums;
 
 namespace HumanResources.Business.DTOs.UserEducationDtos
 {
