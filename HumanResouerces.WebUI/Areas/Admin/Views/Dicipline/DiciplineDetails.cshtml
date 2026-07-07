@@ -1,0 +1,313 @@
+﻿@model HumanResouerces.WebUI.Models.DiciplineDetailViewModel
+@{
+    ViewData["Title"] = "Kayıt Detayları";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var user = Model.CurrentRecord.AppUser;
+
+    bool IsOdul(string neden) => neden?.Contains("ödül", StringComparison.OrdinalIgnoreCase) == true
+                              || neden?.Contains("odul", StringComparison.OrdinalIgnoreCase) == true;
+    var currentIsOdul = IsOdul(Model.CurrentRecord.DisiplinNedeni);
+
+    // DİKKAT: Buradaki adresi KENDİ API PROJENİN ÇALIŞTIĞI PORT ile değiştir.
+    // Örn: API'n https://localhost:7214'te çalışıyorsa onu yaz.
+    var apiBaseUrl = "https://localhost:7018";
+}
+
+<style>
+    .dsp-detail-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    }
+
+    .profile-card {
+        background: linear-gradient(135deg, #f0fdfa, #f8fafc);
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 1.5rem;
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .profile-img {
+        width: 84px;
+        height: 84px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .profile-initials {
+        width: 84px;
+        height: 84px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0d9488, #0f766e);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        font-weight: 700;
+        border: 3px solid #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .profile-name {
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: .25rem;
+    }
+
+    .profile-meta {
+        color: #6b7280;
+        font-size: .88rem;
+    }
+
+    .type-hero {
+        font-size: .8rem;
+        font-weight: 700;
+        padding: .35rem .8rem;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        margin-bottom: .5rem;
+    }
+
+        .type-hero.odul {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .type-hero.ceza {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+    .detail-box {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        height: 100%;
+    }
+
+    .detail-label {
+        color: #94a3b8;
+        font-size: .74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin-bottom: .35rem;
+    }
+
+    .detail-value {
+        color: #111827;
+        font-size: 1.02rem;
+        font-weight: 500;
+    }
+
+    .file-btn {
+        border: 1.5px solid #2563eb;
+        color: #2563eb;
+        border-radius: 999px;
+        padding: .5rem 1.25rem;
+        font-weight: 600;
+        font-size: .9rem;
+    }
+
+        .file-btn:hover {
+            background: #2563eb;
+            color: #fff;
+        }
+
+    /* Geçmiş kayıtlar - zaman çizelgesi */
+    .timeline {
+        position: relative;
+        padding-left: 1.75rem;
+    }
+
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 8px;
+            top: 6px;
+            bottom: 6px;
+            width: 2px;
+            background: #e5e7eb;
+        }
+
+    .timeline-item {
+        position: relative;
+        padding-bottom: 1.25rem;
+    }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+    .timeline-dot {
+        position: absolute;
+        left: -1.75rem;
+        top: 4px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 2px #e5e7eb;
+    }
+
+        .timeline-dot.odul {
+            background: #22c55e;
+        }
+
+        .timeline-dot.ceza {
+            background: #ef4444;
+        }
+
+    .timeline-card {
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: .85rem 1.1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .timeline-date {
+        color: #64748b;
+        font-size: .8rem;
+        font-weight: 600;
+    }
+
+    .timeline-reason {
+        color: #1f2937;
+        font-weight: 600;
+    }
+
+    .btn-goto {
+        background: #fdf4ff;
+        color: #c026d3;
+        border: none;
+        border-radius: 8px;
+        font-size: .8rem;
+        font-weight: 600;
+        padding: .35rem .75rem;
+    }
+
+        .btn-goto:hover {
+            background: #fae8ff;
+            color: #a21caf;
+        }
+</style>
+
+<div class="card dsp-detail-card mb-4">
+    <div class="card-body p-4">
+
+        @* --- Personel Kartı --- *@
+        <div class="profile-card mb-4">
+            @if (!string.IsNullOrEmpty(user.FotografUrl))
+            {
+                <img src="@user.FotografUrl" class="profile-img" alt="@user.Ad @user.Soyad" />
+            }
+            else
+            {
+                <div class="profile-initials">@(user.Ad?.Substring(0, 1))@(user.Soyad?.Substring(0, 1))</div>
+            }
+            <div>
+                <span class="type-hero @(currentIsOdul ? "odul" : "ceza")">
+                    <i class="bi @(currentIsOdul ? "bi-trophy" : "bi-exclamation-triangle")"></i>
+                    @(currentIsOdul ? "Ödül Kaydı" : "Disiplin Kaydı")
+                </span>
+                <h4 class="profile-name">@user.Ad @user.Soyad</h4>
+                <p class="profile-meta mb-0">
+                    <i class="bi bi-building"></i> @user.DepartmanAd
+                    <span class="mx-2">|</span>
+                    <i class="bi bi-person-vcard"></i> Sicil: @user.SicilNo
+                </p>
+            </div>
+        </div>
+
+        @* --- Olay Detayları --- *@
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="detail-box">
+                    <div class="detail-label">Kayıt Nedeni</div>
+                    <div class="detail-value">@Model.CurrentRecord.DisiplinNedeni</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="detail-box">
+                    <div class="detail-label">Olay Tarihi</div>
+                    <div class="detail-value">
+                        <i class="bi bi-calendar3 me-1 text-muted"></i>
+                        @Model.CurrentRecord.OlayTarihi.ToString("dd MMMM yyyy, dddd", new System.Globalization.CultureInfo("tr-TR"))
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="detail-box">
+                    <div class="detail-label">Detaylı Açıklama</div>
+                    <div class="detail-value" style="white-space: pre-line;">@Model.CurrentRecord.Detay</div>
+                </div>
+            </div>
+
+            @* İŞTE SİHİRLİ DOKUNUŞ BURADA: apiBaseUrl eklendi *@
+            @if (!string.IsNullOrEmpty(Model.CurrentRecord.DosyaYolu))
+            {
+                <div class="col-12 mt-2">
+                    <a href="@($"{apiBaseUrl}{Model.CurrentRecord.DosyaYolu}")" target="_blank" class="btn file-btn">
+                        <i class="bi bi-file-earmark-arrow-down me-1"></i> Ekli Belgeyi Görüntüle / İndir
+                    </a>
+                </div>
+            }
+        </div>
+
+        <hr class="my-4" />
+
+        @* --- Personelin Diğer Kayıtları (Zaman Çizelgesi) --- *@
+        <h6 class="fw-bold mb-3">
+            <i class="bi bi-clock-history me-1"></i>
+            Personelin Diğer Kayıtları
+            <span class="badge rounded-pill text-bg-light border ms-1">@Model.OtherRecords.Count</span>
+        </h6>
+
+        @if (Model.OtherRecords.Any())
+        {
+            <div class="timeline">
+                @foreach (var other in Model.OtherRecords)
+                {
+                    var odul = IsOdul(other.DisiplinNedeni);
+                    <div class="timeline-item">
+                        <span class="timeline-dot @(odul ? "odul" : "ceza")"></span>
+                        <div class="timeline-card">
+                            <div>
+                                <div class="timeline-date">@other.OlayTarihi.ToString("dd.MM.yyyy")</div>
+                                <div class="timeline-reason">@other.DisiplinNedeni</div>
+                            </div>
+                            <a href="/Admin/Dicipline/DiciplineDetails?id=@other.Id&userId=@other.AppUserId" class="btn btn-goto">
+                                <i class="bi bi-eye"></i> İncele
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-light border text-muted" role="alert">
+                <i class="bi bi-info-circle me-2"></i> Bu personele ait başka bir geçmiş kayıt bulunmamaktadır.
+            </div>
+        }
+
+        <div class="mt-4 text-end">
+            <a href="/Admin/Dicipline/Index" class="btn btn-secondary px-4"><i class="bi bi-arrow-left me-1"></i> Listeye Dön</a>
+        </div>
+    </div>
+</div>

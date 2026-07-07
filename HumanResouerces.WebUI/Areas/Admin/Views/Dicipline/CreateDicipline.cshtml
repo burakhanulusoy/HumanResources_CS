@@ -1,0 +1,227 @@
+﻿@model HumanResouerces.WebUI.Models.DiciplineCreateViewModel
+@{
+    ViewData["Title"] = "Yeni Disiplin/Ödül Kaydı";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .dsp-form-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        box-shadow: 0 1px 3px rgba(0,0,0,.04);
+        max-width: 860px;
+        margin: 0 auto;
+    }
+
+    .dsp-form-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem 1.75rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+        .dsp-form-header .icon-wrap {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff;
+            font-size: 1.3rem;
+        }
+
+    .dsp-form-title {
+        font-weight: 700;
+        color: #111827;
+        margin: 0;
+    }
+
+    .dsp-form-subtitle {
+        color: #6b7280;
+        font-size: .85rem;
+        margin: 2px 0 0;
+    }
+
+    .dsp-form-body {
+        padding: 1.75rem;
+    }
+
+    .dsp-label {
+        font-weight: 600;
+        color: #374151;
+        font-size: .88rem;
+        margin-bottom: .45rem;
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+    }
+
+        .dsp-label i {
+            color: #0d9488;
+        }
+
+    .dsp-input {
+        border: 1.5px solid #e5e7eb;
+        border-radius: 10px;
+        padding: .6rem .85rem;
+        font-size: .92rem;
+    }
+
+        .dsp-input:focus {
+            border-color: #0d9488;
+            box-shadow: 0 0 0 3px rgba(13,148,136,.12);
+        }
+
+    /* Dosya yükleme kutusu */
+    .file-drop {
+        border: 2px dashed #d1d5db;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        color: #9ca3af;
+        cursor: pointer;
+        transition: .2s;
+        background: #fafafa;
+    }
+
+        .file-drop:hover, .file-drop.has-file {
+            border-color: #0d9488;
+            color: #0d9488;
+            background: #f0fdfa;
+        }
+
+        .file-drop i {
+            font-size: 1.6rem;
+            display: block;
+            margin-bottom: .35rem;
+        }
+
+        .file-drop input[type=file] {
+            display: none;
+        }
+
+    .file-name {
+        font-weight: 600;
+        font-size: .88rem;
+    }
+
+    .btn-create {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: .6rem 1.4rem;
+        font-weight: 600;
+    }
+
+        .btn-create:hover {
+            color: #fff;
+            filter: brightness(1.08);
+        }
+
+    .btn-cancel {
+        background: #f1f5f9;
+        color: #475569;
+        border: none;
+        border-radius: 10px;
+        padding: .6rem 1.2rem;
+        font-weight: 600;
+    }
+
+        .btn-cancel:hover {
+            background: #e2e8f0;
+            color: #334155;
+        }
+</style>
+
+<div class="card dsp-form-card mb-4">
+    <div class="dsp-form-header">
+        <span class="icon-wrap"><i class="bi bi-file-earmark-plus"></i></span>
+        <div>
+            <h5 class="dsp-form-title">Yeni Kayıt Oluştur</h5>
+            <p class="dsp-form-subtitle">Personele ait disiplin veya ödül kaydı ekleyin</p>
+        </div>
+    </div>
+    <div class="card-body dsp-form-body">
+        <form asp-action="CreateDicipline" method="post" id="createForm" enctype="multipart/form-data" novalidate>
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="dsp-label"><i class="bi bi-person-badge"></i> Personel</label>
+                    <select asp-for="Record.AppUserId" asp-items="Model.Users" class="form-select dsp-input" required>
+                        <option value="">-- Personel Seçiniz --</option>
+                    </select>
+                    <span class="text-danger small" asp-validation-for="Record.AppUserId"></span>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="dsp-label"><i class="bi bi-calendar-event"></i> Olay Tarihi</label>
+                    <input type="date" asp-for="Record.OlayTarihi" asp-format="{0:yyyy-MM-dd}" class="form-control dsp-input" required />
+                    <span class="text-danger small" asp-validation-for="Record.OlayTarihi"></span>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="dsp-label"><i class="bi bi-card-text"></i> Kayıt Nedeni</label>
+                <input type="text" asp-for="Record.DisiplinNedeni" class="form-control dsp-input"
+                       placeholder="Örn: İşe Geç Kalma, Ödül: Yılın Personeli..." maxlength="150" required />
+                <span class="text-danger small" asp-validation-for="Record.DisiplinNedeni"></span>
+            </div>
+
+            <div class="mb-4">
+                <label class="dsp-label"><i class="bi bi-justify-left"></i> Detaylı Açıklama</label>
+                <textarea asp-for="Record.Detay" class="form-control dsp-input" rows="4"
+                          placeholder="Olayın detaylarını giriniz..." maxlength="1500" required></textarea>
+                <span class="text-danger small" asp-validation-for="Record.Detay"></span>
+            </div>
+
+            <div class="mb-4">
+                <label class="dsp-label"><i class="bi bi-paperclip"></i> Belge / Tutanak (Opsiyonel)</label>
+                <label class="file-drop d-block" id="fileDrop">
+                    <i class="bi bi-cloud-arrow-up"></i>
+                    <span class="file-name" id="fileName">Dosya seçmek için tıklayın (PDF, Word, Görsel — max 10 MB)</span>
+                    <input type="file" asp-for="Record.Dosya" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xlsx" />
+                </label>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a href="/Admin/Dicipline/Index" class="btn btn-cancel">İptal</a>
+                <button type="submit" class="btn btn-create"><i class="bi bi-check-lg"></i> Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Seçilen dosya adını kutuda göster
+    const fileInput = document.querySelector('#fileDrop input[type=file]');
+    fileInput.addEventListener('change', function () {
+        const drop = document.getElementById('fileDrop');
+        const label = document.getElementById('fileName');
+        if (this.files.length > 0) {
+            label.textContent = this.files[0].name;
+            drop.classList.add('has-file');
+        }
+    });
+
+    document.getElementById('createForm').addEventListener('submit', function (e) {
+        var form = this;
+        if (!form.checkValidity()) { form.reportValidity(); e.preventDefault(); return; }
+        e.preventDefault();
+        Swal.fire({
+            title: "Emin misiniz?",
+            text: "Kayıt sisteme eklenecektir.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#16a34a",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Evet, kaydet",
+            cancelButtonText: "İptal",
+            reverseButtons: true
+        }).then(res => { if (res.isConfirmed) form.submit(); });
+    });
+</script>
