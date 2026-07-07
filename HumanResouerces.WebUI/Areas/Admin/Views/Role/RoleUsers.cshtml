@@ -1,0 +1,295 @@
+﻿@model List<HumanResources.Business.DTOs.UserDtos.UserDto>
+@{
+    string roleName = ViewData["RoleName"]?.ToString() ?? "Rol";
+    ViewData["Title"] = $"{roleName} - Kullanıcılar";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int userCount = Model?.Count ?? 0;
+    int i = 0;
+}
+
+<style>
+    :root {
+        --navy: #0B2545;
+        --navy-2: #143A6B;
+        --cyan: #29A8CC;
+        --cyan-soft: #EAF6FA;
+        --muted: #64748B;
+        --line: #E7ECF3;
+        --soft: #F7F9FC;
+    }
+
+    .ru-page svg {
+        display: block;
+    }
+
+    .ru-toolbar {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+        box-shadow: 0 1px 3px rgba(16,24,40,.04);
+    }
+
+        .ru-toolbar .title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .ru-toolbar .icon-wrap {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: linear-gradient(140deg, var(--navy), var(--navy-2));
+            color: var(--cyan);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .ru-toolbar h5 {
+            margin: 0;
+            font-weight: 700;
+            color: var(--navy);
+            font-size: 1.12rem;
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .ru-toolbar .role-chip {
+            display: inline-block;
+            background: var(--cyan-soft);
+            color: var(--navy);
+            font-weight: 700;
+            font-size: .8rem;
+            padding: .18rem .7rem;
+            border-radius: 999px;
+            border: 1px solid rgba(41,168,204,.25);
+        }
+
+        .ru-toolbar .meta {
+            font-size: .82rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+    .btn-back-soft {
+        background: var(--soft);
+        color: #475569;
+        border: 1px solid var(--line);
+        font-weight: 600;
+        border-radius: 11px;
+        padding: .55rem 1.1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        transition: all .15s ease;
+    }
+
+        .btn-back-soft:hover {
+            background: #eef2f7;
+            color: var(--navy);
+        }
+
+    .ru-card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(16,24,40,.05);
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .ru-table {
+        margin-bottom: 0;
+        width: 100%;
+    }
+
+        .ru-table thead th {
+            background: var(--soft);
+            color: var(--muted);
+            font-size: .75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            border-bottom: 1px solid var(--line);
+            padding: .85rem 1.1rem;
+            text-align: left;
+        }
+
+        .ru-table tbody td {
+            padding: .9rem 1.1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+            color: #374151;
+        }
+
+        .ru-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .ru-table tbody tr:hover {
+            background: #f6fbfd;
+        }
+
+    .row-index {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: var(--soft);
+        color: var(--muted);
+        font-size: .8rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .u-name {
+        font-weight: 700;
+        color: var(--navy);
+        display: block;
+    }
+
+    .u-contact {
+        font-size: 12.5px;
+        color: var(--muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 3px;
+    }
+
+        .u-contact svg {
+            color: #94a3b8;
+        }
+
+    .dept-badge {
+        background: var(--soft);
+        color: var(--navy);
+        font-size: .75rem;
+        font-weight: 600;
+        border-radius: 999px;
+        padding: .3rem .8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        width: fit-content;
+        border: 1px solid var(--line);
+    }
+
+    .u-avatar {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 2px 6px rgba(16,24,40,.12);
+    }
+
+    .empty-state {
+        padding: 3.5rem 1rem;
+        text-align: center;
+        color: #9aa5b4;
+    }
+
+        .empty-state .empty-ic {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto .8rem;
+            background: var(--soft);
+            color: #c3cdda;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+</style>
+
+<div class="ru-page">
+    <div class="ru-toolbar">
+        <div class="title-wrap">
+            <span class="icon-wrap">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+            </span>
+            <div>
+                <h5>Role Sahip Kullanıcılar <span class="role-chip">@roleName</span></h5>
+                <div class="meta">Toplam @userCount kullanıcı bu role sahip</div>
+            </div>
+        </div>
+        <a class="btn-back-soft" asp-area="Admin" asp-controller="Role" asp-action="Index">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>
+            Rollere Dön
+        </a>
+    </div>
+
+    <div class="ru-card">
+        <div class="table-responsive">
+            <table class="ru-table">
+                <thead>
+                    <tr>
+                        <th style="width: 6%;" class="text-center">#</th>
+                        <th style="width: 34%;">Personel &amp; İletişim</th>
+                        <th style="width: 30%;">Departman / Birim</th>
+                        <th style="width: 30%;">Telefon</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var user in Model)
+                        {
+                            i++;
+                            <tr>
+                                <td class="text-center"><span class="row-index">@i</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="@(string.IsNullOrEmpty(user.FotografUrl) ? "/assets/images/admin.png" : user.FotografUrl)" class="u-avatar" alt="Profil">
+                                        <div>
+                                            <span class="u-name">@user.Ad @user.Soyad</span>
+                                            <span class="u-contact">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+                                                @(string.IsNullOrEmpty(user.Email) ? "-" : user.Email)
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="dept-badge">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18" /><path d="M5 21V7l8-4v18" /><path d="M19 21V11l-6-4" /></svg>
+                                        @(string.IsNullOrEmpty(user.DepartmanAd) ? "-" : user.DepartmanAd) / @(string.IsNullOrEmpty(user.BirimAd) ? "-" : user.BirimAd)
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="u-contact">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+                                        @(string.IsNullOrEmpty(user.PhoneNumber) ? "-" : user.PhoneNumber)
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4">
+                                <div class="empty-state">
+                                    <span class="empty-ic">
+                                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="17" y1="8" x2="23" y2="14" /><line x1="23" y1="8" x2="17" y2="14" /></svg>
+                                    </span>
+                                    <p class="mb-0">Bu role sahip herhangi bir kullanıcı bulunmuyor.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

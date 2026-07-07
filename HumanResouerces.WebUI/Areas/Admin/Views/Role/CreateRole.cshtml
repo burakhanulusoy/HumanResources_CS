@@ -1,0 +1,149 @@
+﻿@model HumanResources.Business.DTOs.RoleDtos.CreateRoleDto
+@{
+    ViewData["Title"] = "Yeni Rol";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    :root {
+        --navy: #0B2545;
+        --navy-2: #143A6B;
+        --cyan: #29A8CC;
+        --cyan-soft: #EAF6FA;
+        --muted: #64748B;
+        --line: #E7ECF3;
+        --soft: #F7F9FC;
+    }
+
+    .role-form-wrap {
+        max-width: 560px;
+        margin: 0 auto;
+    }
+
+    .role-form-head {
+        background: linear-gradient(120deg, var(--navy), var(--navy-2));
+        color: #fff;
+        border-radius: 16px 16px 0 0;
+        padding: 24px 28px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+        .role-form-head svg {
+            color: var(--cyan);
+        }
+
+        .role-form-head h5 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .role-form-head .sub {
+            font-size: .8rem;
+            color: #b9c6d8;
+            margin-top: 3px;
+        }
+
+    .role-form-body {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-top: none;
+        border-radius: 0 0 16px 16px;
+        padding: 26px 28px;
+    }
+
+    .form-label-sm {
+        font-weight: 600;
+        color: var(--navy);
+        font-size: .85rem;
+        margin-bottom: .35rem;
+        display: block;
+    }
+
+    .form-control-brand {
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        padding: .65rem .85rem;
+        width: 100%;
+    }
+
+        .form-control-brand:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 3px rgba(41,168,204,.15);
+            outline: none;
+        }
+
+    .val-summary {
+        color: #c0392b;
+        font-size: .85rem;
+        margin-bottom: 1rem;
+    }
+
+        .val-summary ul {
+            margin: 0;
+            padding-left: 1.1rem;
+        }
+
+        .val-summary:empty {
+            display: none;
+        }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: .6rem;
+        margin-top: 1.4rem;
+    }
+
+    .btn-brand {
+        background: var(--navy);
+        color: #fff;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        padding: .55rem 1.3rem;
+    }
+
+        .btn-brand:hover {
+            background: #0d2c55;
+            color: #fff;
+        }
+
+    .btn-soft {
+        background: var(--soft);
+        border: 1px solid var(--line);
+        color: #475569;
+        border-radius: 10px;
+        font-weight: 600;
+        padding: .55rem 1.1rem;
+    }
+
+        .btn-soft:hover {
+            background: #eef2f7;
+            color: var(--navy);
+        }
+</style>
+
+<div class="role-form-wrap">
+    <div class="role-form-head">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="16" /><line x1="8" y1="12" x2="16" y2="12" /></svg>
+        <div>
+            <h5>Yeni Rol Ekle</h5>
+            <div class="sub">Sisteme yeni bir yetki rolü tanımlayın</div>
+        </div>
+    </div>
+
+    <form asp-area="Admin" asp-controller="Role" asp-action="CreateRole" method="post" class="role-form-body">
+        <div asp-validation-summary="All" class="val-summary"></div>
+
+        <label asp-for="Name" class="form-label-sm">Rol Adı</label>
+        <input asp-for="Name" class="form-control-brand" placeholder="Örn: Yönetici, İK Uzmanı..." autofocus />
+        <span asp-validation-for="Name" class="text-danger small"></span>
+
+        <div class="form-actions">
+            <a asp-action="Index" class="btn btn-soft">Vazgeç</a>
+            <button type="submit" class="btn btn-brand">Kaydet</button>
+        </div>
+    </form>
+</div>

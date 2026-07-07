@@ -12,6 +12,7 @@ namespace HumanResources.WebUI.Services.UserServices
 
         Task<BaseResult<List<UserDto>>> GetUsersByRoleAsync(string roleName);
         Task<BaseResult<List<ResultUserDto>>> GetUsersByUnitIdAsync(int unitId);
+        Task<BaseResult<List<ResultUserDto>>> GetAllUsersWithRolesAsync();
 
     }
 }

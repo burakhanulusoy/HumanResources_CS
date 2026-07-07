@@ -1,20 +1,21 @@
 ﻿@model HumanResources.Business.DTOs.DepartmentDtos.ResultDepartmentWithUserDto
 @{
     ViewData["Title"] = $"{Model.Ad} - Departman Personel Listesi";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml"; // Doğru yol
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 
-    // PDF Dosya adını dinamik oluşturuyoruz
-    string pdfFileName = $"Departman_Raporu_{Model.Ad.Replace(" ", "_")}_{DateTime.Now.ToString("dd_MM_yyyy")}.pdf";
+    // Logonuzun yolu — dosyayı bu isimle wwwroot/assets/images klasörüne kaydedin
+    string logoUrl = "/ImagesProject/Logo.png";
 
-    // Personel sayısını güvenli bir şekilde alıyoruz
+    // Sunum için basit, null-güvenli sayaç. Burada filtreleme YOK.
+    // Silinmiş kayıtlar zaten AppDbContext'teki global query filter (SilindiMi == false) ile elenerek geliyor.
     int staffCount = Model.Personeller?.Count ?? 0;
 
-    // Yönetici adını güvenli bir şekilde oluşturuyoruz
     string yoneticiAdSoyad = Model.Yonetici != null ? $"{Model.Yonetici.Ad} {Model.Yonetici.Soyad}" : "Yönetici Atanmadı";
+
+    string pdfFileName = $"Departman_Raporu_{Model.Ad.Replace(" ", "_")}_{DateTime.Now.ToString("dd_MM_yyyy")}.pdf";
 }
 
 <style>
-    /* Özel Rapor / PDF Stilleri */
     .toolbar {
         background: #fff;
         border: 1px solid #eef0f3;
@@ -36,17 +37,21 @@
         }
 
     .btn-download-pdf {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
+        background: #0B2545;
         border: none;
         color: #fff;
         font-weight: 600;
         border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(220,38,38,.25);
+        box-shadow: 0 4px 12px rgba(11,37,69,.25);
     }
 
         .btn-download-pdf:hover {
-            filter: brightness(1.05);
+            background: #0d2c55;
             color: #fff;
+        }
+
+        .btn-download-pdf i {
+            color: #29A8CC;
         }
 
     /* PDF İçeriği */
@@ -58,27 +63,52 @@
         padding: 40px;
     }
 
+    /* --- Logolu resmi başlık --- */
     .doc-header {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        border-bottom: 3px double #000;
+        border-bottom: 3px double #0B2545;
         padding-bottom: 14px;
         margin-bottom: 18px;
     }
 
+        .doc-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+            .doc-header .brand img {
+                height: 58px;
+                width: auto;
+                display: block;
+            }
+
         .doc-header .org-info h3 {
             margin: 0;
-            font-size: 1.05rem;
-            font-weight: 700;
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: .04em;
+            color: #0B2545;
             text-transform: uppercase;
-            letter-spacing: .02em;
+        }
+
+            .doc-header .org-info h3 span {
+                color: #29A8CC;
+            }
+
+        .doc-header .org-info .dept-line {
+            margin: 3px 0 0;
+            font-size: .8rem;
+            font-weight: 700;
+            color: #0B2545;
         }
 
         .doc-header .org-info p {
-            margin: 2px 0 0;
-            font-size: .78rem;
-            color: #444;
+            margin: 1px 0 0;
+            font-size: .74rem;
+            color: #555;
         }
 
         .doc-header .doc-meta {
@@ -89,7 +119,7 @@
         }
 
             .doc-header .doc-meta strong {
-                color: #000;
+                color: #0B2545;
             }
 
     .doc-title {
@@ -103,11 +133,19 @@
             text-transform: uppercase;
             letter-spacing: .03em;
             margin: 0;
-            text-decoration: underline;
+            color: #0B2545;
+        }
+
+        .doc-title .title-underline {
+            width: 90px;
+            height: 3px;
+            background: #29A8CC;
+            margin: 8px auto 0;
+            border-radius: 2px;
         }
 
         .doc-title p {
-            margin: 4px 0 0;
+            margin: 6px 0 0;
             font-size: .78rem;
             color: #444;
         }
@@ -120,13 +158,14 @@
     }
 
         .doc-info-table td {
-            border: 1px solid #000;
+            border: 1px solid #333;
             padding: 8px 12px;
         }
 
             .doc-info-table td.label {
-                background: #f0f0f0;
+                background: #eef2f7;
                 font-weight: 700;
+                color: #0B2545;
                 width: 22%;
             }
 
@@ -138,22 +177,35 @@
     }
 
         .doc-staff-table th {
-            border: 1px solid #000;
-            background: #f0f0f0;
-            padding: 8px 10px;
+            border: 1px solid #0B2545;
+            background: #0B2545;
+            color: #fff;
+            padding: 9px 10px;
             font-weight: 700;
             text-transform: uppercase;
-            font-size: .74rem;
+            font-size: .72rem;
+            letter-spacing: .03em;
             text-align: left;
         }
 
         .doc-staff-table td {
-            border: 1px solid #000;
+            border: 1px solid #cbd5e1;
             padding: 8px 10px;
         }
 
         .doc-staff-table tbody tr:nth-child(even) {
-            background: #fafafa;
+            background: #f6f9fc;
+        }
+
+        .doc-staff-table td.idx {
+            text-align: center;
+            font-weight: 700;
+            color: #0B2545;
+        }
+
+        .doc-staff-table .staff-name {
+            font-weight: 700;
+            color: #0B2545;
         }
 
         .doc-staff-table .empty-row td {
@@ -176,9 +228,11 @@
     }
 
     .doc-signature-line {
-        border-top: 1px solid #000;
+        border-top: 1px solid #0B2545;
         margin-top: 50px;
         padding-top: 6px;
+        font-weight: 700;
+        color: #0B2545;
     }
 
     .doc-signature-name {
@@ -190,13 +244,18 @@
 
     .doc-footer {
         margin-top: 25px;
-        border-top: 1px solid #000;
+        border-top: 1px solid #0B2545;
         padding-top: 10px;
         font-size: .7rem;
         color: #444;
         display: flex;
         justify-content: space-between;
     }
+
+        .doc-footer .conf {
+            color: #0B2545;
+            font-weight: 700;
+        }
 </style>
 
 <div class="toolbar d-flex justify-content-between align-items-center mb-4">
@@ -210,9 +269,13 @@
 
 <div id="pdfContent" class="card shadow-sm">
     <div class="doc-header">
-        <div class="org-info">
-            <h3>İnsan Kaynakları Departmanı</h3>
-            <p>Departman ve Personel Yönetim Sistemi</p>
+        <div class="brand">
+            <img src="@logoUrl" alt="CS Savunma Logo" />
+            <div class="org-info">
+                <h3>C<span>S</span> SAVUNMA</h3>
+                <div class="dept-line">İnsan Kaynakları Departmanı</div>
+                <p>Departman ve Personel Yönetim Sistemi</p>
+            </div>
         </div>
         <div class="doc-meta">
             <div><strong>Rapor No:</strong> DPT-@Model.Id.ToString("D4")-@DateTime.Now.ToString("yyyyMMdd")</div>
@@ -223,6 +286,7 @@
 
     <div class="doc-title">
         <h2>Departman Personel Listesi Raporu</h2>
+        <div class="title-underline"></div>
         <p>Kurum İçi Kadro ve Personel Dağılım Belgesi</p>
     </div>
 
@@ -231,7 +295,7 @@
             <td class="label">Departman Adı</td>
             <td>@Model.Ad</td>
             <td class="label">Departman Yöneticisi</td>
-            <td class="font-weight-bold">@yoneticiAdSoyad</td>
+            <td>@yoneticiAdSoyad</td>
         </tr>
         <tr>
             <td class="label">Toplam Personel</td>
@@ -244,10 +308,11 @@
     <table class="doc-staff-table">
         <thead>
             <tr>
-                <th style="width: 5%;">#</th>
-                <th style="width: 35%;">Personel Adı Soyadı</th>
-                <th style="width: 35%;">E-Posta Adresi</th>
-                <th style="width: 25%;">Kayıt Durumu</th>
+                <th style="width: 6%;">#</th>
+                <th style="width: 28%;">Adı Soyadı</th>
+                <th style="width: 22%;">Birimi</th>
+                <th style="width: 20%;">Telefon</th>
+                <th style="width: 24%;">E-Posta</th>
             </tr>
         </thead>
         <tbody>
@@ -258,18 +323,18 @@
                 {
                     pCount++;
                     <tr>
-                        <td>@pCount</td>
-                        <!-- UserDto içindeki property isimleri (FirstName, LastName vb.) projendeki isimlendirmeye göre düzenlenebilir -->
-                        <td>@p.Ad @p.Soyad</td>
+                        <td class="idx">@pCount</td>
+                        <td class="staff-name">@p.Ad @p.Soyad</td>
+                        <td>@(string.IsNullOrEmpty(p.BirimAd) ? "-" : p.BirimAd)</td>
+                        <td>@(string.IsNullOrEmpty(p.PhoneNumber) ? "-" : p.PhoneNumber)</td>
                         <td>@(string.IsNullOrEmpty(p.Email) ? "-" : p.Email)</td>
-                        <td>Aktif Personel</td>
                     </tr>
                 }
             }
             else
             {
                 <tr class="empty-row">
-                    <td colspan="4">Bu departmana doğrudan bağlı personel bulunmamaktadır.</td>
+                    <td colspan="5">Bu departmana bağlı personel bulunmamaktadır.</td>
                 </tr>
             }
         </tbody>
@@ -295,7 +360,7 @@
 
     <div class="doc-footer">
         <span>Bu rapor sistemdeki güncel verilere göre otomatik oluşturulmuştur.</span>
-        <span>Sayfa 1/1</span>
+        <span class="conf">GİZLİLİK SINIFI: KURUM İÇİ &nbsp;|&nbsp; Sayfa 1/1</span>
     </div>
 </div>
 
@@ -304,11 +369,12 @@
     document.getElementById('downloadPdfBtn').addEventListener('click', function () {
         var element = document.getElementById('pdfContent');
         var opt = {
-            margin: 0.5,
-            filename: '@pdfFileName',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
+            margin:      0.4,
+            filename:    '@pdfFileName',
+            image:       { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 3, useCORS: true, backgroundColor: '#ffffff' },
+            jsPDF:       { unit: 'in', format: 'a4', orientation: 'portrait' },
+            pagebreak:   { mode: ['css', 'legacy'] }
         };
         html2pdf().set(opt).from(element).save();
     });

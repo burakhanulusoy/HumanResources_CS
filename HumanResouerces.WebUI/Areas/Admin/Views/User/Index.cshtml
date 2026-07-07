@@ -1,0 +1,440 @@
+﻿@model List<HumanResources.Business.DTOs.UserDtos.ResultUserDto>
+@{
+    ViewData["Title"] = "Rol İşlemleri";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int userCount = Model?.Count ?? 0;
+    int idx = 0;
+}
+
+<style>
+    :root {
+        --navy: #0B2545;
+        --navy-2: #143A6B;
+        --cyan: #29A8CC;
+        --cyan-soft: #EAF6FA;
+        --muted: #64748B;
+        --line: #E7ECF3;
+        --soft: #F7F9FC;
+    }
+
+    .um-page svg {
+        display: block;
+    }
+
+    .um-toolbar {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+        box-shadow: 0 1px 3px rgba(16,24,40,.04);
+    }
+
+        .um-toolbar .title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .um-toolbar .icon-wrap {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: linear-gradient(140deg, var(--navy), var(--navy-2));
+            color: var(--cyan);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .um-toolbar h5 {
+            margin: 0;
+            font-weight: 700;
+            color: var(--navy);
+            font-size: 1.15rem;
+        }
+
+        .um-toolbar .meta {
+            font-size: .82rem;
+            color: var(--muted);
+            margin-top: 3px;
+        }
+
+        .um-toolbar .count-chip {
+            background: var(--cyan-soft);
+            color: var(--navy);
+            font-weight: 700;
+            border-radius: 999px;
+            padding: .1rem .55rem;
+        }
+
+    /* Arama */
+    .search-bar {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 10px 16px;
+        margin-bottom: 18px;
+        box-shadow: 0 2px 10px rgba(16,24,40,.04);
+        transition: all .15s ease;
+    }
+
+        .search-bar:focus-within {
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 3px rgba(41,168,204,.12);
+        }
+
+        .search-bar svg {
+            color: var(--navy);
+            flex-shrink: 0;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: .95rem;
+            color: #1f2a37;
+            background: transparent;
+        }
+
+            .search-bar input::placeholder {
+                color: #9aa5b4;
+            }
+
+    .search-count {
+        font-size: .78rem;
+        font-weight: 600;
+        color: var(--navy);
+        background: var(--cyan-soft);
+        border-radius: 999px;
+        padding: .28rem .7rem;
+        white-space: nowrap;
+    }
+
+    .um-card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(16,24,40,.05);
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .um-table {
+        margin-bottom: 0;
+        width: 100%;
+    }
+
+        .um-table thead th {
+            background: var(--soft);
+            color: var(--muted);
+            font-size: .75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            border-bottom: 1px solid var(--line);
+            padding: .85rem 1.1rem;
+            text-align: left;
+        }
+
+        .um-table tbody td {
+            padding: .9rem 1.1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+            color: #374151;
+        }
+
+        .um-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .um-table tbody tr.user-row:hover {
+            background: #f6fbfd;
+        }
+
+    .row-index {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: var(--soft);
+        color: var(--muted);
+        font-size: .8rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .u-avatar {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 2px 6px rgba(16,24,40,.12);
+    }
+
+    .u-name {
+        font-weight: 700;
+        color: var(--navy);
+        display: block;
+    }
+
+    .u-contact {
+        font-size: 12.5px;
+        color: var(--muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 3px;
+    }
+
+        .u-contact svg {
+            color: #94a3b8;
+        }
+
+    .dept-badge {
+        background: var(--soft);
+        color: var(--navy);
+        font-size: .75rem;
+        font-weight: 600;
+        border-radius: 999px;
+        padding: .3rem .8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        width: fit-content;
+        border: 1px solid var(--line);
+    }
+
+    .role-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .role-pill {
+        background: var(--cyan-soft);
+        color: var(--navy);
+        font-size: .72rem;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: .22rem .6rem;
+        border: 1px solid rgba(41,168,204,.28);
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+    }
+
+    .role-none {
+        font-size: .78rem;
+        color: #9aa5b4;
+        font-style: italic;
+    }
+
+    .btn-assign {
+        background: var(--navy);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: .45rem .9rem;
+        font-size: .8rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        transition: all .15s ease;
+    }
+
+        .btn-assign:hover {
+            background: #0d2c55;
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(11,37,69,.22);
+        }
+
+        .btn-assign svg {
+            color: var(--cyan);
+        }
+
+    .empty-state {
+        padding: 3.5rem 1rem;
+        text-align: center;
+        color: #9aa5b4;
+    }
+
+        .empty-state .empty-ic {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto .8rem;
+            background: var(--soft);
+            color: #c3cdda;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+</style>
+
+<div class="um-page">
+    <div class="um-toolbar">
+        <div class="title-wrap">
+            <span class="icon-wrap">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+            </span>
+            <div>
+                <h5>Rol İşlemleri</h5>
+                <div class="meta">Toplam <span class="count-chip">@userCount</span> personel · rol atamak için "Rol Ata"</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-bar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+        <input type="text" id="userSearch" autocomplete="off" placeholder="Personel ara: ad soyad, e-posta, departman, rol..." />
+        <span class="search-count" id="searchCount">@userCount personel</span>
+    </div>
+
+    <div class="um-card">
+        <div class="table-responsive">
+            <table class="um-table" id="userTable">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;" class="text-center">#</th>
+                        <th style="width: 28%;">Personel &amp; İletişim</th>
+                        <th style="width: 22%;">Departman / Birim</th>
+                        <th style="width: 30%;">Roller</th>
+                        <th style="width: 15%;" class="text-end pe-4">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="userBody">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var user in Model)
+                        {
+                            idx++;
+                            string dep = user.Departman?.Ad ?? "-";
+                            string bir = user.Birim?.Ad ?? "-";
+                            string rollerMetni = user.Roller != null ? string.Join(" ", user.Roller) : "";
+                            string aramaMetni = $"{user.Ad} {user.Soyad} {user.Email} {dep} {bir} {rollerMetni}".ToLower();
+                            <tr class="user-row" data-search="@aramaMetni">
+                                <td class="text-center"><span class="row-index">@idx</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="@(string.IsNullOrEmpty(user.FotografUrl) ? "/assets/images/admin.png" : user.FotografUrl)" class="u-avatar" alt="Profil">
+                                        <div>
+                                            <span class="u-name">@user.Ad @user.Soyad</span>
+                                            <span class="u-contact">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+                                                @(string.IsNullOrEmpty(user.Email) ? "-" : user.Email)
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="dept-badge">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18" /><path d="M5 21V7l8-4v18" /><path d="M19 21V11l-6-4" /></svg>
+                                        @dep / @bir
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (user.Roller != null && user.Roller.Any())
+                                    {
+                                        <div class="role-pills">
+                                            @foreach (var r in user.Roller)
+                                            {
+                                                <span class="role-pill">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                                                    @r
+                                                </span>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="role-none">Rol atanmamış</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a class="btn-assign" asp-area="Admin" asp-controller="Role" asp-action="AssignRole" asp-route-id="@user.Id">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="22" y1="11" x2="16" y2="11" /></svg>
+                                        Rol Ata
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <span class="empty-ic">
+                                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /></svg>
+                                    </span>
+                                    <p class="mb-0">Sistemde kayıtlı personel bulunmuyor.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tbody id="noResultBody" style="display:none;">
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <span class="empty-ic">
+                                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+                                </span>
+                                <p class="mb-0">Aramanızla eşleşen personel bulunamadı.</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var input = document.getElementById('userSearch');
+        var countEl = document.getElementById('searchCount');
+        var noResult = document.getElementById('noResultBody');
+        var rows = Array.prototype.slice.call(document.querySelectorAll('#userBody tr.user-row'));
+        var total = rows.length;
+        if (!input || total === 0) return;
+
+        function normalize(s) {
+            return (s || '').toLocaleLowerCase('tr-TR')
+                .replace(/ı/g, 'i').replace(/İ/g, 'i').replace(/ş/g, 's')
+                .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ö/g, 'o').replace(/ç/g, 'c');
+        }
+
+        function filter() {
+            var q = normalize(input.value.trim());
+            var visible = 0;
+            rows.forEach(function (row) {
+                var match = q === '' || normalize(row.getAttribute('data-search')).indexOf(q) !== -1;
+                row.style.display = match ? '' : 'none';
+                if (match) {
+                    visible++;
+                    var ix = row.querySelector('.row-index');
+                    if (ix) ix.textContent = visible;
+                }
+            });
+            noResult.style.display = (visible === 0) ? '' : 'none';
+            countEl.textContent = (input.value.trim() === '') ? (total + ' personel') : (visible + ' / ' + total + ' personel');
+        }
+
+        input.addEventListener('input', filter);
+        input.addEventListener('keydown', function (e) { if (e.key === 'Escape') { input.value = ''; filter(); } });
+    })();
+</script>

@@ -1,3 +1,4 @@
+using FluentValidation;
 using HumanResources.Business.Base;
 using HumanResources.Business.DTOs.RoleDtos;
 using HumanResources.Entity.Entities;
@@ -6,17 +7,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HumanResources.Business.Services.RoleServices
 {
-    public class RoleService(RoleManager<AppRole> _roleManager,UserManager<AppUser> _userManager) : IRoleService
+    public class RoleService(
+        RoleManager<AppRole> _roleManager,
+        UserManager<AppUser> _userManager,
+        IValidator<CreateRoleDto> _createValidator,  
+        IValidator<UpdateRoleDto> _updateValidator   
+        ) : IRoleService
     {
         public async Task<BaseResult<object>> AssignRoleAsync(List<AssignRoleDto> assignRoleDtos)
         {
             var userId = assignRoleDtos.Select(x => x.UserId).FirstOrDefault();
-
             var user = await _userManager.FindByIdAsync(userId.ToString());
 
             foreach (var role in assignRoleDtos)
             {
-
                 if (role.RoleExist)
                 {
                     await _userManager.AddToRoleAsync(user, role.RoleName);
@@ -25,17 +29,20 @@ namespace HumanResources.Business.Services.RoleServices
                 {
                     await _userManager.RemoveFromRoleAsync(user, role.RoleName);
                 }
-
-
-
             }
-
 
             return BaseResult<object>.Success(new { Message = "Assign Role Successful." });
         }
 
         public async Task<BaseResult<object>> CreateAsync(CreateRoleDto createDto)
         {
+            // ?? EKLENDÝ: VALIDATION KONTROLÜ
+            var validationResult = await _createValidator.ValidateAsync(createDto);
+            if (!validationResult.IsValid)
+            {
+                return BaseResult<object>.Fail(validationResult.Errors); // Hatalarý fýrlat ki Filter yakalasýn!
+            }
+
             var roleExists = await _roleManager.RoleExistsAsync(createDto.Name);
             if (roleExists)
             {
@@ -123,27 +130,24 @@ namespace HumanResources.Business.Services.RoleServices
                 return BaseResult<List<AssignRoleDto>>.Fail("User Not Found");
             }
 
-            var roles = await _roleManager.Roles.ToListAsync();
+            // ?? DÜZELTÝLEN KISIM: Sadece silinmemiþ (aktif) rolleri getiriyoruz!
+            var roles = await _roleManager.Roles
+                .Where(r => !r.SilindiMi)
+                .ToListAsync();
 
             var userRoles = await _userManager.GetRolesAsync(user);
-
             var assignRoleList = new List<AssignRoleDto>();
 
             foreach (var role in roles)
             {
-
                 assignRoleList.Add(new AssignRoleDto
                 {
                     FullName = string.Join(" ", user.Ad, user.Soyad),
                     RoleId = role.Id,
                     UserId = user.Id,
                     RoleName = role.Name,
-                    RoleExist = userRoles.Contains(role.Name) //true ya da false
-
-
+                    RoleExist = userRoles.Contains(role.Name) // Kullanýcýda bu rol var mý? (true/false)
                 });
-
-
             }
 
             return BaseResult<List<AssignRoleDto>>.Success(assignRoleList);
@@ -151,6 +155,13 @@ namespace HumanResources.Business.Services.RoleServices
 
         public async Task<BaseResult<object>> UpdateAsync(UpdateRoleDto updateDto)
         {
+            // ?? EKLENDÝ: VALIDATION KONTROLÜ
+            var validationResult = await _updateValidator.ValidateAsync(updateDto);
+            if (!validationResult.IsValid)
+            {
+                return BaseResult<object>.Fail(validationResult.Errors);
+            }
+
             var role = await _roleManager.FindByIdAsync(updateDto.Id.ToString());
 
             if (role is null || role.SilindiMi)

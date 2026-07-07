@@ -268,9 +268,54 @@ namespace HumanResources.Business.Services.UserServices
 
         public async Task<BaseResult<List<UserDto>>> GetUsersByRoleAsync(string roleName)
         {
-            var users = await _userManager.GetUsersInRoleAsync(roleName);
-            var mapped = users.Adapt<List<UserDto>>();
-            return BaseResult<List<UserDto>>.Success(mapped);
+            var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
+            var userIds = usersInRole.Select(u => u.Id).ToList();
+
+            var users = await _userManager.Users
+                .Where(u => userIds.Contains(u.Id))
+                .Include(u => u.Departman)
+                .Include(u => u.Birim)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var result = users.Select(u => new UserDto
+            {
+                Id = u.Id,
+                Ad = u.Ad,
+                Soyad = u.Soyad,
+                Email = u.Email,
+                PhoneNumber = u.PhoneNumber,
+                FotografUrl = u.FotografUrl,
+                DepartmanId = u.DepartmanId,
+                DepartmanAd = u.Departman != null ? u.Departman.Ad : null,
+                BirimId = u.BirimId,
+                BirimAd = u.Birim != null ? u.Birim.Ad : null
+            }).ToList();
+
+            return BaseResult<List<UserDto>>.Success(result);
         }
+
+
+
+        public async Task<BaseResult<List<ResultUserDto>>> GetAllUsersWithRolesAsync()
+        {
+            var users = await _userManager.Users
+                .Include(u => u.Departman)
+                .Include(u => u.Birim)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var list = new List<ResultUserDto>();
+            foreach (var u in users)
+            {
+                var dto = u.Adapt<ResultUserDto>();          // Departman/Birim map olur
+                dto.Roller = await _userManager.GetRolesAsync(u); // kullanýcýnýn rolleri
+                list.Add(dto);
+            }
+
+            return BaseResult<List<ResultUserDto>>.Success(list);
+        }
+
+
     }
 }

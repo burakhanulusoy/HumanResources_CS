@@ -1,0 +1,229 @@
+﻿@model List<HumanResources.Business.DTOs.RoleDtos.AssignRoleDto>
+@{
+    ViewData["Title"] = "Rol Atama";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    string fullName = Model != null && Model.Any() ? Model.First().FullName : "Kullanıcı";
+    int aktifRol = Model?.Count(x => x.RoleExist) ?? 0;
+    int toplamRol = Model?.Count ?? 0;
+}
+
+<style>
+    :root {
+        --navy: #0B2545;
+        --navy-2: #143A6B;
+        --cyan: #29A8CC;
+        --cyan-soft: #EAF6FA;
+        --muted: #64748B;
+        --line: #E4E9F0;
+        --soft: #F7F9FC;
+    }
+
+    .assign-wrap {
+        max-width: 640px;
+        margin: 0 auto;
+    }
+
+    .assign-head {
+        background: linear-gradient(120deg, var(--navy), var(--navy-2));
+        color: #fff;
+        border-radius: 16px 16px 0 0;
+        padding: 24px 28px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+        .assign-head .avatar {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            background: rgba(255,255,255,.12);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--cyan);
+            flex-shrink: 0;
+        }
+
+        .assign-head h5 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .assign-head .sub {
+            font-size: .8rem;
+            color: #b9c6d8;
+            margin-top: 3px;
+        }
+
+    .assign-body {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-top: none;
+        border-radius: 0 0 16px 16px;
+        padding: 10px 0 0;
+    }
+
+    .role-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 28px;
+        border-bottom: 1px solid var(--line);
+    }
+
+        .role-row:last-of-type {
+            border-bottom: none;
+        }
+
+        .role-row .info {
+            display: flex;
+            align-items: center;
+            gap: .85rem;
+        }
+
+        .role-row .r-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--cyan-soft);
+            color: var(--navy);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .role-row .r-name {
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .role-row .r-note {
+            font-size: .74rem;
+            color: var(--muted);
+        }
+
+    /* Toggle */
+    .form-switch .form-check-input {
+        width: 3rem;
+        height: 1.5rem;
+        cursor: pointer;
+        border-color: var(--line);
+    }
+
+        .form-switch .form-check-input:checked {
+            background-color: var(--cyan);
+            border-color: var(--cyan);
+        }
+
+        .form-switch .form-check-input:focus {
+            box-shadow: 0 0 0 3px rgba(41,168,204,.18);
+            border-color: var(--cyan);
+        }
+
+    .assign-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 28px;
+        background: var(--soft);
+        border: 1px solid var(--line);
+        border-top: none;
+        border-radius: 0 0 16px 16px;
+    }
+
+        .assign-footer .count {
+            font-size: .82rem;
+            color: var(--muted);
+        }
+
+            .assign-footer .count b {
+                color: var(--navy);
+            }
+
+    .btn-back-soft {
+        background: #fff;
+        color: #475569;
+        border: 1px solid var(--line);
+        font-weight: 600;
+        border-radius: 10px;
+        padding: .5rem 1rem;
+    }
+
+        .btn-back-soft:hover {
+            background: #eef2f7;
+            color: var(--navy);
+        }
+
+    .btn-save {
+        background: var(--navy);
+        color: #fff;
+        border: none;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: .55rem 1.3rem;
+        box-shadow: 0 4px 12px rgba(11,37,69,.22);
+    }
+
+        .btn-save:hover {
+            background: #0d2c55;
+            color: #fff;
+        }
+
+        .btn-save i {
+            color: var(--cyan);
+        }
+</style>
+
+<div class="assign-wrap">
+    <form asp-area="Admin" asp-controller="Role" asp-action="AssignRole" method="post">
+        <div class="assign-head">
+            <span class="avatar"><i class="bi bi-person-gear"></i></span>
+            <div>
+                <h5>@fullName</h5>
+                <div class="sub">Kullanıcının rollerini açıp kapatarak yetkilerini düzenleyin</div>
+            </div>
+        </div>
+
+        <div class="assign-body">
+            @if (Model != null && Model.Any())
+            {
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    <div class="role-row">
+                        <div class="info">
+                            <span class="r-icon"><i class="bi bi-shield-check"></i></span>
+                            <div>
+                                <div class="r-name">@Model[i].RoleName</div>
+                                <div class="r-note">@(Model[i].RoleExist ? "Şu an atanmış" : "Atanmamış")</div>
+                            </div>
+                        </div>
+                        <div class="form-check form-switch m-0">
+                            <input type="hidden" asp-for="@Model[i].UserId" />
+                            <input type="hidden" asp-for="@Model[i].RoleId" />
+                            <input type="hidden" asp-for="@Model[i].RoleName" />
+                            <input class="form-check-input" type="checkbox" role="switch" asp-for="@Model[i].RoleExist" />
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center text-muted py-5">
+                    <i class="bi bi-shield-slash fs-2 d-block mb-2"></i>
+                    Sistemde tanımlı rol bulunmuyor.
+                </div>
+            }
+        </div>
+
+        <div class="assign-footer">
+            <span class="count">Aktif: <b>@aktifRol</b> / @toplamRol rol</span>
+            <div class="d-flex gap-2">
+                <a class="btn btn-back-soft" onclick="history.back()"><i class="bi bi-arrow-left me-1"></i>Geri</a>
+                <button type="submit" class="btn btn-save"><i class="bi bi-check2-circle me-1"></i>Kaydet</button>
+            </div>
+        </div>
+    </form>
+</div>

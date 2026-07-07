@@ -92,6 +92,11 @@ namespace HumanResources.API.Controllers
             var response = await _userService.GetUsersByUnitIdAsync(unitId);
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
         }
-
+        [HttpGet("WithRoles")]
+        public async Task<IActionResult> GetAllWithRoles()
+        {
+            var response = await _userService.GetAllUsersWithRolesAsync();
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
     }
 }

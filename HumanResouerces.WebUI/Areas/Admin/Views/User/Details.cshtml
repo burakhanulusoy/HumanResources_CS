@@ -7,185 +7,378 @@
     string fotoUrl = (Model == null || string.IsNullOrEmpty(Model.FotografUrl)) ? "/assets/images/admin.png" : Model.FotografUrl;
     string departmanBirim = Model != null ? $"{(Model.Departman?.Ad ?? "-")} / {(Model.Birim?.Ad ?? "-")}" : "-";
     string pdfFileName = $"Personel_Bilgi_Formu_{Model?.Ad}_{Model?.Soyad}.pdf";
+    string bugun = DateTime.Now.ToString("dd/MM/yyyy");
+
+    // Logonuzun yolu — dosyayı bu isimle assets/images klasörüne kaydedin
+    string logoUrl = "/ImagesProject/Logo.png";
 }
 
 <style>
+    :root {
+        --navy: #0B2545;
+        --navy-2: #143A6B;
+        --cyan: #29A8CC;
+        --cyan-soft: #EAF6FA;
+        --ink: #1F2A37;
+        --muted: #64748B;
+        --line: #E4E9F0;
+        --soft: #F7F9FC;
+        --white: #ffffff;
+    }
+
+    /* ------ Ekran araç çubuğu (PDF'e dahil değil) ------ */
     .action-toolbar {
-        background: #fff;
-        border: 1px solid #eef0f3;
+        background: var(--white);
+        border: 1px solid var(--line);
         border-radius: 14px;
         padding: 14px 20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 22px;
     }
 
     .btn-back {
-        background: #f3f4f6;
-        color: #4b5563;
-        border: 1px solid #e5e7eb;
-        font-weight: 500;
+        background: var(--soft);
+        color: #475569;
+        border: 1px solid var(--line);
+        font-weight: 600;
         border-radius: 10px;
-        padding: .5rem 1rem;
+        padding: .55rem 1.1rem;
+        transition: all .15s ease;
     }
 
+        .btn-back:hover {
+            background: #eef2f7;
+        }
+
     .btn-pdf {
-        background: #dc2626;
+        background: var(--navy);
         color: #fff;
         border: none;
         font-weight: 600;
         border-radius: 10px;
-        padding: .5rem 1rem;
-        box-shadow: 0 4px 10px rgba(220,38,38,.25);
+        padding: .55rem 1.2rem;
+        box-shadow: 0 6px 16px rgba(11,37,69,.28);
+        transition: all .15s ease;
     }
 
+        .btn-pdf:hover {
+            background: #0d2c55;
+        }
+
+        .btn-pdf i {
+            color: var(--cyan);
+        }
+
+    /* ------ A4 doküman ------ */
     .form-container {
-        background: #ffffff;
-        max-width: 21cm;
+        background: var(--white);
+        width: 21cm;
+        min-height: 29.7cm;
         margin: 0 auto;
-        box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        font-family: 'Times New Roman', Times, serif;
-        color: #333;
+        box-shadow: 0 4px 30px rgba(11,37,69,.12);
+        font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        color: var(--ink);
         position: relative;
+        overflow: hidden;
     }
 
-    .form-doc-no {
-        text-align: right;
-        font-size: 11px;
-        padding: 5px 20px;
-        background: #e2e2e2;
-        display: inline-block;
-        float: right;
-        margin-top: 10px;
-        margin-right: 10px;
-        font-weight: bold;
+    /* İnce üst cyan şerit (logo hızlı çizgilerine gönderme) */
+    .accent-strip {
+        height: 6px;
+        background: linear-gradient(90deg, var(--cyan) 0%, #4FC3E0 55%, var(--cyan) 100%);
     }
 
+    /* ------ Başlık ------ */
     .form-header {
-        background-color: #899eb1;
-        color: #0b1a3d;
-        padding: 30px 40px;
+        background: linear-gradient(120deg, var(--navy) 0%, var(--navy-2) 100%);
+        color: #fff;
+        padding: 26px 40px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        clear: both;
-        margin-bottom: 30px;
     }
 
-        .form-header h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        .form-header .logo-area {
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-            .form-header .logo-area i {
-                font-size: 32px;
-                display: block;
-                margin-bottom: 5px;
-            }
-
-    .form-top-section {
+    .brand {
         display: flex;
-        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+    }
+
+        .brand img {
+            height: 62px;
+            width: auto;
+            display: block;
+        }
+
+        .brand .brand-name {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: .6px;
+            line-height: 1.1;
+        }
+
+            .brand .brand-name span {
+                color: var(--cyan);
+            }
+
+        .brand .brand-sub {
+            font-size: 11px;
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #B9C6D8;
+            margin-top: 3px;
+        }
+
+    .header-title {
+        text-align: right;
+    }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .header-title .subtitle {
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--cyan);
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+    /* ------ Doküman meta şeridi ------ */
+    .doc-meta {
+        display: flex;
+        border-bottom: 1px solid var(--line);
+        background: var(--soft);
+        font-size: 11px;
+    }
+
+        .doc-meta .cell {
+            flex: 1;
+            padding: 8px 16px;
+            border-right: 1px solid var(--line);
+        }
+
+            .doc-meta .cell:last-child {
+                border-right: none;
+            }
+
+        .doc-meta .k {
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            font-size: 9px;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .doc-meta .v {
+            color: var(--navy);
+            font-weight: 700;
+        }
+
+    /* ------ Bölüm başlığı ------ */
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 26px 40px 14px 40px;
+        color: var(--navy);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+    }
+
+        .section-title::before {
+            content: "";
+            width: 4px;
+            height: 16px;
+            background: var(--cyan);
+            border-radius: 2px;
+        }
+
+        .section-title::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--line);
+        }
+
+    /* ------ Kimlik + fotoğraf ------ */
+    .identity-row {
+        display: flex;
+        gap: 20px;
         padding: 0 40px;
-        margin-bottom: 30px;
+        align-items: stretch;
     }
 
-    .form-grey-box {
-        background-color: #e6e7e9;
-        padding: 25px;
-        width: 65%;
-        border-radius: 2px;
+    .identity-box {
+        flex: 1;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
     }
 
-        .form-grey-box table {
+        .identity-box table {
             width: 100%;
+            border-collapse: collapse;
         }
 
-        .form-grey-box td {
-            padding: 8px 0;
-            font-size: 14px;
-        }
-
-            .form-grey-box td:first-child {
-                font-weight: bold;
-                width: 35%;
-                color: #111;
-            }
-
-    .form-photo {
-        width: 140px;
-        height: 180px;
-        object-fit: cover;
-        border: 1px solid #ccc;
-        padding: 3px;
-        background: #fff;
-    }
-
-    .form-body {
-        padding: 0 40px;
-        margin-bottom: 50px;
-    }
-
-    .form-details-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0 15px;
-    }
-
-        .form-details-table td {
-            vertical-align: top;
+        .identity-box td {
+            padding: 11px 16px;
             font-size: 13px;
-            line-height: 1.5;
+            border-bottom: 1px solid var(--line);
         }
 
-            .form-details-table td.lbl {
-                font-weight: bold;
-                width: 20%;
-                color: #111;
-            }
+        .identity-box tr:last-child td {
+            border-bottom: none;
+        }
 
-            .form-details-table td.val {
-                width: 30%;
-                padding-right: 15px;
+        .identity-box td.k {
+            font-weight: 700;
+            color: var(--navy);
+            width: 38%;
+            background: var(--soft);
+        }
+
+        .identity-box td.v {
+            color: var(--ink);
+        }
+
+    .photo-frame {
+        width: 148px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+        .photo-frame img {
+            width: 148px;
+            height: 185px;
+            object-fit: cover;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--soft);
+            padding: 4px;
+        }
+
+        .photo-frame .cap {
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: .5px;
+            margin-top: 8px;
+            text-transform: uppercase;
+        }
+
+    /* ------ Detay tablosu ------ */
+    .details {
+        padding: 0 40px;
+    }
+
+    .details-table {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        border-collapse: separate;
+        border-spacing: 0;
+        overflow: hidden;
+    }
+
+        .details-table td {
+            font-size: 13px;
+            padding: 11px 16px;
+            border-bottom: 1px solid var(--line);
+            vertical-align: top;
+            line-height: 1.45;
+        }
+
+        .details-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .details-table td.lbl {
+            font-weight: 700;
+            color: var(--navy);
+            width: 18%;
+            background: var(--soft);
+            border-right: 1px solid var(--line);
+        }
+
+        .details-table td.val {
+            width: 32%;
+            border-right: 1px solid var(--line);
+        }
+
+            .details-table td.val:last-child {
+                border-right: none;
             }
 
     .blood-badge {
-        border: 1px solid #ccc;
-        padding: 3px 10px;
-        border-radius: 4px;
+        border: 1px solid var(--cyan);
+        color: var(--navy);
+        padding: 2px 10px;
+        border-radius: 20px;
         display: inline-block;
-        background: #f9f9f9;
+        background: var(--cyan-soft);
+        font-weight: 700;
+        font-size: 12px;
     }
 
+    /* ------ İmzalar ------ */
     .form-signatures {
         display: flex;
         justify-content: space-between;
-        padding: 0 40px 40px 40px;
-        text-align: center;
-        margin-top: 60px;
+        gap: 24px;
+        padding: 0 40px;
+        margin-top: 55px;
     }
 
     .sig-box {
-        width: 30%;
-        font-size: 13px;
-        font-weight: bold;
-        color: #111;
+        flex: 1;
+        text-align: center;
     }
 
     .sig-line {
-        border-top: 1px solid #999;
-        margin-top: 60px;
-        padding-top: 10px;
+        border-top: 1.5px solid var(--navy);
+        margin-top: 50px;
+        padding-top: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--navy);
     }
+
+    .sig-box .sig-role {
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 2px;
+    }
+
+    /* ------ Alt bilgi ------ */
+    .form-footer {
+        margin-top: 40px;
+        border-top: 1px solid var(--line);
+        padding: 12px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 10px;
+        color: var(--muted);
+        background: var(--soft);
+    }
+
+        .form-footer .conf {
+            color: var(--navy);
+            font-weight: 700;
+            letter-spacing: .5px;
+        }
 </style>
 
 <div class="action-toolbar">
@@ -194,44 +387,55 @@
 </div>
 
 <div id="pdfContent" class="form-container">
-    <div class="form-doc-no">Doküman No &nbsp;&nbsp;&nbsp; IK-FRM-001</div>
+    <div class="accent-strip"></div>
 
     <div class="form-header">
-        <h1>Personel Bilgi Formu</h1>
-        <div class="logo-area" style="display: flex; align-items: center; gap: 15px; color: #0b1a3d;">
-            <!-- Logo burada -->
-            <img src="~/assets/images/image_f9b8ff.png" alt="CS SAVUNMA Logo" style="height: 60px; width: auto;" />
-            <div style="text-align: left;">
-                <div style="font-size: 20px; font-weight: 800; letter-spacing: 0.5px;">CS SAVUNMA</div>
-                <div style="font-size: 11px; font-weight: 400; opacity: 0.8;">İnsan Kaynakları</div>
+        <div class="brand">
+            <img src="@logoUrl" alt="CS Savunma Logo" />
+            <div>
+                <div class="brand-name">C<span>S</span> SAVUNMA</div>
+                <div class="brand-sub">İnsan Kaynakları</div>
             </div>
         </div>
+        <div class="header-title">
+            <h1>Personel Bilgi Formu</h1>
+            <div class="subtitle">Personnel Information Form</div>
+        </div>
+    </div>
+
+    <div class="doc-meta">
+        <div class="cell"><span class="k">Doküman No</span><span class="v">IK-FRM-001</span></div>
+        <div class="cell"><span class="k">Revizyon No</span><span class="v">00</span></div>
+        <div class="cell"><span class="k">Yayın Tarihi</span><span class="v">@bugun</span></div>
+        <div class="cell"><span class="k">Sayfa No</span><span class="v">1 / 1</span></div>
     </div>
 
     @if (Model != null)
     {
-        <div class="form-top-section">
-            <div class="form-grey-box">
+        <div class="section-title">Kimlik Bilgileri</div>
+        <div class="identity-row">
+            <div class="identity-box">
                 <table>
-                    <tr><td>Adı Soyadı</td><td>@adSoyad</td></tr>
-                    <tr><td>Uyruğu</td><td>T.C.</td></tr>
-                    <tr><td>TC Kimlik No</td><td>@(string.IsNullOrEmpty(Model.TcKimlikNo) ? "Belirtilmedi" : Model.TcKimlikNo)</td></tr>
-                    <tr><td colspan="2"><hr style="border-top: 1px solid #ccc; margin: 15px 0;" /></td></tr>
-                    <tr><td>Görevi / Unvan</td><td>@(string.IsNullOrEmpty(Model.PersonelTipi) ? "Personel" : Model.PersonelTipi)</td></tr>
-                    <tr><td>Departman / Birim</td><td>@departmanBirim</td></tr>
+                    <tr><td class="k">Adı Soyadı</td><td class="v">@adSoyad</td></tr>
+                    <tr><td class="k">Uyruğu</td><td class="v">T.C.</td></tr>
+                    <tr><td class="k">T.C. Kimlik No</td><td class="v">@(string.IsNullOrEmpty(Model.TcKimlikNo) ? "Belirtilmedi" : Model.TcKimlikNo)</td></tr>
+                    <tr><td class="k">Görevi / Unvan</td><td class="v">@(string.IsNullOrEmpty(Model.PersonelTipi) ? "Personel" : Model.PersonelTipi)</td></tr>
+                    <tr><td class="k">Departman / Birim</td><td class="v">@departmanBirim</td></tr>
                 </table>
             </div>
-            <div>
-                <img src="@fotoUrl" class="form-photo" alt="Personel Fotoğrafı" />
+            <div class="photo-frame">
+                <img src="@fotoUrl" alt="Personel Fotoğrafı" />
+                <div class="cap">Personel Fotoğrafı</div>
             </div>
         </div>
 
-        <div class="form-body">
-            <table class="form-details-table">
+        <div class="section-title">İletişim ve Özlük Bilgileri</div>
+        <div class="details">
+            <table class="details-table">
                 <tr>
                     <td class="lbl">Cinsiyeti</td>
                     <td class="val">@(string.IsNullOrEmpty(Model.Cinsiyet) ? "-" : Model.Cinsiyet)</td>
-                    <td class="lbl">Email</td>
+                    <td class="lbl">E-posta</td>
                     <td class="val">@(string.IsNullOrEmpty(Model.Email) ? "-" : Model.Email)</td>
                 </tr>
                 <tr>
@@ -242,7 +446,7 @@
                 </tr>
                 <tr>
                     <td class="lbl">Kan Grubu</td>
-                    <td class="val">@(!string.IsNullOrEmpty(Model.KanGrubu) ? Model.KanGrubu : "-")</td>
+                    <td class="val">@(!string.IsNullOrEmpty(Model.KanGrubu) ? Html.Raw($"<span class='blood-badge'>{Model.KanGrubu}</span>") : Html.Raw("-"))</td>
                     <td class="lbl">Ev Telefon</td>
                     <td class="val">-</td>
                 </tr>
@@ -260,7 +464,7 @@
                     <td class="lbl">SGK Sicil No</td>
                     <td class="val">@(string.IsNullOrEmpty(Model.SgkSicilNo) ? "-" : Model.SgkSicilNo)</td>
                     <td class="lbl">Acil Durum</td>
-                    <td class="val">@Model.AcilDurumKisiAdSoyad <br /> @Model.AcilDurumTelefonu</td>
+                    <td class="val">@Model.AcilDurumKisiAdSoyad<br />@Model.AcilDurumTelefonu</td>
                 </tr>
                 <tr>
                     <td class="lbl">Bağlı Amir</td>
@@ -272,9 +476,14 @@
         </div>
 
         <div class="form-signatures">
-            <div class="sig-box"><div class="sig-line">Hazırlayanın İmzası</div></div>
-            <div class="sig-box"><div class="sig-line">Departman Yöneticisi</div></div>
-            <div class="sig-box"><div class="sig-line">İK Müdürü</div></div>
+            <div class="sig-box"><div class="sig-line">Hazırlayan</div><div class="sig-role">İnsan Kaynakları</div></div>
+            <div class="sig-box"><div class="sig-line">Departman Yöneticisi</div><div class="sig-role">Onay</div></div>
+            <div class="sig-box"><div class="sig-line">İK Müdürü</div><div class="sig-role">Onay</div></div>
+        </div>
+
+        <div class="form-footer">
+            <div>Bu form CS Savunma İnsan Kaynakları Departmanı tarafından düzenlenmiştir.</div>
+            <div class="conf">GİZLİLİK SINIFI: KURUM İÇİ</div>
         </div>
     }
 </div>
@@ -284,11 +493,12 @@
     document.getElementById('downloadPdfBtn').addEventListener('click', function () {
         var element = document.getElementById('pdfContent');
         var opt = {
-            margin:       [0.2, 0.2, 0.2, 0.2],
+            margin:       0,
             filename:     '@pdfFileName',
-            image:        { type: 'jpeg', quality: 1 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 3, useCORS: true, backgroundColor: '#ffffff' },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['avoid-all', 'css'] }
         };
         html2pdf().set(opt).from(element).save();
     });

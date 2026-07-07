@@ -6,9 +6,11 @@ namespace HumanResouerces.WebUI.Areas.Admin.Controllers
     [Area("Admin")]
     public class UserController(IUserService _userService) : Controller
     {
-        public IActionResult Index()
+        // Rol İşlemleri ekranı: tüm personel + rolleri
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var response = await _userService.GetAllUsersWithRolesAsync();
+            return View(response.Data);
         }
 
         public async Task<IActionResult> UnitUsers(int id)

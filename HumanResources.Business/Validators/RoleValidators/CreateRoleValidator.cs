@@ -7,7 +7,10 @@ namespace HumanResources.Business.Validators.RoleValidators
     {
         public CreateRoleValidator()
         {
-            
+            RuleFor(x => x.Name)
+                .NotEmpty().WithMessage("Rol adý boþ býrakýlamaz.")
+                .MinimumLength(2).WithMessage("Rol adý en az 2 karakter olmalýdýr.")
+                .MaximumLength(50).WithMessage("Rol adý en fazla 50 karakter olabilir.");
         }
     }
 }

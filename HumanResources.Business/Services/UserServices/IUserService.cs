@@ -16,7 +16,7 @@ namespace HumanResources.Business.Services.UserServices
         Task<BaseResult<List<ResultUserDto>>> GetAllUsersForReportAsync();
 
         Task<BaseResult<List<UserDto>>> GetUsersByRoleAsync(string roleName);
-
+        Task<BaseResult<List<ResultUserDto>>> GetAllUsersWithRolesAsync();
 
         Task<BaseResult<List<ResultUserDto>>> GetUsersByUnitIdAsync(int unitId);
     }

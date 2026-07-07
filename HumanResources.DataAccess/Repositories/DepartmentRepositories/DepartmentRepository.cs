@@ -12,8 +12,6 @@ namespace HumanResources.DataAccess.Repositories.DepartmentRepositories
 
         public Task<List<Departman>> GetDepartmentsWithUserAsync()
         {
-            // Index sayfasýndaki PersonellerCount ve BirimlerCount'un doðru dolmasý için 
-            // buraya da Include ekliyoruz.
             return _table.Include(x => x.Yonetici)
                          .Include(x => x.Birimler)
                          .Include(x => x.Personeller)
@@ -23,20 +21,20 @@ namespace HumanResources.DataAccess.Repositories.DepartmentRepositories
 
         public Task<Departman> GetDepartmentWithUserAsync(int id)
         {
-            // PDF'in olacaðý detay sayfasý için hem Yöneticiyi hem de Personelleri çekiyoruz.
             return _table.Include(x => x.Yonetici)
                          .Include(x => x.Personeller)
-                         .AsNoTracking()
-                         .FirstOrDefaultAsync(x => x.Id == id);
-        }
-        public Task<Departman> GetDepartmentWithUnitsAsync(int id)
-        {
-            return _table.Include(x => x.Yonetici)
-                         .Include(x => x.Birimler)
-                             .ThenInclude(b => b.Personeller)   // her birimin kiþi sayýsý için
+                             .ThenInclude(p => p.Birim)
                          .AsNoTracking()
                          .FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public Task<Departman> GetDepartmentWithUnitsAsync(int id)
+        {
+            return _table.Include(x => x.Yonetici)
+                         .Include(x => x.Birimler)
+                             .ThenInclude(b => b.Personeller)   // her birimin kisi sayisi icin
+                         .AsNoTracking()
+                         .FirstOrDefaultAsync(x => x.Id == id);
+        }
     }
 }

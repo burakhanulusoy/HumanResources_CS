@@ -114,5 +114,11 @@ namespace HumanResources.WebUI.Services.UserServices
         {
             return await _client.GetFromJsonAsync<BaseResult<List<ResultUserDto>>>($"users/GetUsersByUnit/{unitId}");
         }
+
+        public async Task<BaseResult<List<ResultUserDto>>> GetAllUsersWithRolesAsync()
+        {
+            return await _client.GetFromJsonAsync<BaseResult<List<ResultUserDto>>>("users/WithRoles");
+        }
+
     }
 }
