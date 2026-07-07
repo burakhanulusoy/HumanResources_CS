@@ -1,6 +1,6 @@
 using HumanResouerces.WebUI.Base;
 using HumanResouerces.WebUI.Exceptions;
-using HumanResources.Business.DTOs.DiciplineDtos;
+using HumanResources.WebUI.DTOs.DiciplineDtos;
 using System.Globalization;
 using System.Net.Http.Headers;
 

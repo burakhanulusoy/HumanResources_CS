@@ -1,4 +1,4 @@
-namespace HumanResources.Business.DTOs.ItemTypeDtos
+namespace HumanResources.WebUI.DTOs.ItemTypeDtos
 {
     public class CreateItemTypeDto
     {

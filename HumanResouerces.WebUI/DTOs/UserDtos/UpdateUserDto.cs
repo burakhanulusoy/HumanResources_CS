@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Http;
-using System;
-
-namespace HumanResources.Business.DTOs.UserDtos
+namespace HumanResources.WebUI.DTOs.UserDtos
 {
     public class UpdateUserDto
     {

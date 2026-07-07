@@ -1,4 +1,4 @@
-namespace HumanResources.Business.DTOs.DiciplineDtos
+namespace HumanResources.WebUI.DTOs.DiciplineDtos
 {
     public class UpdateDiciplineDto
     {

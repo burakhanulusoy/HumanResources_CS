@@ -1,0 +1,125 @@
+﻿@model HumanResouerces.WebUI.Areas.Admin.Models.EducationCreateViewModel
+@{
+    ViewData["Title"] = "Yeni Eğitim";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-mortarboard me-2"></i>Yeni Eğitim Oluştur
+            </div>
+            <div class="card-body">
+                <form asp-action="CreateEducation" method="post" id="createEducationForm">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none"></div>
+
+                    <div class="row">
+                        <!-- Sol: Eğitim Bilgileri -->
+                        <div class="col-md-6">
+                            <h6 class="text-muted border-bottom pb-2 mb-3">Eğitim Bilgileri</h6>
+
+                            <div class="mb-3">
+                                <label asp-for="Egitim.Ad" class="form-label">Eğitim Adı</label>
+                                <input asp-for="Egitim.Ad" class="form-control" placeholder="Örn: IPC J-STD-001" required />
+                                <span asp-validation-for="Egitim.Ad" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Egitim.Egitmen" class="form-label">Eğitmen</label>
+                                <input asp-for="Egitim.Egitmen" class="form-control" required />
+                                <span asp-validation-for="Egitim.Egitmen" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Egitim.EgitimAciklamasi" class="form-label">Açıklama</label>
+                                <textarea asp-for="Egitim.EgitimAciklamasi" class="form-control" rows="4"
+                                          minlength="10" required></textarea>
+                                <span asp-validation-for="Egitim.EgitimAciklamasi" class="text-danger small"></span>
+                                <small class="text-muted">En az 10 karakter olmalı.</small>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label asp-for="Egitim.EgitimTarihi" class="form-label">Tarih</label>
+                                    <input asp-for="Egitim.EgitimTarihi" type="date" class="form-control"
+                                           min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                                    <span asp-validation-for="Egitim.EgitimTarihi" class="text-danger small"></span>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label asp-for="Egitim.SuresiSaat" class="form-label">Süre (Saat)</label>
+                                    <input asp-for="Egitim.SuresiSaat" type="number" min="1" class="form-control" required />
+                                    <span asp-validation-for="Egitim.SuresiSaat" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sağ: Katılımcı Seçimi -->
+                        <div class="col-md-6">
+                            <h6 class="text-muted border-bottom pb-2 mb-3">
+                                Katılımcı Seç
+                                <small class="fw-normal">(isteğe bağlı)</small>
+                            </h6>
+
+                            <input type="text" id="userSearch" class="form-control mb-2"
+                                   placeholder="Personel ara..." />
+
+                            <div class="border rounded p-2" style="max-height: 320px; overflow-y: auto;" id="userList">
+                                @foreach (var user in Model.TumKullanicilar)
+                                {
+                                    <div class="form-check py-1 user-item">
+                                        <input type="checkbox" class="form-check-input"
+                                               name="Egitim.SelectedUserIds"
+                                               value="@user.Id" id="user_@user.Id" />
+                                        <label class="form-check-label w-100" for="user_@user.Id">
+                                            @user.Ad @user.Soyad
+                                            <small class="text-muted">— @user.SicilNo</small>
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-3">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Vazgeç</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.getElementById('userSearch').addEventListener('input', function () {
+        const term = this.value.toLowerCase();
+        document.querySelectorAll('#userList .user-item').forEach(item => {
+            item.style.display = item.innerText.toLowerCase().includes(term) ? '' : 'none';
+        });
+    });
+
+    const form = document.getElementById('createEducationForm');
+    form.addEventListener('submit', function (e) {
+        if (form.dataset.confirmed === 'true') return;
+        if (!form.checkValidity()) return; // boş/geçersiz alan varsa tarayıcı kendi uyarısını gösterir, submit hiç gitmez
+
+        e.preventDefault();
+        Swal.fire({
+            title: 'Eğitim oluşturulsun mu?',
+            text: 'Seçilen katılımcılarla birlikte eğitim kaydedilecek.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Evet, oluştur',
+            cancelButtonText: 'Vazgeç'
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                form.dataset.confirmed = 'true';
+                form.submit();
+            }
+        });
+    });
+</script>

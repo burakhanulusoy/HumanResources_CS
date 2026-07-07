@@ -1,6 +1,6 @@
 using HumanResouerces.WebUI.Base;
 
-namespace HumanResources.Business.DTOs.ItemTypeDtos
+namespace HumanResources.WebUI.DTOs.ItemTypeDtos
 {
     public class ResultItemTypeDto:BaseDto
     {

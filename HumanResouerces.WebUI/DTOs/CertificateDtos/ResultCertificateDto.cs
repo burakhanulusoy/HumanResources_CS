@@ -1,7 +1,7 @@
 using HumanResouerces.WebUI.Base;
 using HumanResouerces.WebUI.Enums;
 
-namespace HumanResources.Business.DTOs.CertificateDtos
+namespace HumanResources.WebUI.DTOs.CertificateDtos
 {
     public class ResultCertificateDto : BaseDto
     {

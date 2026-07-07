@@ -1,4 +1,4 @@
-namespace HumanResources.Business.DTOs.RoleDtos
+namespace HumanResources.WebUI.DTOs.RoleDtos
 {
     public class AssignRoleDto
     {

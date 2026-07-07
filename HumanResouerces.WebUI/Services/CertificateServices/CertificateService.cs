@@ -1,6 +1,6 @@
 using HumanResouerces.WebUI.Base;
 using HumanResouerces.WebUI.Exceptions;
-using HumanResources.Business.DTOs.CertificateDtos;
+using HumanResources.WebUI.DTOs.CertificateDtos;
 using System.Net.Http.Headers;
 
 namespace HumanResources.WebUI.Services.CertificateServices

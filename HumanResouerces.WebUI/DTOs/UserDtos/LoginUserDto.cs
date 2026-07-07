@@ -1,4 +1,4 @@
-namespace HumanResources.Business.DTOs.UserDtos
+namespace HumanResources.WebUI.DTOs.UserDtos
 {
     public class LoginUserDto
     {

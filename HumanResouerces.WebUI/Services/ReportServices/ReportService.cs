@@ -1,4 +1,3 @@
-using System.Net.Http.Json;
 using HumanResouerces.WebUI.Base; // Senin projedeki tam yazýlýmýyla ekledik
 using HumanResouerces.WebUI.Exceptions;
 

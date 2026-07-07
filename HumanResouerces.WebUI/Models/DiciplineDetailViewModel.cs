@@ -1,4 +1,4 @@
-﻿using HumanResources.Business.DTOs.DiciplineDtos;
+﻿using HumanResources.WebUI.DTOs.DiciplineDtos;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HumanResouerces.WebUI.Models

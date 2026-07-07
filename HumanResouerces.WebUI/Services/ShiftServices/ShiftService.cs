@@ -1,7 +1,6 @@
-using System.Net.Http.Json;
 using HumanResouerces.WebUI.Base;
-using HumanResources.Business.DTOs.ShiftDtos;
 using HumanResouerces.WebUI.Exceptions;
+using HumanResources.WebUI.DTOs.ShiftDtos;
 
 namespace HumanResources.WebUI.Services.ShiftServices
 {

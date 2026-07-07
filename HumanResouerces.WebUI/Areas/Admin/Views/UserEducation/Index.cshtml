@@ -1,0 +1,126 @@
+﻿@model List<HumanResources.WebUI.DTOs.UserEducationDtos.UserEducationDto>
+
+@{
+    ViewData["Title"] = "Bekleyen Eğitim Başvuruları";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0"><i class="bi bi-hourglass-split me-2"></i>Bekleyen Başvurular</h3>
+    <span class="badge bg-warning text-dark fs-6">@Model.Count bekliyor</span>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        @if (Model.Count > 0)
+        {
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Personel</th>
+                        <th>Eğitim</th>
+                        <th>Başvuru Tarihi</th>
+                        <th class="text-end">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var basvuru in Model)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@basvuru.AppUser?.Ad @basvuru.AppUser?.Soyad</td>
+                            <td>@basvuru.Egitim?.Ad</td>
+                            <td>@basvuru.BasvuruTarihi.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td class="text-end">
+                                <form asp-action="Approve" asp-route-id="@basvuru.Id" method="post"
+                                      class="d-inline js-approve-form">
+                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                        <i class="bi bi-check-lg me-1"></i>Onayla
+                                    </button>
+                                </form>
+
+                                <form asp-action="Reject" asp-route-id="@basvuru.Id" method="post"
+                                      class="d-inline js-reject-form">
+                                    <input type="hidden" name="aciklama" class="js-reject-reason" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-x-lg me-1"></i>Reddet
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                Bekleyen başvuru bulunmuyor.
+            </div>
+        }
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Onaylama onayı
+    document.querySelectorAll('.js-approve-form').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Başvuru onaylansın mı?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Evet, onayla',
+                cancelButtonText: 'Vazgeç',
+                confirmButtonColor: '#198754'
+            }).then(function (result) {
+                if (result.isConfirmed) form.submit();
+            });
+        });
+    });
+
+    // Reddetme: açıklama iste, sonra gönder
+    document.querySelectorAll('.js-reject-form').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const reasonInput = form.querySelector('.js-reject-reason');
+
+            Swal.fire({
+                title: 'Başvuru reddedilsin mi?',
+                input: 'text',
+                inputLabel: 'Red gerekçesi (isteğe bağlı)',
+                inputPlaceholder: 'Örn: Kontenjan dolu',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Evet, reddet',
+                cancelButtonText: 'Vazgeç',
+                confirmButtonColor: '#dc3545'
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    reasonInput.value = result.value || '';
+                    form.submit();
+                }
+            });
+        });
+    });
+
+    // Başarı toast'ı
+    (function () {
+        const params = new URLSearchParams(window.location.search);
+        const basarili = params.get('basarili');
+        const mesajlar = {
+            onaylandi: 'Başvuru onaylandı.',
+            reddedildi: 'Başvuru reddedildi.'
+        };
+        if (basarili && mesajlar[basarili]) {
+            Swal.fire({
+                icon: 'success', title: mesajlar[basarili], toast: true,
+                position: 'top-end', showConfirmButton: false, timer: 2200, timerProgressBar: true
+            });
+            params.delete('basarili');
+            const yeniUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+            window.history.replaceState({}, '', yeniUrl);
+        }
+    })();
+</script>

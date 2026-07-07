@@ -3,7 +3,7 @@
 // dropdown'ı için departman listesini ViewBag ile view'e taşıyoruz.
 // IDepartmentService'in WebUI'da kayıtlı olduğunu varsayıyorum.
 // =====================================================================
-using HumanResources.Business.DTOs.UnitDtos;
+using HumanResources.WebUI.DTOs.UnitDtos;
 using HumanResources.WebUI.Services.DepartmentServices;
 using HumanResources.WebUI.Services.UnitServices;
 using Microsoft.AspNetCore.Mvc;

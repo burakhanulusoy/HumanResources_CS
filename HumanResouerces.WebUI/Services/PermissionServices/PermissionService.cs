@@ -1,6 +1,6 @@
 using HumanResouerces.WebUI.Base;
 using HumanResouerces.WebUI.Exceptions;
-using HumanResources.Business.DTOs.PermissionDtos;
+using HumanResources.WebUI.DTOs.PermissionDtos;
 
 namespace HumanResources.WebUI.Services.PermissionServices
 {

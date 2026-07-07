@@ -1,4 +1,4 @@
-﻿using HumanResources.Business.DTOs.ShiftDtos;
+﻿using HumanResources.WebUI.DTOs.ShiftDtos;
 using HumanResources.WebUI.Services.ShiftServices;
 using HumanResources.WebUI.Services.UserServices;
 using Microsoft.AspNetCore.Mvc;

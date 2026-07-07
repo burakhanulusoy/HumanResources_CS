@@ -1,6 +1,5 @@
 using FluentValidation;
 using HumanResources.Business.DTOs.EducationDtos;
-using System;
 
 namespace HumanResources.Business.Validators.EducationValidators
 {

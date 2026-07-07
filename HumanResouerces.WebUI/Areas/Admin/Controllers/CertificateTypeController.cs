@@ -1,4 +1,4 @@
-﻿using HumanResources.Business.DTOs.CertificateTypeDtos;
+﻿using HumanResources.WebUI.DTOs.CertificateTypeDtos;
 using HumanResources.WebUI.Services.CertificateTypeServices;
 using Microsoft.AspNetCore.Mvc;
 

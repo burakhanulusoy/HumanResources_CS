@@ -78,16 +78,12 @@ namespace HumanResources.Business.Services.UserEducationServices
 
         // Profil Sayfasý: Personelin Baþvurduðu Eðitimler
         // Profil Sayfasý: Personelin Baþvurduðu Eðitimler
+        // Profil Sayfasý: Personelin Baþvurduðu Eðitimler
         public async Task<BaseResult<List<GetWithEducationInfoDto>>> GetEducationByUserIdAsync(int userId)
         {
             var entities = await _userEducationRepository.GetEducationByUserIdAsync(userId);
 
-            // ÝÞ KURALI: Defansif Programlama - Kayýt yoksa boþ liste yerine net bir mesajla Fail dönüyoruz.
-            if (entities == null || !entities.Any())
-            {
-                return BaseResult<List<GetWithEducationInfoDto>>.Fail("Bu personele ait herhangi bir eðitim baþvurusu veya geçmiþi bulunamadý.");
-            }
-
+            // Boþ liste hata deðildir; personelin henüz eðitimi olmayabilir.
             var mappedEntities = entities.Adapt<List<GetWithEducationInfoDto>>();
             return BaseResult<List<GetWithEducationInfoDto>>.Success(mappedEntities);
         }

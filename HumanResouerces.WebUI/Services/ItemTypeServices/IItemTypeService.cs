@@ -1,5 +1,5 @@
 ﻿using HumanResouerces.WebUI.Base;
-using HumanResources.Business.DTOs.ItemTypeDtos;
+using HumanResources.WebUI.DTOs.ItemTypeDtos;
 using HumanResources.WebUI.Services.GenericServices;
 
 namespace HumanResources.WebUI.Services.ItemTypeServices

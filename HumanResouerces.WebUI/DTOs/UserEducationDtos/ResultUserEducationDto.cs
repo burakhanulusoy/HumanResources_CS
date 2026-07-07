@@ -1,7 +1,7 @@
 using HumanResouerces.WebUI.Base;
 using HumanResouerces.WebUI.Enums;
 
-namespace HumanResources.Business.DTOs.UserEducationDtos
+namespace HumanResources.WebUI.DTOs.UserEducationDtos
 {
     public class ResultUserEducationDto:BaseDto
     {

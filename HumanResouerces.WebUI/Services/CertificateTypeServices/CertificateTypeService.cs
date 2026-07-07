@@ -1,6 +1,6 @@
 using HumanResouerces.WebUI.Base;
 using HumanResouerces.WebUI.Exceptions;
-using HumanResources.Business.DTOs.CertificateTypeDtos;
+using HumanResources.WebUI.DTOs.CertificateTypeDtos;
 
 namespace HumanResources.WebUI.Services.CertificateTypeServices
 {

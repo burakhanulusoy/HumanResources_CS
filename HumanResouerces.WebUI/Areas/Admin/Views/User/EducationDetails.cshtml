@@ -1,0 +1,108 @@
+﻿@model HumanResouerces.WebUI.Areas.Admin.Models.UserDetailsViewModel
+@using HumanResouerces.WebUI.Enums
+
+@{
+    ViewData["Title"] = "Personel Eğitim Profili";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var egitimler = Model.Egitimler ?? new List<HumanResources.WebUI.DTOs.UserEducationDtos.GetWithEducationInfoDto>();
+}
+
+<div class="row g-4">
+    <!-- Profil kartı -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                @if (!string.IsNullOrEmpty(Model.Kullanici.FotografUrl))
+                {
+                    <img src="@Model.Kullanici.FotografUrl" class="rounded-circle mb-3"
+                         style="width:110px;height:110px;object-fit:cover;" alt="Profil" />
+                }
+                else
+                {
+                    <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center mb-3"
+                         style="width:110px;height:110px;font-size:2rem;">
+                        @Model.Kullanici.Ad?[0]@Model.Kullanici.Soyad?[0]
+                    </div>
+                }
+                <h5 class="mb-1">@Model.Kullanici.Ad @Model.Kullanici.Soyad</h5>
+                <p class="text-muted small mb-3">Sicil: @Model.Kullanici.SicilNo</p>
+
+                <ul class="list-group list-group-flush text-start">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="text-muted">Amir</span>
+                        <span>@Model.Kullanici.AmirAdSoyad</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Eğitim geçmişi -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-journal-check me-2"></i>Eğitim Geçmişi</span>
+                <span class="badge bg-secondary rounded-pill">@egitimler.Count kayıt</span>
+            </div>
+            <div class="card-body p-0">
+                @if (egitimler.Count > 0)
+                {
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Eğitim</th>
+                                <th>Eğitmen</th>
+                                <th>Durum</th>
+                                <th>Başvuru Tarihi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var e in egitimler)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@e.Egitim?.Ad</td>
+                                    <td>@e.Egitim?.Egitmen</td>
+                                    <td>
+                                        @switch (e.BasvuruDurumu)
+                                        {
+                                            case ApplicationStatus.Bekliyor:
+                                                <span class="badge bg-warning text-dark">Bekliyor</span>
+                                                break;
+                                            case ApplicationStatus.Onaylandi:
+                                                <span class="badge bg-success">Onaylandı</span>
+                                                break;
+                                            case ApplicationStatus.Reddedildi:
+                                                <span class="badge bg-danger">Reddedildi</span>
+                                                break;
+                                            case ApplicationStatus.Tamamlandi:
+                                                <span class="badge bg-primary">Tamamlandı</span>
+                                                break;
+                                            case ApplicationStatus.IptalEdildi:
+                                                <span class="badge bg-secondary">İptal</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>@e.BasvuruTarihi.ToString("dd.MM.yyyy")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-5">
+                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                        Bu personelin henüz eğitim kaydı bulunmuyor.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="/Admin/User/UserList" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Personel Listesine Dön
+    </a>
+</div>

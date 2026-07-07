@@ -1,7 +1,7 @@
 using HumanResouerces.WebUI.Base;
-using HumanResources.Business.DTOs.UserDtos;
+using HumanResources.WebUI.DTOs.UserDtos;
 
-namespace HumanResources.Business.DTOs.DiciplineDtos
+namespace HumanResources.WebUI.DTOs.DiciplineDtos
 {
     public class DiciplineDto:BaseDto
     {

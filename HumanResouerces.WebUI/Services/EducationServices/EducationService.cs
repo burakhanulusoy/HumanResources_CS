@@ -1,6 +1,7 @@
+// WebUI/Services/EducationServices/EducationService.cs
 using HumanResouerces.WebUI.Base;
 using HumanResouerces.WebUI.Exceptions;
-using HumanResources.Business.DTOs.EducationDtos;
+using HumanResources.WebUI.DTOs.EducationDtos;
 
 namespace HumanResources.WebUI.Services.EducationServices
 {
@@ -9,16 +10,13 @@ namespace HumanResources.WebUI.Services.EducationServices
         public async Task<BaseResult<object>> CreateAsync(CreateEducationDto createDto)
         {
             var response = await _client.PostAsJsonAsync("educations", createDto);
-
             var result = await response.Content.ReadFromJsonAsync<BaseResult<object>>();
-
             return result.IsFailure ? throw new ApiValidationException(result.Errors) : result;
         }
 
         public async Task<BaseResult<object>> DeleteAsync(int id)
         {
             var response = await _client.DeleteAsync($"educations/{id}");
-
             return await response.Content.ReadFromJsonAsync<BaseResult<object>>();
         }
 
@@ -35,13 +33,9 @@ namespace HumanResources.WebUI.Services.EducationServices
         public async Task<BaseResult<object>> UpdateAsync(UpdateEducationDto updateDto)
         {
             var response = await _client.PutAsJsonAsync("educations", updateDto);
-
             var result = await response.Content.ReadFromJsonAsync<BaseResult<object>>();
-
             return result.IsFailure ? throw new ApiValidationException(result.Errors) : result;
         }
-
-        // --- Özel Metotlar ---
 
         public async Task<BaseResult<List<EducationDto>>> GetAllWithUsersAsync()
         {
@@ -51,6 +45,13 @@ namespace HumanResources.WebUI.Services.EducationServices
         public async Task<BaseResult<EducationDto>> GetWithUsersAsync(int id)
         {
             return await _client.GetFromJsonAsync<BaseResult<EducationDto>>($"educations/GetWithUsers/{id}");
+        }
+
+        public async Task<BaseResult<object>> CreateWithParticipantsAsync(CreateEducationWithParticipantsDto dto)
+        {
+            var response = await _client.PostAsJsonAsync("educations/CreateWithParticipants", dto);
+            var result = await response.Content.ReadFromJsonAsync<BaseResult<object>>();
+            return result.IsFailure ? throw new ApiValidationException(result.Errors) : result;
         }
     }
 }

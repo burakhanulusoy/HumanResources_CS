@@ -1,6 +1,6 @@
 ﻿using HumanResouerces.WebUI.Exceptions;
 using HumanResouerces.WebUI.Models;
-using HumanResources.Business.DTOs.DiciplineDtos;
+using HumanResources.WebUI.DTOs.DiciplineDtos;
 using HumanResources.WebUI.Services.DiciplineServices;
 using HumanResources.WebUI.Services.UserServices;
 using Microsoft.AspNetCore.Mvc;

@@ -1,4 +1,4 @@
-namespace HumanResources.Business.DTOs.PermissionTypeDtos
+namespace HumanResources.WebUI.DTOs.PermissionTypeDtos
 {
     public class CreatePermissionTypeDto
     {

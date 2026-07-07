@@ -1,7 +1,7 @@
 using HumanResouerces.WebUI.Base;
 using HumanResouerces.WebUI.DTOs.DepartmentDtos;
 using HumanResouerces.WebUI.Exceptions;
-using HumanResources.Business.DTOs.DepartmentDtos;
+using HumanResources.WebUI.DTOs.DepartmentDtos;
 
 namespace HumanResources.WebUI.Services.DepartmentServices
 {

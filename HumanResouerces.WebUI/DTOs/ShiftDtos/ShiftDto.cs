@@ -1,6 +1,6 @@
 using HumanResouerces.WebUI.Base;
 
-namespace HumanResources.Business.DTOs.ShiftDtos
+namespace HumanResources.WebUI.DTOs.ShiftDtos
 {
     public class ShiftDto:BaseDto
     {

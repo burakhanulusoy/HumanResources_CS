@@ -1,7 +1,6 @@
-using System.Net.Http.Json;
 using HumanResouerces.WebUI.Base;
-using HumanResources.Business.DTOs.RoleDtos;
 using HumanResouerces.WebUI.Exceptions;
+using HumanResources.WebUI.DTOs.RoleDtos;
 
 namespace HumanResources.WebUI.Services.RoleServices
 {

@@ -1,9 +1,9 @@
-﻿using System.Security.Claims;
+﻿using HumanResources.WebUI.DTOs.UserDtos;
+using HumanResources.WebUI.Services.UserServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using HumanResources.Business.DTOs.UserDtos;
-using HumanResources.WebUI.Services.UserServices;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HumanResouerces.WebUI.Controllers
 {

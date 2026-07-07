@@ -1,5 +1,5 @@
 ﻿using HumanResouerces.WebUI.Base;
-using HumanResources.Business.DTOs.CertificateDtos;
+using HumanResources.WebUI.DTOs.CertificateDtos;
 using HumanResources.WebUI.Services.GenericServices;
 
 namespace HumanResources.WebUI.Services.CertificateServices

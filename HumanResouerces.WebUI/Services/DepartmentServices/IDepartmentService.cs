@@ -1,6 +1,6 @@
 ﻿using HumanResouerces.WebUI.Base;
 using HumanResouerces.WebUI.DTOs.DepartmentDtos;
-using HumanResources.Business.DTOs.DepartmentDtos;
+using HumanResources.WebUI.DTOs.DepartmentDtos;
 using HumanResources.WebUI.Services.GenericServices;
 
 namespace HumanResources.WebUI.Services.DepartmentServices

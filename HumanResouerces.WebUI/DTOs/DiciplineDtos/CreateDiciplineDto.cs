@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Http;
-using System;
-
-namespace HumanResources.Business.DTOs.DiciplineDtos
+namespace HumanResources.WebUI.DTOs.DiciplineDtos
 {
     public class CreateDiciplineDto
     {

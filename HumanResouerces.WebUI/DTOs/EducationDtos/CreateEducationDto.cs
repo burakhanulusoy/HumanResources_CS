@@ -1,4 +1,4 @@
-namespace HumanResources.Business.DTOs.EducationDtos
+namespace HumanResources.WebUI.DTOs.EducationDtos
 {
     public class CreateEducationDto
     {

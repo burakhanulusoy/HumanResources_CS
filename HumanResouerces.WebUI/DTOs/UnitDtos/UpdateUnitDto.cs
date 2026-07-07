@@ -1,4 +1,4 @@
-namespace HumanResources.Business.DTOs.UnitDtos
+namespace HumanResources.WebUI.DTOs.UnitDtos
 {
     public class UpdateUnitDto
     {

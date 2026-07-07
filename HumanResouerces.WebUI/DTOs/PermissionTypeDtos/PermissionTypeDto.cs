@@ -1,5 +1,6 @@
 using HumanResouerces.WebUI.Base;
-using HumanResources.Business.DTOs.PermissionDtos;
+using HumanResources.WebUI.DTOs.PermissionDtos;
+
 
 namespace HumanResources.Business.DTOs.PermissionTypeDtos
 {

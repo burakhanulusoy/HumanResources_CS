@@ -1,6 +1,6 @@
 using HumanResouerces.WebUI.Base;
 
-namespace HumanResources.Business.DTOs.DepartmentDtos
+namespace HumanResources.WebUI.DTOs.DepartmentDtos
 {
     public class DepartmentDto:BaseDto
     {

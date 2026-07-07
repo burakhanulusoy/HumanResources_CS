@@ -1,6 +1,6 @@
 using HumanResouerces.WebUI.Enums;
 
-namespace HumanResources.Business.DTOs.UserEducationDtos
+namespace HumanResources.WebUI.DTOs.UserEducationDtos
 {
     public class UpdateUserEducationDto
     {

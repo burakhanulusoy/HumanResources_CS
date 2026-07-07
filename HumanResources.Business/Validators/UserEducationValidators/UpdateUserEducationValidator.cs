@@ -17,12 +17,10 @@ namespace HumanResources.Business.Validators.UserEducationValidators
             RuleFor(x => x.EgitimId)
                 .GreaterThan(0).WithMessage("Geçersiz eðitim kimliði.");
 
-       
-
             RuleFor(x => x.BasvuruDurumu)
                 .IsInEnum().WithMessage("Geçersiz baþvuru durumu seçimi.");
 
-            // 1. KURAL: Eðer durum Reddedildi veya Ýptal Edildi ise açýklama ZORUNLUDUR
+            // 1. KURAL: Durum Reddedildi veya Ýptal Edildi ise açýklama zorunludur
             RuleFor(x => x.AdminAciklamasi)
                 .NotEmpty().WithMessage("Baþvuru reddedildiðinde veya iptal edildiðinde nedenini (açýklama) yazmak zorunludur.")
                 .When(x => x.BasvuruDurumu == ApplicationStatus.Reddedildi || x.BasvuruDurumu == ApplicationStatus.IptalEdildi);
@@ -30,8 +28,6 @@ namespace HumanResources.Business.Validators.UserEducationValidators
             // 2. KURAL: Durum ne olursa olsun, girilen açýklama 500 karakteri geçemez
             RuleFor(x => x.AdminAciklamasi)
                 .MaximumLength(500).WithMessage("Admin açýklamasý en fazla 500 karakter olabilir.");
-
-    
         }
     }
 }

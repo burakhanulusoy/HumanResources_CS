@@ -1,5 +1,5 @@
 ﻿using HumanResouerces.WebUI.Base;
-using HumanResources.Business.DTOs.PermissionDtos;
+using HumanResources.WebUI.DTOs.PermissionDtos;
 using HumanResources.WebUI.Services.GenericServices;
 
 namespace HumanResources.WebUI.Services.PermissionServices

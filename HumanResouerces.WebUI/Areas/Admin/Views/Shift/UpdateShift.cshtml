@@ -1,8 +1,8 @@
-﻿@model HumanResources.Business.DTOs.ShiftDtos.UpdateShiftDto
+﻿@model HumanResources.WebUI.DTOs.ShiftDtos.UpdateShiftDto
 @{
     ViewData["Title"] = "Vardiya Düzenle";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    var userList = ViewBag.Users as List<HumanResources.Business.DTOs.UserDtos.UserDto>;
+    var userList = ViewBag.Users as List<HumanResources.WebUI.DTOs.UserDtos.UserDto>;
     var shiftTimes = ViewBag.ShiftTimes as Dictionary<int, string>;
 
     // Zaten seçili olanları en üste alalım ki kolayca görülsün

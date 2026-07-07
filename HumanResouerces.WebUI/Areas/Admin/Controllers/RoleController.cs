@@ -1,4 +1,4 @@
-﻿using HumanResources.Business.DTOs.RoleDtos;
+﻿using HumanResources.WebUI.DTOs.RoleDtos;
 using HumanResources.WebUI.Services.RoleServices;
 using HumanResources.WebUI.Services.UserServices;
 using Microsoft.AspNetCore.Mvc;

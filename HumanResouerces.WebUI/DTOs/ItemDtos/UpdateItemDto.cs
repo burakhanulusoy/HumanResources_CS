@@ -1,6 +1,6 @@
 using HumanResouerces.WebUI.Enums;
 
-namespace HumanResources.Business.DTOs.ItemDtos
+namespace HumanResources.WebUI.DTOs.ItemDtos
 {
     public class UpdateItemDto
     {

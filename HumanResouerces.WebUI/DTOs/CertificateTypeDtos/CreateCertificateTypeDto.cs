@@ -1,4 +1,4 @@
-namespace HumanResources.Business.DTOs.CertificateTypeDtos
+namespace HumanResources.WebUI.DTOs.CertificateTypeDtos
 {
     public class CreateCertificateTypeDto
     {

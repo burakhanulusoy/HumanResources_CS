@@ -1,7 +1,7 @@
 using HumanResouerces.WebUI.Base;
-using HumanResources.Business.DTOs.CertificateDtos;
+using HumanResources.WebUI.DTOs.CertificateDtos;
 
-namespace HumanResources.Business.DTOs.CertificateTypeDtos
+namespace HumanResources.WebUI.DTOs.CertificateTypeDtos
 {
     public class CertificateTypeDto:BaseDto
     {

@@ -1,9 +1,7 @@
 using HumanResouerces.WebUI.Base;
 using HumanResouerces.WebUI.Exceptions;
-using HumanResources.Business.DTOs.UserDtos;
-using Microsoft.AspNetCore.Http.HttpResults;
+using HumanResources.WebUI.DTOs.UserDtos;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 
 namespace HumanResources.WebUI.Services.UserServices
 {

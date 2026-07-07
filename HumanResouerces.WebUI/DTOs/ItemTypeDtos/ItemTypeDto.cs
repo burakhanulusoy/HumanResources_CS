@@ -1,7 +1,7 @@
 using HumanResouerces.WebUI.Base;
-using HumanResources.Business.DTOs.ItemDtos;
+using HumanResources.WebUI.DTOs.ItemDtos;
 
-namespace HumanResources.Business.DTOs.ItemTypeDtos
+namespace HumanResources.WebUI.DTOs.ItemTypeDtos
 {
     public class ItemTypeDto:BaseDto
     {

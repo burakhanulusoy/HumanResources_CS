@@ -1,6 +1,6 @@
 using HumanResouerces.WebUI.Base;
 using HumanResouerces.WebUI.Exceptions;
-using HumanResources.Business.DTOs.ItemTypeDtos;
+using HumanResources.WebUI.DTOs.ItemTypeDtos;
 
 namespace HumanResources.WebUI.Services.ItemTypeServices
 {

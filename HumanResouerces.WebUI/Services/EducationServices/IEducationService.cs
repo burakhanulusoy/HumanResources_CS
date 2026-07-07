@@ -1,5 +1,5 @@
 ﻿using HumanResouerces.WebUI.Base;
-using HumanResources.Business.DTOs.EducationDtos;
+using HumanResources.WebUI.DTOs.EducationDtos;
 using HumanResources.WebUI.Services.GenericServices;
 
 namespace HumanResources.WebUI.Services.EducationServices
@@ -8,5 +8,6 @@ namespace HumanResources.WebUI.Services.EducationServices
     {
         Task<BaseResult<List<EducationDto>>> GetAllWithUsersAsync();
         Task<BaseResult<EducationDto>> GetWithUsersAsync(int id);
+        Task<BaseResult<object>> CreateWithParticipantsAsync(CreateEducationWithParticipantsDto dto);
     }
 }

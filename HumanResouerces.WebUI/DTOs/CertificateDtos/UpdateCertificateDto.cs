@@ -1,6 +1,6 @@
 using HumanResouerces.WebUI.Enums;
 
-namespace HumanResources.Business.DTOs.CertificateDtos
+namespace HumanResources.WebUI.DTOs.CertificateDtos
 {
     public class UpdateCertificateDto
     {

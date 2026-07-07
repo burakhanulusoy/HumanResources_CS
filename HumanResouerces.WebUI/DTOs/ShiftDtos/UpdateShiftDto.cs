@@ -1,4 +1,4 @@
-namespace HumanResources.Business.DTOs.ShiftDtos
+namespace HumanResources.WebUI.DTOs.ShiftDtos
 {
     public class UpdateShiftDto
     {

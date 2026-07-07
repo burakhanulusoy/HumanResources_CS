@@ -1,9 +1,9 @@
 using HumanResouerces.WebUI.Base;
 using HumanResouerces.WebUI.Enums;
-using HumanResources.Business.DTOs.ItemTypeDtos;
-using HumanResources.Business.DTOs.UserDtos;
+using HumanResources.WebUI.DTOs.ItemTypeDtos;
+using HumanResources.WebUI.DTOs.UserDtos;
 
-namespace HumanResources.Business.DTOs.ItemDtos
+namespace HumanResources.WebUI.DTOs.ItemDtos
 {
     public class ItemDto:BaseDto
     {

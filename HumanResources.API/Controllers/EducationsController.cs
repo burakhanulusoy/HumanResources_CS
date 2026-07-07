@@ -1,7 +1,7 @@
-﻿using HumanResources.Business.DTOs.EducationDtos;
+﻿// API/Controllers/EducationsController.cs
+using HumanResources.Business.DTOs.EducationDtos;
 using HumanResources.Business.Services.EducationServices;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace HumanResources.API.Controllers
 {
@@ -44,7 +44,6 @@ namespace HumanResources.API.Controllers
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
         }
 
-
         [HttpGet("GetAllWithUsers")]
         public async Task<IActionResult> GetAllWithUsers()
         {
@@ -56,6 +55,13 @@ namespace HumanResources.API.Controllers
         public async Task<IActionResult> GetWithUsers(int id)
         {
             var response = await _educationService.GetEducationWithUsersAsync(id);
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
+
+        [HttpPost("CreateWithParticipants")]
+        public async Task<IActionResult> CreateWithParticipants(CreateEducationWithParticipantsDto item)
+        {
+            var response = await _educationService.CreateWithParticipantsAsync(item);
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
         }
     }

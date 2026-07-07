@@ -1,0 +1,195 @@
+﻿@model HumanResources.WebUI.DTOs.EducationDtos.EducationDto
+@using HumanResouerces.WebUI.Enums
+@{
+    ViewData["Title"] = Model.Ad;
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-mortarboard me-2"></i>Eğitim Bilgileri
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.Ad</h5>
+                <p class="text-muted">@Model.EgitimAciklamasi</p>
+                <hr />
+                <dl class="row mb-0">
+                    <dt class="col-5">Eğitmen</dt>
+                    <dd class="col-7">@Model.Egitmen</dd>
+                    <dt class="col-5">Tarih</dt>
+                    <dd class="col-7">@Model.EgitimTarihi.ToString("dd.MM.yyyy")</dd>
+                    <dt class="col-5">Süre</dt>
+                    <dd class="col-7">@Model.SuresiSaat saat</dd>
+                    <dt class="col-5">Durum</dt>
+                    <dd class="col-7"><span class="badge bg-info">@Model.Durumu</span></dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-people me-2"></i>Katılımcılar</span>
+                <span class="badge bg-secondary rounded-pill">@Model.Katilimcilar.Count kişi</span>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Katilimcilar.Count > 0)
+                {
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Ad Soyad</th>
+                                <th style="width: 220px;">Başvuru Durumu</th>
+                                <th>Başvuru Tarihi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var k in Model.Katilimcilar)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@k.AppUser?.Ad @k.AppUser?.Soyad</td>
+                                    <td>
+                                        <form asp-controller="UserEducation" asp-action="ChangeStatus"
+                                              method="post" class="js-status-form d-flex align-items-center gap-2">
+                                            <input type="hidden" name="id" value="@k.Id" />
+                                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                            <input type="hidden" name="aciklama" class="js-status-reason" />
+
+                                            <select name="status" class="form-select form-select-sm status-select @GetStatusClass(k.BasvuruDurumu)">
+                                                @foreach (ApplicationStatus durum in Enum.GetValues(typeof(ApplicationStatus)))
+                                                {
+                                                    <option value="@((int)durum)" selected="@(durum == k.BasvuruDurumu)">
+                                                        @GetStatusLabel(durum)
+                                                    </option>
+                                                }
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td>@k.BasvuruTarihi.ToString("dd.MM.yyyy HH:mm")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-5">
+                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                        Bu eğitime henüz katılımcı eklenmemiş.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Listeye Dön</a>
+</div>
+
+@functions {
+    string GetStatusLabel(ApplicationStatus durum) => durum switch
+    {
+        ApplicationStatus.Bekliyor => "Bekliyor",
+        ApplicationStatus.Onaylandi => "Onaylandı",
+        ApplicationStatus.Reddedildi => "Reddedildi",
+        ApplicationStatus.Tamamlandi => "Tamamlandı",
+        ApplicationStatus.IptalEdildi => "İptal Edildi",
+        _ => durum.ToString()
+    };
+
+    string GetStatusClass(ApplicationStatus durum) => durum switch
+    {
+        ApplicationStatus.Bekliyor => "border-warning text-warning-emphasis",
+        ApplicationStatus.Onaylandi => "border-success text-success-emphasis",
+        ApplicationStatus.Reddedildi => "border-danger text-danger-emphasis",
+        ApplicationStatus.Tamamlandi => "border-primary text-primary-emphasis",
+        ApplicationStatus.IptalEdildi => "border-secondary text-secondary-emphasis",
+        _ => ""
+    };
+}
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.querySelectorAll('.status-select').forEach(function (select) {
+        const originalValue = select.value;
+
+        select.addEventListener('change', function () {
+            const form = select.closest('form');
+            const newValue = select.value;
+            const newLabel = select.options[select.selectedIndex].text;
+            const reasonInput = form.querySelector('.js-status-reason');
+
+            // Reddedildi (3) veya İptal Edildi (5) seçilirse gerekçe ZORUNLU sor
+            if (newValue == '3' || newValue == '5') {
+                Swal.fire({
+                    title: `Başvuru "${newLabel}" olarak işaretlensin mi?`,
+                    input: 'text',
+                    inputLabel: 'Gerekçe',
+                    inputPlaceholder: 'Örn: Kontenjan dolu / Eğitim iptal oldu',
+                    inputValidator: (value) => {
+                        if (!value) return 'Bu durum için gerekçe girmelisiniz.';
+                    },
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Evet, onayla',
+                    cancelButtonText: 'Vazgeç',
+                    confirmButtonColor: '#dc3545'
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        reasonInput.value = result.value;
+                        form.submit();
+                    } else {
+                        select.value = originalValue;
+                    }
+                });
+                return;
+            }
+
+            // Diğer durumlar için basit onay
+            Swal.fire({
+                title: 'Durum değiştirilsin mi?',
+                text: `Yeni durum: ${newLabel}`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Evet, değiştir',
+                cancelButtonText: 'Vazgeç'
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    form.submit();
+                } else {
+                    select.value = originalValue;
+                }
+            });
+        });
+    });
+
+    (function () {
+        const params = new URLSearchParams(window.location.search);
+        const basarili = params.get('basarili');
+
+        const mesajlar = {
+            guncellendi: { icon: 'success', text: 'Başvuru durumu güncellendi.' },
+            hata: { icon: 'error', text: 'Durum güncellenemedi. Lütfen tekrar deneyin.' }
+        };
+
+        if (basarili && mesajlar[basarili]) {
+            Swal.fire({
+                icon: mesajlar[basarili].icon,
+                title: mesajlar[basarili].text,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true
+            });
+
+            params.delete('basarili');
+            const yeniUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+            window.history.replaceState({}, '', yeniUrl);
+        }
+    })();
+</script>

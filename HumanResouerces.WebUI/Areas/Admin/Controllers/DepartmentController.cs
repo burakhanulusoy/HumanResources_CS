@@ -1,4 +1,4 @@
-﻿using HumanResources.Business.DTOs.DepartmentDtos;
+﻿using HumanResources.WebUI.DTOs.DepartmentDtos;
 using HumanResources.WebUI.Services.DepartmentServices;
 using HumanResources.WebUI.Services.UserServices;
 using Microsoft.AspNetCore.Mvc;

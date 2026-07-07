@@ -1,8 +1,8 @@
 using HumanResouerces.WebUI.Base;
-using HumanResources.Business.DTOs.PermissionTypeDtos;
-using HumanResources.Business.DTOs.UserDtos;
+using HumanResources.WebUI.DTOs.PermissionTypeDtos;
+using HumanResources.WebUI.DTOs.UserDtos;
 
-namespace HumanResources.Business.DTOs.PermissionDtos
+namespace HumanResources.WebUI.DTOs.PermissionDtos
 {
     public class ResultPermissionDto : BaseDto
     {

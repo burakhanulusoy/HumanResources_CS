@@ -1,6 +1,6 @@
 ﻿using HumanResouerces.WebUI.Base;
 using HumanResouerces.WebUI.Enums;
-using HumanResources.Business.DTOs.UserEducationDtos;
+using HumanResources.WebUI.DTOs.UserEducationDtos;
 using HumanResources.WebUI.Services.GenericServices;
 
 namespace HumanResources.WebUI.Services.UserEducationServices

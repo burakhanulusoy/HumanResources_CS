@@ -1,8 +1,7 @@
-using System.Net.Http.Json;
 using HumanResouerces.WebUI.Base;
-using HumanResources.Business.DTOs.UserEducationDtos;
-using HumanResouerces.WebUI.Exceptions;
 using HumanResouerces.WebUI.Enums;
+using HumanResouerces.WebUI.Exceptions;
+using HumanResources.WebUI.DTOs.UserEducationDtos;
 
 namespace HumanResources.WebUI.Services.UserEducationServices
 {

@@ -1,0 +1,45 @@
+﻿@model List<HumanResources.WebUI.DTOs.UserDtos.ResultUserDto>
+
+@{
+    ViewData["Title"] = "Personel Listesi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0"><i class="bi bi-people me-2"></i>Personel Listesi</h3>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Ad Soyad</th>
+                    <th>Departman</th>
+                    <th>Birim</th>
+                    <th>Telefon</th>
+                    <th class="text-end">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@user.Ad @user.Soyad</td>
+                        <td>@user.Departman?.Ad</td>
+                        <td>@user.Birim?.Ad</td>
+                        <td>@user.PhoneNumber</td>
+                        <td class="text-end">
+                            <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-outline-info">
+                                <i class="bi bi-eye me-1"></i>İncele
+                            </a>
+                            <a asp-action="EducationDetails" asp-route-id="@user.Id" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-mortarboard me-1"></i>Eğitimleri
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

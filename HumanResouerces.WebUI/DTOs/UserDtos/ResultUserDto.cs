@@ -1,7 +1,7 @@
-using HumanResources.Business.DTOs.DepartmentDtos;
-using HumanResources.Business.DTOs.UnitDtos;
+using HumanResources.WebUI.DTOs.DepartmentDtos;
+using HumanResources.WebUI.DTOs.UnitDtos;
 
-namespace HumanResources.Business.DTOs.UserDtos
+namespace HumanResources.WebUI.DTOs.UserDtos
 {
     public class ResultUserDto 
     {
