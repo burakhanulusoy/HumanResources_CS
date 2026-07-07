@@ -3,9 +3,6 @@ using HumanResources.WebUI.Services.CertificateTypeServices;
 using Microsoft.AspNetCore.Mvc;
 
 
-
-
-
 namespace HumanResouerces.WebUI.Areas.Admin.Controllers
 {
     [Area("Admin")]
@@ -15,6 +12,7 @@ namespace HumanResouerces.WebUI.Areas.Admin.Controllers
         {
             var response = await _certificateTypeService.GetAllAsync();
             return View(response.Data);
+        
         }
 
         public IActionResult CreateCertificateType()
