@@ -119,6 +119,16 @@ namespace HumanResources.WebUI.Services.UserServices
         {
             return await _client.GetFromJsonAsync<BaseResult<List<ResultUserDto>>>("users/WithRoles");
         }
+        public async Task<BaseResult<ResultUserDto>> LoginUserAsync(LoginUserDto loginUserDto)
+        {
+            var response = await _client.PostAsJsonAsync("users/login", loginUserDto);
+
+            // API'den gelen sonucu direkt okuyoruz
+            var result = await response.Content.ReadFromJsonAsync<BaseResult<ResultUserDto>>();
+
+            // UnitService'te olduðu gibi direkt tek satýrda kontrol edip fýrlatýyoruz
+            return result.IsFailure ? throw new ApiValidationException(result.Errors) : result;
+        }
 
     }
 }

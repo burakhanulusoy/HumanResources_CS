@@ -1,5 +1,6 @@
 using HumanResouerces.WebUI.Extensions;
 using HumanResouerces.WebUI.Filters;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,10 @@ builder.Services.AddControllersWithViews(options =>
 
 
 builder.Services.AddControllersWithViews();
+
+
+
+
 
 var app = builder.Build();
 

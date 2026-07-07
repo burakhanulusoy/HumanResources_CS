@@ -1,4 +1,5 @@
 using FluentValidation;
+using FluentValidation.Results;
 using HumanResources.Business.Base;
 using HumanResources.Business.DTOs.UserDtos;
 using HumanResources.Business.Services.FileServices;
@@ -207,15 +208,23 @@ namespace HumanResources.Business.Services.UserServices
                 .Include(u => u.Amir)
                 .FirstOrDefaultAsync(u => u.UserName == loginUserDto.UserName && !u.SilindiMi);
 
+
             if (user is null)
             {
-                return BaseResult<ResultUserDto>.Fail("Kullanýcý adý veya þifre hatalý.");
+                return BaseResult<ResultUserDto>.Fail(new List<ValidationFailure>
+    {
+        new ValidationFailure(nameof(LoginUserDto.UserName), "Kullanýcý adý veya þifre hatalý.")
+    });
             }
 
             var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, loginUserDto.Password);
+
             if (!isPasswordCorrect)
             {
-                return BaseResult<ResultUserDto>.Fail("Kullanýcý adý veya þifre hatalý.");
+                return BaseResult<ResultUserDto>.Fail(new List<ValidationFailure>
+    {
+        new ValidationFailure(nameof(LoginUserDto.Password), "Þifreniz hatalý lütfen kontrol ediniz.")
+    });
             }
 
             TypeAdapterConfig<AppUser, ResultUserDto>.NewConfig()

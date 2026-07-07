@@ -98,5 +98,15 @@ namespace HumanResources.API.Controllers
             var response = await _userService.GetAllUsersWithRolesAsync();
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
         }
+
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginUserDto loginUserDto)
+        {
+            var response = await _userService.LoginUserAsync(loginUserDto);
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
+
+
     }
 }
