@@ -1,4 +1,5 @@
 ﻿using HumanResouerces.WebUI.Areas.Admin.Models;
+using HumanResouerces.WebUI.Enums;
 using HumanResources.WebUI.DTOs.EducationDtos;
 using HumanResources.WebUI.Services.EducationServices;
 using HumanResources.WebUI.Services.UserServices;
@@ -18,8 +19,25 @@ namespace HumanResouerces.WebUI.Areas.Admin.Controllers
 
         public async Task<IActionResult> DetailsEducation(int id)
         {
-            var response = await _educationService.GetWithUsersAsync(id);
-            return View(response.Data);
+            var egitim = await _educationService.GetWithUsersAsync(id);
+            var kullanicilar = await _userService.GetAllAsync();
+
+            // Aktif kaydı (Reddedildi/İptal dışı) olan personeller eklenebilir listesinden çıkarılır
+            var aktifKatilimciIdler = egitim.Data.Katilimcilar
+                .Where(k => k.BasvuruDurumu != ApplicationStatus.Reddedildi &&
+                            k.BasvuruDurumu != ApplicationStatus.IptalEdildi)
+                .Select(k => k.AppUserId)
+                .ToHashSet();
+
+            var vm = new EducationDetailsViewModel
+            {
+                Egitim = egitim.Data,
+                EklenebilirKullanicilar = (kullanicilar.Data ?? new())
+                    .Where(u => !aktifKatilimciIdler.Contains(u.Id))
+                    .ToList()
+            };
+
+            return View(vm);
         }
 
         public async Task<IActionResult> CreateEducation()
@@ -27,7 +45,7 @@ namespace HumanResouerces.WebUI.Areas.Admin.Controllers
             var users = await _userService.GetAllAsync();
             var vm = new EducationCreateViewModel
             {
-                TumKullanicilar = users.Data ?? new()   // null gelirse boş liste
+                TumKullanicilar = users.Data ?? new()
             };
             return View(vm);
         }

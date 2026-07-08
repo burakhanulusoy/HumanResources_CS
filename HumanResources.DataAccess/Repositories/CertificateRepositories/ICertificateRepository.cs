@@ -15,5 +15,12 @@ namespace HumanResources.DataAccess.Repositories.CertificateRepositories
 
         // YENİ 3. Admin bir sertifika türüne tıkladığında o belgeyi alan personelleri getir
         Task<List<Sertifika>> GetUsersByCertificateTypeIdAsync(int sertifikaTuruId);
+
+
+        // ICertificateRepository.cs — ekle
+        Task<List<Sertifika>> GetAllWithInfoAsync();
+        Task<Sertifika> GetByIdWithInfoAsync(int id);
+        // ICertificateRepository.cs
+        Task<List<Sertifika>> GetExpiredButStillValidAsync();
     }
 }

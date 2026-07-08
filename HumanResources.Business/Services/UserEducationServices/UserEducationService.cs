@@ -124,5 +124,41 @@ namespace HumanResources.Business.Services.UserEducationServices
 
             return result ? BaseResult<object>.Success(entity) : BaseResult<object>.Fail("Updated Failed");
         }
+
+        // ÝÞ KURALI: Admin elle personel ekler; kayýt direkt Onaylandý olur.
+        // Reddedilmiþ/Ýptal edilmiþ eski baþvurular engel deðildir; aktif kayýt (Bekliyor/Onaylandý/Tamamlandý) varsa eklenemez.
+        public async Task<BaseResult<object>> AddParticipantByAdminAsync(CreateUserEducationDto createDto)
+        {
+            var validationResult = await _createValidator.ValidateAsync(createDto);
+
+            if (!validationResult.IsValid)
+            {
+                return BaseResult<object>.Fail(validationResult.Errors);
+            }
+
+            var mevcutKayitlar = await _userEducationRepository.GetUsersByEducationIdAsync(createDto.EgitimId);
+
+            bool aktifKayitVar = mevcutKayitlar.Any(x =>
+                x.AppUserId == createDto.AppUserId &&
+                x.BasvuruDurumu != ApplicationStatus.Reddedildi &&
+                x.BasvuruDurumu != ApplicationStatus.IptalEdildi);
+
+            if (aktifKayitVar)
+            {
+                return BaseResult<object>.Fail("Bu personelin bu eðitimde zaten aktif bir kaydý bulunuyor.");
+            }
+
+            var entity = createDto.Adapt<AppUserEgitim>();
+            entity.BasvuruTarihi = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
+            entity.BasvuruDurumu = ApplicationStatus.Onaylandi; // Admin eklediði için otomatik onaylý
+
+            await _userEducationRepository.CreateAsync(entity);
+
+            bool result = await _unitOfWork.SaveChangesAsync();
+
+            return result ? BaseResult<object>.Success(entity) : BaseResult<object>.Fail("Personel eklenemedi.");
+        }
+
+
     }
 }

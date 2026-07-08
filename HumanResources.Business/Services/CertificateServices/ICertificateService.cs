@@ -14,5 +14,10 @@ namespace HumanResources.Business.Services.CertificateServices
 
         // 3. Admin bir sertifika türüne tıkladığında o belgeyi alan personelleri getir
         Task<BaseResult<List<CertificateDto>>> GetUsersByCertificateTypeIdAsync(int sertifikaTuruId);
+
+        // ICertificateService.cs — ekle
+        Task<BaseResult<List<CertificateDto>>> GetAllWithInfoAsync();
+        Task<BaseResult<CertificateDto>> GetByIdWithInfoAsync(int id);
+
     }
-}
+}   

@@ -1,0 +1,130 @@
+﻿@model HumanResources.WebUI.DTOs.CertificateDtos.UpdateCertificateDto
+@using HumanResouerces.WebUI.Enums
+@{
+    ViewData["Title"] = "Sertifika Güncelle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning">
+                <i class="bi bi-pencil-square me-2"></i>Sertifikayı Güncelle
+            </div>
+            <div class="card-body">
+                <form asp-action="UpdateCertificate" method="post" enctype="multipart/form-data" id="updateCertificateForm">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none"></div>
+
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="AppUserId" />
+                    <input type="hidden" asp-for="SertifikaTuruId" />
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="VerenKurum" class="form-label">Veren Kurum</label>
+                            <input asp-for="VerenKurum" class="form-control" maxlength="150" required />
+                            <span asp-validation-for="VerenKurum" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="BelgeNo" class="form-label">Belge No</label>
+                            <input asp-for="BelgeNo" class="form-control" maxlength="50" required />
+                            <span asp-validation-for="BelgeNo" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="AlinmaTarihi" class="form-label">Alınma Tarihi</label>
+                            <input asp-for="AlinmaTarihi" type="date" class="form-control"
+                                   max="@DateTime.Today.ToString("yyyy-MM-dd")" required id="alinmaTarihi" />
+                            <span asp-validation-for="AlinmaTarihi" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="YenilemeTarihi" class="form-label">Yenileme Tarihi</label>
+                            <input asp-for="YenilemeTarihi" type="date" class="form-control" required id="yenilemeTarihi" />
+                            <span asp-validation-for="YenilemeTarihi" class="text-danger small"></span>
+                            <small class="text-muted">Alınma ile geçerlilik arasında olmalı.</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="GecerlilikTarihi" class="form-label">Geçerlilik Tarihi</label>
+                            <input asp-for="GecerlilikTarihi" type="date" class="form-control" required id="gecerlilikTarihi" />
+                            <span asp-validation-for="GecerlilikTarihi" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Durumu" class="form-label">Durum</label>
+                            <select asp-for="Durumu" class="form-select"
+                                    asp-items="Html.GetEnumSelectList<CertificateStatus>()"></select>
+                            <span asp-validation-for="Durumu" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Dosya" class="form-label">Yeni Dosya <small class="text-muted">(değiştirmek istersen)</small></label>
+                            <input asp-for="Dosya" type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Aciklama" class="form-label">Açıklama</label>
+                        <textarea asp-for="Aciklama" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Vazgeç</a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-check-lg me-1"></i>Güncelle
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Tarih kuralları: Alınma < Yenileme < Geçerlilik
+    const alinma = document.getElementById('alinmaTarihi');
+    const gecerlilik = document.getElementById('gecerlilikTarihi');
+    const yenileme = document.getElementById('yenilemeTarihi');
+
+    function tarihSinirlariAyarla() {
+        if (alinma.value) {
+            const ertesiGun = new Date(alinma.value);
+            ertesiGun.setDate(ertesiGun.getDate() + 1);
+            const minStr = ertesiGun.toISOString().split('T')[0];
+            gecerlilik.min = minStr;
+            yenileme.min = minStr;
+        }
+        if (gecerlilik.value) {
+            const oncekiGun = new Date(gecerlilik.value);
+            oncekiGun.setDate(oncekiGun.getDate() - 1);
+            yenileme.max = oncekiGun.toISOString().split('T')[0];
+        }
+    }
+    alinma.addEventListener('change', tarihSinirlariAyarla);
+    gecerlilik.addEventListener('change', tarihSinirlariAyarla);
+    tarihSinirlariAyarla();
+
+    // Güncellemeden önce onay
+    const form = document.getElementById('updateCertificateForm');
+    form.addEventListener('submit', function (e) {
+        if (form.dataset.confirmed === 'true') return;
+        if (!form.checkValidity()) return;
+
+        e.preventDefault();
+        Swal.fire({
+            title: 'Değişiklikler kaydedilsin mi?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Evet, güncelle',
+            cancelButtonText: 'Vazgeç'
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                form.dataset.confirmed = 'true';
+                form.submit();
+            }
+        });
+    });
+</script>

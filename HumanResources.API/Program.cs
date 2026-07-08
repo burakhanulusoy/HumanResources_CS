@@ -1,3 +1,4 @@
+using HumanResources.Business.BackgroundJobs;
 using HumanResources.Business.Extensions;
 using HumanResources.Business.Mappings;
 using HumanResources.DataAccess.Extensions;
@@ -12,7 +13,7 @@ builder.Services.AddRepositoriesExt(builder.Configuration)
                 .AddServiceExt(builder.Configuration);
 
 TypeAdapterConfig.GlobalSettings.Scan(typeof(UnitMappingConfig).Assembly);
-
+builder.Services.AddHostedService<CertificateStatusUpdateJob>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

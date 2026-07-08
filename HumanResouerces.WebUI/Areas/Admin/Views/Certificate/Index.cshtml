@@ -1,0 +1,169 @@
+﻿@model List<HumanResources.WebUI.DTOs.CertificateDtos.CertificateDto>
+@using HumanResouerces.WebUI.Enums
+@{
+    ViewData["Title"] = "Sertifikalar";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@{
+    // DİKKAT GEREKTİRENLERİ SAY: İptal edilenler, süresi dolanlar veya 30 gün içinde dolacak olanlar
+    var dikkatGerektirenCount = Model.Count(s =>
+        s.Durumu == CertificateStatus.IptalEdildi ||
+        s.Durumu == CertificateStatus.SuresiDolu ||
+        (s.Durumu == CertificateStatus.Gecerli && (s.GecerlilikTarihi.Date - DateTime.Today).Days <= 30));
+}
+
+@if (dikkatGerektirenCount > 0)
+{
+    <div class="alert alert-warning d-flex justify-content-between align-items-center mb-4">
+        <span><i class="bi bi-exclamation-triangle me-2"></i>Sistemde dikkat gerektiren (süresi yaklaşan, dolan veya iptal edilen) <strong>@dikkatGerektirenCount</strong> sertifika bulunuyor.</span>
+        <a asp-action="ExpiringCertificates" class="btn btn-sm btn-warning">Detayları Görüntüle</a>
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center">
+        <h3 class="mb-0 me-3"><i class="bi bi-patch-check me-2"></i>Sertifika Yönetimi</h3>
+    </div>
+
+    <div class="d-flex gap-3">
+        <div class="input-group" style="max-width: 250px;">
+            <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" id="searchInput" class="form-control" placeholder="Personel ara...">
+        </div>
+
+        <a asp-action="CreateCertificate" class="btn btn-primary text-nowrap">
+            <i class="bi bi-plus-lg me-1"></i>Yeni Sertifika
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0" id="certificateTable">
+            <thead class="table-light">
+                <tr>
+                    <th>Personel</th>
+                    <th>Sertifika Türü</th>
+                    <th>Veren Kurum</th>
+                    <th>Geçerlilik</th>
+                    <th class="text-center">Durum</th>
+                    <th class="text-end">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold text-nowrap personel-name">@s.AppUser?.Ad @s.AppUser?.Soyad</td>
+                        <td style="max-width: 220px;" class="text-truncate" title="@s.SertifikaTuru?.Ad">@s.SertifikaTuru?.Ad</td>
+                        <td style="max-width: 200px;" class="text-truncate" title="@s.VerenKurum">@s.VerenKurum</td>
+                        <td class="text-nowrap">@s.GecerlilikTarihi.ToString("dd.MM.yyyy")</td>
+                        <td class="text-center">
+                            @switch (s.Durumu)
+                            {
+                                case CertificateStatus.Gecerli:
+                                    <span class="badge bg-success">Geçerli</span>
+                                    break;
+                                case CertificateStatus.SuresiDolu:
+                                    <span class="badge bg-warning text-dark">Süresi Dolu</span>
+                                    break;
+                                case CertificateStatus.IptalEdildi:
+                                    <span class="badge bg-danger">İptal Edildi</span>
+                                    break;
+                            }
+                        </td>
+                        <td class="text-end" style="min-width: 140px; white-space: nowrap;">
+                            <a asp-action="DetailsCertificate" asp-route-id="@s.Id" class="btn btn-sm btn-outline-info" title="İncele">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a asp-action="UpdateCertificate" asp-route-id="@s.Id" class="btn btn-sm btn-outline-warning" title="Düzenle">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form asp-action="DeleteCertificate" asp-route-id="@s.Id" method="post" class="d-inline js-delete-form">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Sil">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div id="noResultMessage" class="text-center text-muted py-4" style="display: none;">
+            <i class="bi bi-search fs-2 d-block mb-2"></i>
+            Aradığınız kritere uygun personel bulunamadı.
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Silme ve Alert İşlemleri
+    document.querySelectorAll('.js-delete-form').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Emin misiniz?',
+                text: 'Bu sertifika ve dosyası kalıcı olarak silinecek.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Evet, sil',
+                cancelButtonText: 'Vazgeç',
+                confirmButtonColor: '#d33'
+            }).then(function (result) {
+                if (result.isConfirmed) form.submit();
+            });
+        });
+    });
+
+    (function () {
+        const params = new URLSearchParams(window.location.search);
+        const basarili = params.get('basarili');
+        const mesajlar = {
+            olusturuldu: 'Sertifika başarıyla oluşturuldu.',
+            guncellendi: 'Sertifika başarıyla güncellendi.',
+            silindi: 'Sertifika başarıyla silindi.'
+        };
+        if (basarili && mesajlar[basarili]) {
+            Swal.fire({
+                icon: 'success', title: mesajlar[basarili], toast: true,
+                position: 'top-end', showConfirmButton: false, timer: 2200, timerProgressBar: true
+            });
+            params.delete('basarili');
+            const yeniUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+            window.history.replaceState({}, '', yeniUrl);
+        }
+    })();
+
+
+
+    // Arama (Filtreleme) Scripti
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        const noResultMessage = document.getElementById("noResultMessage");
+
+        if (searchInput) {
+            searchInput.addEventListener("keyup", function () {
+                const filter = this.value.toLowerCase();
+                const rows = document.querySelectorAll("#certificateTable tbody tr");
+                let hasVisibleRow = false;
+
+                rows.forEach(row => {
+                    const text = row.querySelector(".personel-name").textContent.toLowerCase();
+                    if (text.includes(filter)) {
+                        row.style.display = "";
+                        hasVisibleRow = true;
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+
+                if (noResultMessage) {
+                    noResultMessage.style.display = hasVisibleRow ? "none" : "block";
+                }
+            });
+        }
+    });
+</script>

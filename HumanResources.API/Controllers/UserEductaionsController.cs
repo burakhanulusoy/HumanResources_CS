@@ -76,5 +76,13 @@ namespace HumanResources.API.Controllers
             var response = await _userEducationService.GetUserEducationWithAllInfoAsync();
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
         }
+
+        [HttpPost("AddParticipantByAdmin")]
+        public async Task<IActionResult> AddParticipantByAdmin(CreateUserEducationDto item)
+        {
+            var response = await _userEducationService.AddParticipantByAdminAsync(item);
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
+
     }
 }

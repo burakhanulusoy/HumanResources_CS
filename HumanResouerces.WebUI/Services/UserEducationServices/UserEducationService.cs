@@ -65,5 +65,13 @@ namespace HumanResources.WebUI.Services.UserEducationServices
         {
             return await _client.GetFromJsonAsync<BaseResult<List<UserEducationDto>>>("usereducations/GetAllWithInfo");
         }
+
+        public async Task<BaseResult<object>> AddParticipantAsync(CreateUserEducationDto createDto)
+        {
+            var response = await _client.PostAsJsonAsync("usereducations/AddParticipantByAdmin", createDto);
+            var result = await response.Content.ReadFromJsonAsync<BaseResult<object>>();
+            return result.IsFailure ? throw new ApiValidationException(result.Errors) : result;
+        }
+
     }
 }

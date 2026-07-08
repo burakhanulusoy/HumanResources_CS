@@ -1,5 +1,6 @@
 using HumanResources.DataAccess.Context;
 using HumanResources.Entity.Entities;
+using HumanResources.Entity.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace HumanResources.DataAccess.Repositories.CertificateRepositories
@@ -26,11 +27,11 @@ namespace HumanResources.DataAccess.Repositories.CertificateRepositories
 
             return await _table
                 .Include(x => x.AppUser)
-                .Include(x => x.SertifikaTuru) // Bildirim atarken sertifikanýn adýný bilmek için lazým
-                                               // Durumu geçerli olan ve yenileme tarihi bugünden büyük ama hedef tarihten küçük/eþit olanlar
-                .Where(x => x.Durumu == Entity.Enums.CertificateStatus.Gecerli &&
-                            x.YenilemeTarihi > DateTime.UtcNow &&
-                            x.YenilemeTarihi <= hedefTarih)
+                .Include(x => x.SertifikaTuru)
+                .Where(x =>
+                    (x.Durumu == Entity.Enums.CertificateStatus.Gecerli && x.GecerlilikTarihi <= hedefTarih) ||
+                    x.Durumu == Entity.Enums.CertificateStatus.SuresiDolu ||
+                    x.Durumu == Entity.Enums.CertificateStatus.IptalEdildi)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -43,6 +44,36 @@ namespace HumanResources.DataAccess.Repositories.CertificateRepositories
                 .Where(x => x.SertifikaTuruId == sertifikaTuruId)
                 .AsNoTracking()
                 .ToListAsync();
+        }
+
+        // CertificateRepository.cs — ekle
+        public async Task<List<Sertifika>> GetAllWithInfoAsync()
+        {
+            return await _table
+                .Include(x => x.AppUser)
+                .Include(x => x.SertifikaTuru)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<Sertifika> GetByIdWithInfoAsync(int id)
+        {
+            return await _table
+                .Include(x => x.AppUser)
+                    .ThenInclude(u => u.Departman)
+                .Include(x => x.AppUser)
+                    .ThenInclude(u => u.Birim)
+                .Include(x => x.SertifikaTuru)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+        // CertificateRepository.cs
+        public async Task<List<Sertifika>> GetExpiredButStillValidAsync()
+        {
+            return await _table
+                .Where(x => x.Durumu == CertificateStatus.Gecerli &&
+                            x.GecerlilikTarihi < DateTime.UtcNow)
+                .ToListAsync(); // AsNoTracking YOK — update edeceðiz
         }
     }
 }

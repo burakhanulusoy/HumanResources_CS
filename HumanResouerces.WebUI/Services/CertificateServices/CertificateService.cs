@@ -7,12 +7,10 @@ namespace HumanResources.WebUI.Services.CertificateServices
 {
     public class CertificateService(HttpClient _client) : ICertificateService
     {
-
         public async Task<BaseResult<object>> CreateAsync(CreateCertificateDto createDto)
         {
             using var content = new MultipartFormDataContent();
 
-            // Dosya ekleme iþlemi
             if (createDto.Dosya is not null)
             {
                 var streamContent = new StreamContent(createDto.Dosya.OpenReadStream());
@@ -20,12 +18,14 @@ namespace HumanResources.WebUI.Services.CertificateServices
                 content.Add(streamContent, "Dosya", createDto.Dosya.FileName);
             }
 
-            // DTO içerisindeki diðer property'leri form dataya ekliyoruz
-            // Not: Kendi DTO'ndaki alanlara göre burayý doldurmalýsýn. Tarihler için yyyy-MM-dd formatýný unutma.
             content.Add(new StringContent(createDto.AppUserId.ToString()), "AppUserId");
             content.Add(new StringContent(createDto.SertifikaTuruId.ToString()), "SertifikaTuruId");
             content.Add(new StringContent(createDto.VerenKurum ?? ""), "VerenKurum");
-            // content.Add(new StringContent(createDto.AlinmaTarihi.ToString("yyyy-MM-dd")), "AlinmaTarihi");
+            content.Add(new StringContent(createDto.BelgeNo ?? ""), "BelgeNo");
+            content.Add(new StringContent(createDto.Aciklama ?? ""), "Aciklama");
+            content.Add(new StringContent(createDto.AlinmaTarihi.ToString("yyyy-MM-dd")), "AlinmaTarihi");
+            content.Add(new StringContent(createDto.GecerlilikTarihi.ToString("yyyy-MM-dd")), "GecerlilikTarihi");
+            content.Add(new StringContent(createDto.YenilemeTarihi.ToString("yyyy-MM-dd")), "YenilemeTarihi");
 
             var response = await _client.PostAsync("certificates", content);
             var result = await response.Content.ReadFromJsonAsync<BaseResult<object>>();
@@ -64,7 +64,12 @@ namespace HumanResources.WebUI.Services.CertificateServices
             content.Add(new StringContent(updateDto.AppUserId.ToString()), "AppUserId");
             content.Add(new StringContent(updateDto.SertifikaTuruId.ToString()), "SertifikaTuruId");
             content.Add(new StringContent(updateDto.VerenKurum ?? ""), "VerenKurum");
-            // content.Add(new StringContent(updateDto.AlinmaTarihi.ToString("yyyy-MM-dd")), "AlinmaTarihi");
+            content.Add(new StringContent(updateDto.BelgeNo ?? ""), "BelgeNo");
+            content.Add(new StringContent(updateDto.Aciklama ?? ""), "Aciklama");
+            content.Add(new StringContent(updateDto.AlinmaTarihi.ToString("yyyy-MM-dd")), "AlinmaTarihi");
+            content.Add(new StringContent(updateDto.GecerlilikTarihi.ToString("yyyy-MM-dd")), "GecerlilikTarihi");
+            content.Add(new StringContent(updateDto.YenilemeTarihi.ToString("yyyy-MM-dd")), "YenilemeTarihi");
+            content.Add(new StringContent(((int)updateDto.Durumu).ToString()), "Durumu");
 
             var response = await _client.PutAsync("certificates", content);
             var result = await response.Content.ReadFromJsonAsync<BaseResult<object>>();
@@ -87,6 +92,16 @@ namespace HumanResources.WebUI.Services.CertificateServices
         public async Task<BaseResult<List<CertificateDto>>> GetByCertificateTypeIdAsync(int typeId)
         {
             return await _client.GetFromJsonAsync<BaseResult<List<CertificateDto>>>($"certificates/GetByCertificateTypeId/{typeId}");
+        }
+
+        public async Task<BaseResult<List<CertificateDto>>> GetAllWithInfoAsync()
+        {
+            return await _client.GetFromJsonAsync<BaseResult<List<CertificateDto>>>("certificates/GetAllWithInfo");
+        }
+
+        public async Task<BaseResult<CertificateDto>> GetWithInfoAsync(int id)
+        {
+            return await _client.GetFromJsonAsync<BaseResult<CertificateDto>>($"certificates/GetWithInfo/{id}");
         }
     }
 }

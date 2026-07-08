@@ -1,5 +1,7 @@
 using FluentValidation;
 using HumanResources.Business.DTOs.CertificateDtos;
+using HumanResources.Entity.Enums; // CertificateStatus için gerekli
+using System;
 
 namespace HumanResources.Business.Validators.CertificateValidators
 {
@@ -34,11 +36,27 @@ namespace HumanResources.Business.Validators.CertificateValidators
 
             RuleFor(x => x.YenilemeTarihi)
                 .NotEmpty().WithMessage("Yenileme tarihi zorunludur.")
-                .GreaterThan(x => x.AlinmaTarihi).WithMessage("Yenileme tarihi, alýnma tarihinden sonra olmalýdýr.");
+                .GreaterThan(x => x.AlinmaTarihi).WithMessage("Yenileme tarihi, alýnma tarihinden sonra olmalýdýr.")
+                .LessThan(x => x.GecerlilikTarihi).WithMessage("Yenileme tarihi, geçerlilik tarihinden önce olmalýdýr.");
 
-            // Sertifika statüsü enum içerisinden (Geçerli, SüresiDolu, ÝptalEdildi vb.) seçilmek zorunda
             RuleFor(x => x.Durumu)
                 .IsInEnum().WithMessage("Geçersiz sertifika durumu.");
+
+            // --- ÝSTEM AÇIÐINI KAPATAN KONTROLLER ---
+
+            When(x => x.Durumu == CertificateStatus.Gecerli, () =>
+            {
+                RuleFor(x => x.GecerlilikTarihi)
+                    .GreaterThanOrEqualTo(DateTime.Today)
+                    .WithMessage("Durumu 'Geçerli' seçilen bir sertifikanýn geçerlilik tarihi geçmiþ olamaz.");
+            });
+
+            When(x => x.Durumu == CertificateStatus.SuresiDolu, () =>
+            {
+                RuleFor(x => x.GecerlilikTarihi)
+                    .LessThan(DateTime.Today)
+                    .WithMessage("Geçerlilik tarihi henüz dolmamýþ bir sertifika 'Süresi Dolu' olarak iþaretlenemez.");
+            });
         }
     }
 }

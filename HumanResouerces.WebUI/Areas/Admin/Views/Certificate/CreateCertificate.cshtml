@@ -1,0 +1,158 @@
+﻿@model HumanResouerces.WebUI.Areas.Admin.Models.CertificateCreateViewModel
+@{
+    ViewData["Title"] = "Yeni Sertifika";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-patch-check me-2"></i>Yeni Sertifika Ekle
+            </div>
+            <div class="card-body">
+                <form asp-action="CreateCertificate" method="post" enctype="multipart/form-data" id="createCertificateForm">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none"></div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Sertifika.AppUserId" class="form-label">Personel</label>
+                            <select asp-for="Sertifika.AppUserId" class="form-select js-select2" required
+                                    data-placeholder="Personel ara ve seç...">
+                                <option value=""></option>
+                                @foreach (var u in Model.TumKullanicilar)
+                                {
+                                    <option value="@u.Id">@u.Ad @u.Soyad — @u.SicilNo</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Sertifika.AppUserId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Sertifika.SertifikaTuruId" class="form-label">Sertifika Türü</label>
+                            <select asp-for="Sertifika.SertifikaTuruId" class="form-select js-select2" required
+                                    data-placeholder="Sertifika türü ara ve seç...">
+                                <option value=""></option>
+                                @foreach (var t in Model.SertifikaTurleri)
+                                {
+                                    <option value="@t.Id">@t.Ad</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Sertifika.SertifikaTuruId" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Sertifika.VerenKurum" class="form-label">Veren Kurum</label>
+                            <input asp-for="Sertifika.VerenKurum" class="form-control" maxlength="150" required />
+                            <span asp-validation-for="Sertifika.VerenKurum" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Sertifika.BelgeNo" class="form-label">Belge No</label>
+                            <input asp-for="Sertifika.BelgeNo" class="form-control" maxlength="50" required />
+                            <span asp-validation-for="Sertifika.BelgeNo" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Sertifika.AlinmaTarihi" class="form-label">Alınma Tarihi</label>
+                            <input asp-for="Sertifika.AlinmaTarihi" type="date" class="form-control"
+                                   max="@DateTime.Today.ToString("yyyy-MM-dd")" required id="alinmaTarihi" />
+                            <span asp-validation-for="Sertifika.AlinmaTarihi" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Sertifika.YenilemeTarihi" class="form-label">Yenileme Tarihi</label>
+                            <input asp-for="Sertifika.YenilemeTarihi" type="date" class="form-control" required id="yenilemeTarihi" />
+                            <span asp-validation-for="Sertifika.YenilemeTarihi" class="text-danger small"></span>
+                            <small class="text-muted">Alınma ile geçerlilik arasında olmalı.</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Sertifika.GecerlilikTarihi" class="form-label">Geçerlilik Tarihi</label>
+                            <input asp-for="Sertifika.GecerlilikTarihi" type="date" class="form-control" required id="gecerlilikTarihi" />
+                            <span asp-validation-for="Sertifika.GecerlilikTarihi" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Sertifika.Aciklama" class="form-label">Açıklama <small class="text-muted">(isteğe bağlı)</small></label>
+                        <textarea asp-for="Sertifika.Aciklama" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Sertifika.Dosya" class="form-label">Sertifika Dosyası <small class="text-muted">(PDF/Görsel)</small></label>
+                        <input asp-for="Sertifika.Dosya" type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" />
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Vazgeç</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Aranabilir dropdown'lar
+    $('.js-select2').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        language: {
+            noResults: function () { return "Sonuç bulunamadı"; }
+        }
+    });
+
+    // Tarih kuralları: Alınma < Yenileme < Geçerlilik
+    const alinma = document.getElementById('alinmaTarihi');
+    const gecerlilik = document.getElementById('gecerlilikTarihi');
+    const yenileme = document.getElementById('yenilemeTarihi');
+
+    function tarihSinirlariAyarla() {
+        if (alinma.value) {
+            const ertesiGun = new Date(alinma.value);
+            ertesiGun.setDate(ertesiGun.getDate() + 1);
+            const minStr = ertesiGun.toISOString().split('T')[0];
+            gecerlilik.min = minStr;
+            yenileme.min = minStr;
+        }
+        if (gecerlilik.value) {
+            const oncekiGun = new Date(gecerlilik.value);
+            oncekiGun.setDate(oncekiGun.getDate() - 1);
+            yenileme.max = oncekiGun.toISOString().split('T')[0];
+        }
+    }
+    alinma.addEventListener('change', tarihSinirlariAyarla);
+    gecerlilik.addEventListener('change', tarihSinirlariAyarla);
+    tarihSinirlariAyarla();
+
+    // Kaydetmeden önce onay
+    const form = document.getElementById('createCertificateForm');
+    form.addEventListener('submit', function (e) {
+        if (form.dataset.confirmed === 'true') return;
+        if (!form.checkValidity()) return;
+
+        e.preventDefault();
+        Swal.fire({
+            title: 'Sertifika kaydedilsin mi?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Evet, kaydet',
+            cancelButtonText: 'Vazgeç'
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                form.dataset.confirmed = 'true';
+                form.submit();
+            }
+        });
+    });
+</script>

@@ -1,0 +1,207 @@
+﻿@model HumanResources.WebUI.DTOs.CertificateDtos.CertificateDto
+@using HumanResouerces.WebUI.Enums
+@{
+    ViewData["Title"] = "Sertifika Detayı";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var dosyaUrl = string.IsNullOrEmpty(Model.DosyaYolu) ? null : $"https://localhost:7018{Model.DosyaYolu}";
+    var pdfMi = Model.DosyaYolu?.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) == true;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0"><i class="bi bi-patch-check me-2"></i>Sertifika Detayı</h3>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Listeye Dön
+    </a>
+</div>
+
+<div class="row g-4">
+    <!-- SOL: Personel kartı -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">
+                <i class="bi bi-person-badge me-2"></i>Personel Bilgileri
+            </div>
+
+            <div class="card-body text-center pb-2">
+                @if (!string.IsNullOrEmpty(Model.AppUser?.FotografUrl))
+                {
+                    <img src="@Model.AppUser.FotografUrl" class="rounded-circle mb-3 border border-3 border-light shadow-sm"
+                         style="width:110px;height:110px;object-fit:cover;" alt="Profil" />
+                }
+                else
+                {
+                    <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center mb-3 shadow-sm"
+                         style="width:110px;height:110px;font-size:2rem;">
+                        @Model.AppUser?.Ad?[0]@Model.AppUser?.Soyad?[0]
+                    </div>
+                }
+                <h5 class="mb-0">@Model.AppUser?.Ad @Model.AppUser?.Soyad</h5>
+                <p class="text-muted small mb-1">@Model.AppUser?.PersonelTipi</p>
+                <span class="badge bg-light text-dark border">Sicil: @Model.AppUser?.SicilNo</span>
+            </div>
+
+            <ul class="list-group list-group-flush small">
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted"><i class="bi bi-credit-card-2-front me-1"></i>TC Kimlik No</span>
+                    <span class="fw-semibold">@Model.AppUser?.TcKimlikNo</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted"><i class="bi bi-calendar-heart me-1"></i>Doğum Tarihi</span>
+                    <span class="fw-semibold">@(Model.AppUser?.DogumTarihi?.ToString("dd.MM.yyyy"))</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted"><i class="bi bi-droplet me-1"></i>Kan Grubu</span>
+                    <span class="fw-semibold">@Model.AppUser?.KanGrubu</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted"><i class="bi bi-telephone me-1"></i>Telefon</span>
+                    <span class="fw-semibold">@Model.AppUser?.PhoneNumber</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted"><i class="bi bi-envelope me-1"></i>E-posta</span>
+                    <span class="fw-semibold text-truncate ms-2" style="max-width: 170px;"
+                          title="@Model.AppUser?.Email">@Model.AppUser?.Email</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted"><i class="bi bi-diagram-3 me-1"></i>Departman</span>
+                    <span class="fw-semibold">@Model.AppUser?.DepartmanAd</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted"><i class="bi bi-diagram-2 me-1"></i>Birim</span>
+                    <span class="fw-semibold">@Model.AppUser?.BirimAd</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted"><i class="bi bi-person-up me-1"></i>Amir</span>
+                    <span class="fw-semibold">@Model.AppUser?.AmirAdSoyad</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted"><i class="bi bi-briefcase me-1"></i>İşe Giriş</span>
+                    <span class="fw-semibold">@(Model.AppUser?.IseGirisTarihi?.ToString("dd.MM.yyyy"))</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted"><i class="bi bi-activity me-1"></i>Çalışma Durumu</span>
+                    <span class="fw-semibold">@Model.AppUser?.CalismaDurumu</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted"><i class="bi bi-clock-history me-1"></i>Vardiya</span>
+                    <span class="fw-semibold">@Model.AppUser?.VardiyaAciklama</span>
+                </li>
+            </ul>
+
+            <div class="card-footer bg-transparent">
+                <a asp-controller="User" asp-action="Details" asp-route-id="@Model.AppUserId"
+                   class="btn btn-sm btn-outline-primary w-100">
+                    <i class="bi bi-person-lines-fill me-1"></i>Tam Profili Gör
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SAĞ: Sertifika bilgileri + belge -->
+    <div class="col-lg-8 d-flex flex-column gap-4">
+
+        <!-- Sertifika bilgi kartı -->
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-patch-check me-2"></i>Sertifika Bilgileri</span>
+                @switch (Model.Durumu)
+                {
+                    case CertificateStatus.Gecerli:
+                        <span class="badge bg-success px-3">Geçerli</span>
+                        break;
+                    case CertificateStatus.SuresiDolu:
+                        <span class="badge bg-warning text-dark px-3">Süresi Dolu</span>
+                        break;
+                    case CertificateStatus.IptalEdildi:
+                        <span class="badge bg-danger px-3">İptal Edildi</span>
+                        break;
+                }
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded h-100">
+                            <div class="text-muted small mb-1"><i class="bi bi-award me-1"></i>Sertifika Türü</div>
+                            <div class="fw-semibold">@Model.SertifikaTuru?.Ad</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded h-100">
+                            <div class="text-muted small mb-1"><i class="bi bi-building me-1"></i>Veren Kurum</div>
+                            <div class="fw-semibold">@Model.VerenKurum</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded h-100">
+                            <div class="text-muted small mb-1"><i class="bi bi-upc me-1"></i>Belge No</div>
+                            <div class="fw-semibold">@Model.BelgeNo</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded h-100">
+                            <div class="text-muted small mb-1"><i class="bi bi-chat-left-text me-1"></i>Açıklama</div>
+                            <div class="fw-semibold">@(string.IsNullOrEmpty(Model.Aciklama) ? "—" : Model.Aciklama)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarih zaman çizelgesi -->
+                <div class="row text-center mt-4">
+                    <div class="col-4">
+                        <div class="border-end">
+                            <div class="text-muted small">Alınma</div>
+                            <div class="fw-bold fs-6"><i class="bi bi-calendar-check text-primary me-1"></i>@Model.AlinmaTarihi.ToString("dd.MM.yyyy")</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="border-end">
+                            <div class="text-muted small">Yenileme</div>
+                            <div class="fw-bold fs-6"><i class="bi bi-arrow-repeat text-warning me-1"></i>@Model.YenilemeTarihi.ToString("dd.MM.yyyy")</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-muted small">Geçerlilik Sonu</div>
+                        <div class="fw-bold fs-6"><i class="bi bi-calendar-x text-danger me-1"></i>@Model.GecerlilikTarihi.ToString("dd.MM.yyyy")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Belge önizleme kartı -->
+        <div class="card shadow-sm flex-grow-1">
+            <div class="card-header">
+                <i class="bi bi-file-earmark-image me-2"></i>Sertifika Belgesi
+            </div>
+            <div class="card-body text-center">
+                @if (dosyaUrl != null)
+                {
+                    @if (pdfMi)
+                    {
+                        <div class="border rounded overflow-hidden" style="height: 480px;">
+                            <iframe src="@dosyaUrl" width="100%" height="100%" style="border:none;"></iframe>
+                        </div>
+                    }
+                    else
+                    {
+                        <a href="@dosyaUrl" target="_blank" title="Büyütmek için tıklayın">
+                            <img src="@dosyaUrl" alt="Sertifika"
+                                 class="img-fluid border rounded shadow-sm"
+                                 style="max-height: 480px; cursor: zoom-in;" />
+                        </a>
+                        <div class="text-muted small mt-2">
+                            <i class="bi bi-zoom-in me-1"></i>Büyütmek için görsele tıklayın
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-muted py-5">
+                        <i class="bi bi-file-earmark-x fs-1 d-block mb-2"></i>
+                        Yüklenmiş belge bulunmuyor.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -9,5 +9,8 @@ namespace HumanResources.WebUI.Services.CertificateServices
         Task<BaseResult<List<CertificateDto>>> GetByUserIdAsync(int userId);
         Task<BaseResult<List<CertificateDto>>> GetUpcomingSoonAsync(int days);
         Task<BaseResult<List<CertificateDto>>> GetByCertificateTypeIdAsync(int typeId);
+        Task<BaseResult<List<CertificateDto>>> GetAllWithInfoAsync();
+        Task<BaseResult<CertificateDto>> GetWithInfoAsync(int id);
+
     }
 }

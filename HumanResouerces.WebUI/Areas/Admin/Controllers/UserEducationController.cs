@@ -1,4 +1,5 @@
 ﻿using HumanResouerces.WebUI.Enums;
+using HumanResources.WebUI.DTOs.UserEducationDtos;
 using HumanResources.WebUI.Services.UserEducationServices;
 using Microsoft.AspNetCore.Mvc;
 
@@ -50,5 +51,22 @@ namespace HumanResouerces.WebUI.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index), new { basarili = "guncellendi" });
         }
+
+        [HttpPost]
+        public async Task<IActionResult> AddParticipant(int egitimId, int userId, string? returnUrl)
+        {
+            await _userEducationService.AddParticipantAsync(new CreateUserEducationDto
+            {
+                AppUserId = userId,
+                EgitimId = egitimId
+            });
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect($"{returnUrl}?basarili=eklendi");
+
+            return RedirectToAction(nameof(Index), new { basarili = "eklendi" });
+        }
+
+
     }
 }

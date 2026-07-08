@@ -14,5 +14,10 @@ namespace HumanResources.Business.Services.UserEducationServices
         Task<BaseResult<List<GetWithUserInfoDto>>> GetUsersByEducationIdAsync(int egitimId);
 
         Task<BaseResult<List<UserEducationDto>>> GetUserEducationWithAllInfoAsync();
+
+        Task<BaseResult<object>> AddParticipantByAdminAsync(CreateUserEducationDto createDto);
+
+
+
     }
 }

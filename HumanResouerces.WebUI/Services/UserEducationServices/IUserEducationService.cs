@@ -11,5 +11,6 @@ namespace HumanResources.WebUI.Services.UserEducationServices
         Task<BaseResult<List<GetWithEducationInfoDto>>> GetByUserIdAsync(int userId);
         Task<BaseResult<List<GetWithUserInfoDto>>> GetByEducationIdAsync(int egitimId);
         Task<BaseResult<List<UserEducationDto>>> GetAllWithInfoAsync();
+        Task<BaseResult<object>> AddParticipantAsync(CreateUserEducationDto createDto);
     }
 }

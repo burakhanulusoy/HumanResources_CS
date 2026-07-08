@@ -70,5 +70,20 @@ namespace HumanResources.API.Controllers
             var response = await _certificateService.GetUsersByCertificateTypeIdAsync(typeId);
             return response.IsSuccessful ? Ok(response) : BadRequest(response);
         }
+
+        [HttpGet("GetAllWithInfo")]
+        public async Task<IActionResult> GetAllWithInfo()
+        {
+            var response = await _certificateService.GetAllWithInfoAsync();
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
+
+        [HttpGet("GetWithInfo/{id}")]
+        public async Task<IActionResult> GetWithInfo(int id)
+        {
+            var response = await _certificateService.GetByIdWithInfoAsync(id);
+            return response.IsSuccessful ? Ok(response) : BadRequest(response);
+        }
+
     }
 }

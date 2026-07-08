@@ -22,20 +22,21 @@ namespace HumanResources.Business.Validators.CertificateValidators
                 .NotEmpty().WithMessage("Belge numarasý zorunludur.")
                 .MaximumLength(50).WithMessage("Belge numarasý en fazla 50 karakter olabilir.");
 
-            // Alýnma tarihi bugünden ileri bir tarih olamaz (Henüz alýnmamýþ belge sisteme girilemez)
             RuleFor(x => x.AlinmaTarihi)
                 .NotEmpty().WithMessage("Alýnma tarihi zorunludur.")
                 .LessThanOrEqualTo(DateTime.Today).WithMessage("Alýnma tarihi bugünden ileri bir tarih olamaz.");
 
-            // Geçerlilik tarihi alýnma tarihinden sonra olmalýdýr
+            // --- YENÝ KAYIT ÝÇÝN ÝSTEM AÇIÐI KONTROLÜ ---
+            // Yeni oluþturulan belge "Geçerli" sayýlacaðý için süresi geçmiþ olmamalý.
             RuleFor(x => x.GecerlilikTarihi)
                 .NotEmpty().WithMessage("Geçerlilik tarihi zorunludur.")
-                .GreaterThan(x => x.AlinmaTarihi).WithMessage("Geçerlilik tarihi, alýnma tarihinden sonra olmalýdýr.");
+                .GreaterThan(x => x.AlinmaTarihi).WithMessage("Geçerlilik tarihi, alýnma tarihinden sonra olmalýdýr.")
+                .GreaterThanOrEqualTo(DateTime.Today).WithMessage("Süresi çoktan dolmuþ bir belge sisteme yeni kayýt olarak eklenemez.");
 
-            // Yenileme tarihi alýnma tarihinden sonra olmalýdýr
             RuleFor(x => x.YenilemeTarihi)
                 .NotEmpty().WithMessage("Yenileme tarihi zorunludur.")
-                .GreaterThan(x => x.AlinmaTarihi).WithMessage("Yenileme tarihi, alýnma tarihinden sonra olmalýdýr.");
+                .GreaterThan(x => x.AlinmaTarihi).WithMessage("Yenileme tarihi, alýnma tarihinden sonra olmalýdýr.")
+                .LessThan(x => x.GecerlilikTarihi).WithMessage("Yenileme tarihi, geçerlilik tarihinden önce olmalýdýr.");
         }
     }
 }

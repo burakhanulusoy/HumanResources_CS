@@ -154,10 +154,10 @@ namespace HumanResources.Business.Services.CertificateServices
         {
             var entities = await _certificateRepository.GetDateUpcamingSoonAsync(bildirimGunu);
 
-            // ÝÞ KURALI: Yaklaþan belge yoksa Fail dön
             if (entities == null || !entities.Any())
             {
-                return BaseResult<List<CertificateDto>>.Fail($"Önümüzdeki {bildirimGunu} gün içinde süresi dolacak sertifika bulunmamaktadýr.");
+                // Mesajý yeni duruma göre güncelledik
+                return BaseResult<List<CertificateDto>>.Fail($"Dikkat gerektiren (süresi dolan, yaklaþan veya iptal edilen) sertifika bulunmamaktadýr.");
             }
 
             var mappedEntities = entities.Adapt<List<CertificateDto>>();
@@ -177,5 +177,25 @@ namespace HumanResources.Business.Services.CertificateServices
             var mappedEntities = entities.Adapt<List<CertificateDto>>();
             return BaseResult<List<CertificateDto>>.Success(mappedEntities);
         }
+
+        // CertificateService.cs — ekle
+        public async Task<BaseResult<List<CertificateDto>>> GetAllWithInfoAsync()
+        {
+            var entities = await _certificateRepository.GetAllWithInfoAsync();
+            var mappedEntities = entities.Adapt<List<CertificateDto>>();
+            return BaseResult<List<CertificateDto>>.Success(mappedEntities);
+        }
+
+        public async Task<BaseResult<CertificateDto>> GetByIdWithInfoAsync(int id)
+        {
+            var entity = await _certificateRepository.GetByIdWithInfoAsync(id);
+
+            if (entity is null) return BaseResult<CertificateDto>.Fail("Certificate Not Found");
+
+            var mappedEntity = entity.Adapt<CertificateDto>();
+            return BaseResult<CertificateDto>.Success(mappedEntity);
+        }
+
+
     }
 }
