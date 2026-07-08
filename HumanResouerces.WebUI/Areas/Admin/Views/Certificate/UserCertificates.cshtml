@@ -2,16 +2,11 @@
 @using HumanResouerces.WebUI.Enums
 @inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 
-
-
 @{
     ViewData["Title"] = "Personel Sertifikaları";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 
-    // appsettings.json'dan API Base URL değerini çekiyoruz (sonundaki slash'i garantiye alarak)
     var apiBaseUrl = Configuration["ApiOptions:baseUrl"]?.TrimEnd('/');
-
-    // Liste boş değilse personel bilgilerini ilk kayıttan çekiyoruz
     var personel = Model.FirstOrDefault()?.AppUser;
 }
 
@@ -89,16 +84,31 @@
                     @foreach (var s in Model)
                     {
                         var kalanGun = (s.GecerlilikTarihi.Date - DateTime.Today).Days;
-                        string rowClass = s.Durumu == CertificateStatus.IptalEdildi ? "table-secondary text-muted" : "";
+                        string rowClass = s.Durumu == CertificateStatus.Sinirsiz ? "table-info"
+                        : s.Durumu == CertificateStatus.IptalEdildi ? "table-secondary text-muted"
+                        : "";
 
                         <tr class="@rowClass">
                             <td class="fw-semibold">@s.SertifikaTuru?.Ad</td>
                             <td>@s.VerenKurum</td>
                             <td><span class="text-muted">@s.BelgeNo</span></td>
                             <td>@s.AlinmaTarihi.ToString("dd.MM.yyyy")</td>
-                            <td>@s.GecerlilikTarihi.ToString("dd.MM.yyyy")</td>
+                            <td>
+                                @if (s.Durumu == CertificateStatus.Sinirsiz)
+                                {
+                                    <span class="text-muted"><i class="bi bi-infinity"></i></span>
+                                }
+                                else
+                                {
+                                    @s.GecerlilikTarihi.ToString("dd.MM.yyyy")
+                                }
+                            </td>
                             <td class="text-center">
-                                @if (s.Durumu == CertificateStatus.IptalEdildi)
+                                @if (s.Durumu == CertificateStatus.Sinirsiz)
+                                {
+                                    <span class="badge bg-info text-dark"><i class="bi bi-infinity me-1"></i>Süresiz</span>
+                                }
+                                else if (s.Durumu == CertificateStatus.IptalEdildi)
                                 {
                                     <span class="badge bg-dark">İptal Edildi</span>
                                 }

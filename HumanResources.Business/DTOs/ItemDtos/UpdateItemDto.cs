@@ -10,7 +10,8 @@ namespace HumanResources.Business.DTOs.ItemDtos
         public int ZimmetTuruId { get; set; }
 
         public string? SeriNumarasi { get; set; }
-
+        public string? Marka { get; set; }
+        public string? Model { get; set; }
         public DateTime TeslimTarihi { get; set; }
 
         public DateTime? IadeTarihi { get; set; }

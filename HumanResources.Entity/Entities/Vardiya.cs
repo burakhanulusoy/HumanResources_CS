@@ -2,18 +2,16 @@ using HumanResources.Entity.Entities.Common;
 
 namespace HumanResources.Entity.Entities
 {
-    public class Vardiya : BaseEntity 
+    public class Vardiya : BaseEntity
     {
-        public string Aciklama { get; set; } 
-
+        public string Aciklama { get; set; }
         public TimeSpan BaslangicSaati { get; set; }
         public TimeSpan BitisSaati { get; set; }
-
         public int AraDinlenmeSuresiDk { get; set; }
-
         public TimeSpan CalismaSuresi { get; set; }
 
-       
+        public int? YoneticiId { get; set; }
+        public AppUser? Yonetici { get; set; }
 
         public IList<AppUser> Personeller { get; set; }
     }

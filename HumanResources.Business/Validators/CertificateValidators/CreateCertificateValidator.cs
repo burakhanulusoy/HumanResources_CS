@@ -26,17 +26,16 @@ namespace HumanResources.Business.Validators.CertificateValidators
                 .NotEmpty().WithMessage("Alýnma tarihi zorunludur.")
                 .LessThanOrEqualTo(DateTime.Today).WithMessage("Alýnma tarihi bugünden ileri bir tarih olamaz.");
 
-            // --- YENÝ KAYIT ÝÇÝN ÝSTEM AÇIÐI KONTROLÜ ---
-            // Yeni oluþturulan belge "Geçerli" sayýlacaðý için süresi geçmiþ olmamalý.
             RuleFor(x => x.GecerlilikTarihi)
-                .NotEmpty().WithMessage("Geçerlilik tarihi zorunludur.")
-                .GreaterThan(x => x.AlinmaTarihi).WithMessage("Geçerlilik tarihi, alýnma tarihinden sonra olmalýdýr.")
-                .GreaterThanOrEqualTo(DateTime.Today).WithMessage("Süresi çoktan dolmuþ bir belge sisteme yeni kayýt olarak eklenemez.");
+     .NotEmpty().WithMessage("Geçerlilik tarihi zorunludur.")
+     .GreaterThan(x => x.AlinmaTarihi).WithMessage("Geçerlilik tarihi, alýnma tarihinden sonra olmalýdýr.")
+     .When(x => !x.SuresizGecerli);   // YENÝ: süresizse bu kural hiç çalýþmaz
 
             RuleFor(x => x.YenilemeTarihi)
                 .NotEmpty().WithMessage("Yenileme tarihi zorunludur.")
                 .GreaterThan(x => x.AlinmaTarihi).WithMessage("Yenileme tarihi, alýnma tarihinden sonra olmalýdýr.")
-                .LessThan(x => x.GecerlilikTarihi).WithMessage("Yenileme tarihi, geçerlilik tarihinden önce olmalýdýr.");
+                .LessThan(x => x.GecerlilikTarihi).WithMessage("Yenileme tarihi, geçerlilik tarihinden önce olmalýdýr.")
+                .When(x => !x.SuresizGecerli);   // YENÝ }
         }
     }
 }

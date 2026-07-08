@@ -15,11 +15,12 @@ namespace HumanResouerces.WebUI.Enums
         Tamamlandi = 3,
         IptalEdildi = 4
     }
-    public enum CertificateStatus //sertifika olayý
+    public enum CertificateStatus
     {
-        Gecerli = 1,      // Süresi devam ediyor
-        SuresiDolu = 2,   // Geçerlilik tarihi geçmiþ, yenilenmesi lazým
-        IptalEdildi = 3   // Herhangi bir disiplin suçu vb. sebeple iptal edilmiþ
+        Gecerli = 1,
+        SuresiDolu = 2,
+        IptalEdildi = 3,
+        Sinirsiz = 4
     }
 
 

@@ -4,71 +4,114 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="row mt-4">
-    <div class="col-lg-8 mb-4">
-        <div class="card shadow-sm border-0 rounded-3 h-100">
-            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-bold text-dark">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2 text-primary"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                    Zimmet Bilgileri
-                </h5>
-                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle px-3 py-2 rounded-pill">
-                    Durum: @Model.Durumu.ToString()
-                </span>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0"><i class="bi bi-box-seam me-2"></i>Zimmet Detayı</h3>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Listeye Dön
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-info-circle me-2"></i>Zimmet Bilgileri</span>
+                @switch (Model.Durumu.ToString())
+                {
+                    case "Aktif":
+                        <span class="badge bg-success px-3">Aktif</span>
+                        break;
+                    case "IadeEdildi":
+                        <span class="badge bg-secondary px-3">İade Edildi</span>
+                        break;
+                    case "Arizali":
+                        <span class="badge bg-warning text-dark px-3">Arızalı</span>
+                        break;
+                    case "Kayip":
+                        <span class="badge bg-danger px-3">Kayıp</span>
+                        break;
+                }
             </div>
-            <div class="card-body p-4">
-                <div class="row g-4">
+            <div class="card-body">
+                <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="text-muted small fw-semibold text-uppercase">Zimmet Türü</label>
-                        <p class="fw-bold fs-6 mb-0">@(Model.ZimmetTuru?.Ad ?? "-")</p>
+                        <div class="p-3 bg-light rounded h-100">
+                            <div class="text-muted small mb-1"><i class="bi bi-tags me-1"></i>Zimmet Türü</div>
+                            <div class="fw-semibold">@(Model.ZimmetTuru?.Ad ?? "-")</div>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="text-muted small fw-semibold text-uppercase">Seri Numarası</label>
-                        <p class="fw-bold fs-6 mb-0">@(string.IsNullOrEmpty(Model.SeriNumarasi) ? "Belirtilmemiş" : Model.SeriNumarasi)</p>
+                        <div class="p-3 bg-light rounded h-100">
+                            <div class="text-muted small mb-1"><i class="bi bi-upc-scan me-1"></i>Seri Numarası</div>
+                            <div class="fw-semibold">@(string.IsNullOrEmpty(Model.SeriNumarasi) ? "Belirtilmemiş" : Model.SeriNumarasi)</div>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="text-muted small fw-semibold text-uppercase">Teslim Ediliş Tarihi</label>
-                        <p class="fw-bold fs-6 mb-0">@Model.TeslimTarihi.ToString("dd.MM.yyyy")</p>
+                        <div class="p-3 bg-light rounded h-100">
+                            <div class="text-muted small mb-1"><i class="bi bi-award me-1"></i>Marka</div>
+                            <div class="fw-semibold">@(string.IsNullOrEmpty(Model.Marka) ? "-" : Model.Marka)</div>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="text-muted small fw-semibold text-uppercase">İade Tarihi</label>
-                        <p class="fw-bold fs-6 mb-0">@(Model.IadeTarihi.HasValue && Model.IadeTarihi.Value.Year > 2000 ? Model.IadeTarihi.Value.ToString("dd.MM.yyyy") : "Devam Ediyor")</p>
-                    </div>
-                    <div class="col-12">
-                        <label class="text-muted small fw-semibold text-uppercase">Açıklama / Notlar</label>
-                        <div class="p-3 bg-light rounded mt-1 border">
-                            @(string.IsNullOrEmpty(Model.Aciklama) ? "Bu zimmet ile ilgili ek bir açıklama bulunmamaktadır." : Model.Aciklama)
+                        <div class="p-3 bg-light rounded h-100">
+                            <div class="text-muted small mb-1"><i class="bi bi-cpu me-1"></i>Model</div>
+                            <div class="fw-semibold">@(string.IsNullOrEmpty(Model.Model) ? "-" : Model.Model)</div>
                         </div>
                     </div>
                 </div>
+
+                <div class="row text-center mt-4">
+                    <div class="col-6">
+                        <div class="border-end">
+                            <div class="text-muted small">Teslim Tarihi</div>
+                            <div class="fw-bold fs-6"><i class="bi bi-calendar-check text-primary me-1"></i>@Model.TeslimTarihi.ToString("dd.MM.yyyy")</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-muted small">İade Tarihi</div>
+                        <div class="fw-bold fs-6">
+                            <i class="bi bi-calendar-x text-secondary me-1"></i>
+                            @(Model.IadeTarihi.HasValue && Model.IadeTarihi.Value.Year > 2000
+                                                        ? Model.IadeTarihi.Value.ToString("dd.MM.yyyy")
+                                                        : "Devam Ediyor")
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="text-muted small mb-1"><i class="bi bi-chat-left-text me-1"></i>Açıklama / Notlar</div>
+                <div class="p-3 bg-light rounded">
+                    @(string.IsNullOrEmpty(Model.Aciklama) ? "Bu zimmet ile ilgili ek bir açıklama bulunmamaktadır." : Model.Aciklama)
+                </div>
             </div>
-            <div class="card-footer bg-white border-top p-3 d-flex justify-content-end">
-                <a href="/Admin/Item/Index" class="btn btn-light border px-4 me-2">Listeye Dön</a>
-                <a href="/Admin/Item/UpdateItem/@Model.Id" class="btn btn-primary px-4">Zimmeti Düzenle</a>
+            <div class="card-footer bg-transparent d-flex justify-content-end gap-2">
+                <a asp-action="ZimmetBelgesi" asp-route-id="@Model.Id" class="btn btn-outline-primary">
+                    <i class="bi bi-file-earmark-text me-1"></i>Teslim Belgesini Görüntüle
+                </a>
+                <a asp-action="UpdateItem" asp-route-id="@Model.Id" class="btn btn-warning">
+                    <i class="bi bi-pencil me-1"></i>Düzenle
+                </a>
             </div>
         </div>
     </div>
 
-    <div class="col-lg-4 mb-4">
-        <div class="card shadow-sm border-0 rounded-3">
-            <div class="card-header bg-white border-bottom py-3">
-                <h5 class="mb-0 fw-bold text-dark">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2 text-success"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                    Zimmetli Personel
-                </h5>
+    <div class="col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">
+                <i class="bi bi-person-badge me-2"></i>Zimmetli Personel
             </div>
-            <div class="card-body p-4 text-center">
-                <div class="mb-3">
-                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                        <span class="fs-3 fw-bold text-secondary">@(Model.AppUser?.Ad?.Substring(0, 1))@(Model.AppUser?.Soyad?.Substring(0, 1))</span>
-                    </div>
+            <div class="card-body text-center">
+                <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center mb-3 shadow-sm"
+                     style="width:90px;height:90px;font-size:1.8rem;">
+                    @(Model.AppUser?.Ad?.Substring(0, 1))@(Model.AppUser?.Soyad?.Substring(0, 1))
                 </div>
-                <h5 class="fw-bold mb-1">@(Model.AppUser?.Ad) @(Model.AppUser?.Soyad)</h5>
-                <p class="text-muted mb-3">@(Model.AppUser?.DepartmanAd ?? "Departman Yok") / @(Model.AppUser?.BirimAd ?? "Birim Yok")</p>
+                <h5 class="mb-1">@Model.AppUser?.Ad @Model.AppUser?.Soyad</h5>
+                <p class="text-muted mb-3">@(Model.AppUser?.DepartmanAd ?? "-") / @(Model.AppUser?.BirimAd ?? "-")</p>
 
-                <a href="/Admin/User/Details/@Model.AppUserId" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    Personeli İncele
+                <a asp-controller="User" asp-action="Details" asp-route-id="@Model.AppUserId"
+                   class="btn btn-outline-primary w-100">
+                    <i class="bi bi-person-lines-fill me-1"></i>Personeli İncele
                 </a>
             </div>
         </div>

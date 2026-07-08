@@ -42,8 +42,7 @@
                             <div class="row">
                                 <div class="col-6 mb-3">
                                     <label asp-for="Egitim.EgitimTarihi" class="form-label">Tarih</label>
-                                    <input asp-for="Egitim.EgitimTarihi" type="date" class="form-control"
-                                           min="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                                    <input asp-for="Egitim.EgitimTarihi" type="date" class="form-control" required />
                                     <span asp-validation-for="Egitim.EgitimTarihi" class="text-danger small"></span>
                                 </div>
                                 <div class="col-6 mb-3">

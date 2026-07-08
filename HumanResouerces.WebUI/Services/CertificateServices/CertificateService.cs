@@ -17,7 +17,7 @@ namespace HumanResources.WebUI.Services.CertificateServices
                 streamContent.Headers.ContentType = new MediaTypeHeaderValue(createDto.Dosya.ContentType);
                 content.Add(streamContent, "Dosya", createDto.Dosya.FileName);
             }
-
+            content.Add(new StringContent(createDto.SuresizGecerli.ToString()), "SuresizGecerli");
             content.Add(new StringContent(createDto.AppUserId.ToString()), "AppUserId");
             content.Add(new StringContent(createDto.SertifikaTuruId.ToString()), "SertifikaTuruId");
             content.Add(new StringContent(createDto.VerenKurum ?? ""), "VerenKurum");

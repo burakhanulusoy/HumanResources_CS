@@ -28,13 +28,18 @@ namespace HumanResources.DataAccess.Repositories.ItemRepositories
                 .ToListAsync();
         }
 
-        public async Task<Zimmet> GetItemWithDetailsByIdAsync(int id)
-        {
-            return await _table
-                .Include(x => x.AppUser)    // Eşyaya tıklanınca kime zimmetli olduğunu (kimin aldığını) getir
-                .Include(x => x.ZimmetTuru) // Eşyanın adını ve detaylarını getir
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
-        }
+     public async Task<Zimmet> GetItemWithDetailsByIdAsync(int id)
+{
+    return await _table
+        .Include(x => x.AppUser)
+            .ThenInclude(u => u.Amir)   // YENİ — amir bilgisini de getir
+        .Include(x => x.AppUser)
+            .ThenInclude(u => u.Departman)
+        .Include(x => x.AppUser)
+            .ThenInclude(u => u.Birim)
+        .Include(x => x.ZimmetTuru)
+        .AsNoTracking()
+        .FirstOrDefaultAsync(x => x.Id == id);
+}
     }
 }

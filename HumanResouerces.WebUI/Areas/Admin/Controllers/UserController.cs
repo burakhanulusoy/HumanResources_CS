@@ -1,4 +1,5 @@
 ﻿using HumanResouerces.WebUI.Areas.Admin.Models;
+using HumanResources.WebUI.Services.ItemServices;
 using HumanResources.WebUI.Services.UserEducationServices;
 using HumanResources.WebUI.Services.UserServices;
 using Microsoft.AspNetCore.Mvc;
@@ -7,17 +8,12 @@ namespace HumanResouerces.WebUI.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class UserController(IUserService _userService,
-                                IUserEducationService _userEducationService) : Controller
+                                IUserEducationService _userEducationService,
+                                IItemService _itemService) : Controller
     {
         public async Task<IActionResult> Index()
         {
             var response = await _userService.GetAllUsersWithRolesAsync();
-            return View(response.Data);
-        }
-
-        public async Task<IActionResult> UnitUsers(int id)
-        {
-            var response = await _userService.GetUsersByUnitIdAsync(id);
             return View(response.Data);
         }
 
@@ -35,6 +31,19 @@ namespace HumanResouerces.WebUI.Areas.Admin.Controllers
             {
                 Kullanici = user.Data,
                 Egitimler = educations.Data
+            };
+            return View(vm);
+        }
+
+        // YENİ: Personelin üzerindeki zimmetleri listeler
+        public async Task<IActionResult> UserItems(int id)
+        {
+            var user = await _userService.GetByIdWithDepartmentAndUnitAsync(id);
+            var items = await _itemService.GetItemsByUserIdAsync(id);
+            var vm = new UserItemsViewModel
+            {
+                Kullanici = user.Data,
+                Zimmetler = items.Data ?? new()
             };
             return View(vm);
         }

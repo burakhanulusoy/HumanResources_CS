@@ -55,7 +55,17 @@
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" asp-for="Sertifika.SuresizGecerli" id="suresizCheck" role="switch" />
+                            <label class="form-check-label fw-semibold" for="suresizCheck">
+                                <i class="bi bi-infinity me-1"></i>Süresiz Geçerli
+                                <small class="text-muted d-block fw-normal">Ömür boyu geçerli diploma/sertifika gibi belgeler için işaretleyin.</small>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="row" id="tarihSatiri">
                         <div class="col-md-4 mb-3">
                             <label asp-for="Sertifika.AlinmaTarihi" class="form-label">Alınma Tarihi</label>
                             <input asp-for="Sertifika.AlinmaTarihi" type="date" class="form-control"
@@ -103,7 +113,6 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // Aranabilir dropdown'lar
     $('.js-select2').select2({
         theme: 'bootstrap-5',
         width: '100%',
@@ -112,12 +121,30 @@
         }
     });
 
-    // Tarih kuralları: Alınma < Yenileme < Geçerlilik
+    // Süresiz geçerli anahtarı: işaretlenirse tarih alanları devre dışı kalır
+    const suresizCheck = document.getElementById('suresizCheck');
+    const tarihSatiri = document.getElementById('tarihSatiri');
     const alinma = document.getElementById('alinmaTarihi');
     const gecerlilik = document.getElementById('gecerlilikTarihi');
     const yenileme = document.getElementById('yenilemeTarihi');
 
+    function suresizDurumuGuncelle() {
+        const suresiz = suresizCheck.checked;
+        gecerlilik.disabled = suresiz;
+        yenileme.disabled = suresiz;
+        gecerlilik.required = !suresiz;
+        yenileme.required = !suresiz;
+
+        tarihSatiri.querySelectorAll('.col-md-4:not(:first-child)').forEach(col => {
+            col.style.opacity = suresiz ? '0.4' : '1';
+        });
+    }
+    suresizCheck.addEventListener('change', suresizDurumuGuncelle);
+    suresizDurumuGuncelle();
+
+    // Tarih kuralları: Alınma < Yenileme < Geçerlilik (süresiz değilken geçerli)
     function tarihSinirlariAyarla() {
+        if (suresizCheck.checked) return;
         if (alinma.value) {
             const ertesiGun = new Date(alinma.value);
             ertesiGun.setDate(ertesiGun.getDate() + 1);
@@ -135,7 +162,6 @@
     gecerlilik.addEventListener('change', tarihSinirlariAyarla);
     tarihSinirlariAyarla();
 
-    // Kaydetmeden önce onay
     const form = document.getElementById('createCertificateForm');
     form.addEventListener('submit', function (e) {
         if (form.dataset.confirmed === 'true') return;

@@ -4,6 +4,7 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     string pdfFileName = $"Vardiya_Listesi_Raporu_{DateTime.Now.ToString("dd_MM_yyyy")}.pdf";
     int totalStaff = Model?.Sum(s => s.Personeller?.Count ?? 0) ?? 0;
+    string logoUrl = "/ImagesProject/Logo.png";
 }
 
 <style>
@@ -41,7 +42,6 @@
             color: #fff;
         }
 
-    /* ===== Resmi belge şablonu ===== */
     #pdfContent {
         background: #ffffff;
         font-family: 'Segoe UI', Arial, sans-serif;
@@ -212,9 +212,12 @@
 <div id="pdfContent" class="card shadow-sm p-5">
 
     <div class="doc-header">
-        <div class="org-info">
-            <h3>İnsan Kaynakları Departmanı</h3>
-            <p>Vardiya Yönetim Sistemi</p>
+        <div class="org-info d-flex align-items-center gap-3">
+            <img src="@logoUrl" alt="Logo" style="height:50px;width:auto;" />
+            <div>
+                <h3>ÖNCÜ SAVUNMA</h3>
+                <p>İnsan Kaynakları – Vardiya Yönetim Sistemi</p>
+            </div>
         </div>
         <div class="doc-meta">
             <div><strong>Rapor No:</strong> VRD-@DateTime.Now.ToString("yyyyMMdd")</div>
@@ -247,7 +250,7 @@
         {
             <div class="doc-shift-block">
                 <div class="doc-shift-heading">
-                    <span>@shift.Aciklama</span>
+                    <span>@shift.Aciklama @(shift.Yonetici != null ? $"— Yönetici: {shift.Yonetici.Ad} {shift.Yonetici.Soyad}" : "")</span>
                     <span>@shift.BaslangicSaati.ToString(@"hh\:mm") - @shift.BitisSaati.ToString(@"hh\:mm") &nbsp;|&nbsp; Mola: @shift.AraDinlenmeSuresiDk dk</span>
                 </div>
 
@@ -266,9 +269,10 @@
                             foreach (var p in shift.Personeller)
                             {
                                 pCount++;
+                                bool yoneticiMi = shift.YoneticiId.HasValue && shift.YoneticiId.Value == p.Id;
                                 <tr>
                                     <td>@pCount</td>
-                                    <td>@p.Ad @p.Soyad</td>
+                                    <td>@p.Ad @p.Soyad @(yoneticiMi ? "⭐" : "")</td>
                                     <td>@(string.IsNullOrEmpty(p.SicilNo) ? p.Email : p.SicilNo)</td>
                                 </tr>
                             }
@@ -309,7 +313,7 @@
             margin: 0.5,
             filename: '@pdfFileName',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
+            html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
         };
         html2pdf().set(opt).from(element).save();

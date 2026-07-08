@@ -11,7 +11,8 @@ namespace HumanResources.Business.DTOs.ItemDtos
         public DateTime TeslimTarihi { get; set; }
 
         public DateTime IadeTarihi { get; set; }
-
+        public string? Marka { get; set; }
+        public string? Model { get; set; }
 
         public string Aciklama { get; set; }
     }

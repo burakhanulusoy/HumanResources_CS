@@ -3,6 +3,7 @@
     ViewData["Title"] = "Vardiya Detaylı İnceleme";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     string pdfFileName = $"Vardiya_Detay_{Model.Aciklama.Replace(" ", "_")}.pdf";
+    string logoUrl = "/ImagesProject/Logo.png";
 }
 
 <style>
@@ -33,7 +34,6 @@
             color: #fff;
         }
 
-    /* ===== Resmi belge şablonu (ekranda da bu görünür, PDF de bunu yakalar) ===== */
     #pdfContent {
         background: #ffffff;
         font-family: 'Segoe UI', Arial, sans-serif;
@@ -144,6 +144,11 @@
             background: #fafafa;
         }
 
+        .doc-staff-table tr.manager-row td {
+            background: #fef9e7;
+            font-weight: 700;
+        }
+
     .doc-signature-area {
         display: flex;
         justify-content: space-between;
@@ -151,7 +156,7 @@
     }
 
     .doc-signature-box {
-        width: 40%; /* 3 imzadan 2 imzaya düştüğü için 30'dan 40'a çıkarıldı */
+        width: 40%;
         text-align: center;
         font-size: .8rem;
     }
@@ -160,6 +165,11 @@
         border-top: 1px solid #000;
         margin-top: 50px;
         padding-top: 6px;
+    }
+
+    .doc-signature-name {
+        margin-top: 4px;
+        font-weight: 700;
     }
 
     .doc-footer {
@@ -186,9 +196,12 @@
 
 <div id="pdfContent" class="card shadow-sm p-5">
     <div class="doc-header">
-        <div class="org-info">
-            <h3>İnsan Kaynakları Departmanı</h3>
-            <p>Vardiya Yönetim Sistemi</p>
+        <div class="org-info d-flex align-items-center gap-3">
+            <img src="@logoUrl" alt="Logo" style="height:50px;width:auto;" />
+            <div>
+                <h3>ÖNCÜ SAVUNMA</h3>
+                <p>İnsan Kaynakları – Vardiya Yönetim Sistemi</p>
+            </div>
         </div>
         <div class="doc-meta">
             <div><strong>Belge No:</strong> VRD-@Model.Id-@DateTime.Now.ToString("yyyyMMdd")</div>
@@ -220,6 +233,10 @@
             <td class="label">Net Çalışma Süresi</td>
             <td>@Model.CalismaSuresi.ToString(@"hh\:mm")</td>
         </tr>
+        <tr>
+            <td class="label">Vardiya Yöneticisi</td>
+            <td colspan="3">@(Model.Yonetici != null ? $"{Model.Yonetici.Ad} {Model.Yonetici.Soyad}" : "Atanmadı")</td>
+        </tr>
     </table>
 
     <p class="doc-section-title">
@@ -245,9 +262,10 @@
                 foreach (var user in Model.Personeller)
                 {
                     pCount++;
-                    <tr>
+                    bool yoneticiMi = Model.YoneticiId.HasValue && Model.YoneticiId.Value == user.Id;
+                    <tr class="@(yoneticiMi ? "manager-row" : "")">
                         <td>@pCount</td>
-                        <td>@user.Ad @user.Soyad</td>
+                        <td>@user.Ad @user.Soyad @(yoneticiMi ? "⭐ (Yönetici)" : "")</td>
                         <td>@user.Email</td>
                         <td>@(string.IsNullOrEmpty(user.DepartmanAd) ? "-" : user.DepartmanAd)</td>
                         <td>@(string.IsNullOrEmpty(user.BirimAd) ? "-" : user.BirimAd)</td>
@@ -265,7 +283,15 @@
 
     <div class="doc-signature-area">
         <div class="doc-signature-box"><div class="doc-signature-line">İnsan Kaynakları Yetkilisi</div></div>
-        <div class="doc-signature-box"><div class="doc-signature-line">Genel Müdür Onayı</div></div>
+        <div class="doc-signature-box">
+            <div class="doc-signature-line">
+                Vardiya Yöneticisi
+                @if (Model.Yonetici != null)
+                {
+                    <div class="doc-signature-name">@Model.Yonetici.Ad @Model.Yonetici.Soyad</div>
+                }
+            </div>
+        </div>
     </div>
 
     <div class="doc-footer">
@@ -282,7 +308,7 @@
             margin: 0.5,
             filename: '@pdfFileName',
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
+            html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
         };
         html2pdf().set(opt).from(element).save();

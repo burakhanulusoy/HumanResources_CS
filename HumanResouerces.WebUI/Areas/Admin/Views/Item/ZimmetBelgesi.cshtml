@@ -1,0 +1,301 @@
+﻿@model HumanResources.WebUI.DTOs.ItemDtos.ItemDto
+@{
+    ViewData["Title"] = "Zimmet Teslim Belgesi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    string logoUrl = "/ImagesProject/Logo.png";
+    string pdfFileName = $"Zimmet_Belgesi_{Model.AppUser?.Ad}_{Model.AppUser?.Soyad}.pdf";
+}
+
+<style>
+    .btn-outline-back {
+        background: #f3f4f6;
+        color: #4b5563;
+        border: 1px solid #e5e7eb;
+        font-weight: 500;
+        border-radius: 10px;
+    }
+
+        .btn-outline-back:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+    .btn-download-pdf {
+        background: #0B2545;
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(11,37,69,.25);
+    }
+
+        .btn-download-pdf:hover {
+            background: #0d2c55;
+            color: #fff;
+        }
+
+        .btn-download-pdf i {
+            color: #29A8CC;
+        }
+
+    #pdfContent {
+        background: #ffffff;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #1a1a1a;
+        border-radius: 4px;
+        padding: 40px;
+    }
+
+    .doc-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 3px double #0B2545;
+        padding-bottom: 14px;
+        margin-bottom: 18px;
+    }
+
+        .doc-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+            .doc-header .brand img {
+                height: 58px;
+                width: auto;
+                display: block;
+            }
+
+        .doc-header .org-info h3 {
+            margin: 0;
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: .04em;
+            color: #0B2545;
+            text-transform: uppercase;
+        }
+
+        .doc-header .org-info p {
+            margin: 1px 0 0;
+            font-size: .78rem;
+            color: #555;
+        }
+
+        .doc-header .doc-meta {
+            text-align: right;
+            font-size: .78rem;
+            color: #333;
+            line-height: 1.6;
+        }
+
+            .doc-header .doc-meta strong {
+                color: #0B2545;
+            }
+
+    .doc-title {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+        .doc-title h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+            margin: 0;
+            color: #0B2545;
+        }
+
+        .doc-title .title-underline {
+            width: 90px;
+            height: 3px;
+            background: #29A8CC;
+            margin: 8px auto 0;
+            border-radius: 2px;
+        }
+
+    .doc-info-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 26px;
+        font-size: .88rem;
+    }
+
+        .doc-info-table td {
+            border: 1px solid #333;
+            padding: 9px 12px;
+        }
+
+            .doc-info-table td.label {
+                background: #eef2f7;
+                font-weight: 700;
+                color: #0B2545;
+                width: 24%;
+            }
+
+    .doc-note-box {
+        border: 1px dashed #94a3b8;
+        border-radius: 6px;
+        padding: 12px 14px;
+        font-size: .85rem;
+        color: #374151;
+        min-height: 70px;
+        margin-bottom: 30px;
+    }
+
+    .doc-declaration {
+        font-size: .85rem;
+        color: #333;
+        line-height: 1.7;
+        margin-bottom: 40px;
+        text-align: justify;
+    }
+
+    .doc-signature-area {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        gap: 20px;
+    }
+
+    .doc-signature-box {
+        width: 30%;
+        text-align: center;
+        font-size: .82rem;
+    }
+
+    .doc-signature-line {
+        border-top: 1px solid #0B2545;
+        margin-top: 60px;
+        padding-top: 6px;
+        font-weight: 700;
+        color: #0B2545;
+    }
+
+    .doc-signature-role {
+        font-size: .74rem;
+        color: #64748b;
+        margin-top: 2px;
+    }
+
+    .doc-footer {
+        margin-top: 30px;
+        border-top: 1px solid #0B2545;
+        padding-top: 10px;
+        font-size: .7rem;
+        color: #444;
+        display: flex;
+        justify-content: space-between;
+    }
+
+        .doc-footer .conf {
+            color: #0B2545;
+            font-weight: 700;
+        }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <a asp-action="Index" class="btn btn-outline-back px-3">
+        <i class="bi bi-arrow-left me-1"></i>Geri Dön
+    </a>
+    <button id="downloadPdfBtn" class="btn btn-download-pdf px-4">
+        <i class="bi bi-file-earmark-pdf me-1"></i>Belgeyi PDF İndir
+    </button>
+</div>
+
+<div id="pdfContent" class="card shadow-sm">
+    <div class="doc-header">
+        <div class="brand">
+            <img src="@logoUrl" alt="Logo" />
+            <div class="org-info">
+                <h3>ÖNCÜ SAVUNMA</h3>
+                <p>İnsan Kaynakları – Zimmet Teslim ve Tesellüm Belgesi</p>
+            </div>
+        </div>
+        <div class="doc-meta">
+            <div><strong>Belge No:</strong> ZMT-@Model.Id.ToString("D4")-@DateTime.Now.ToString("yyyyMMdd")</div>
+            <div><strong>Düzenleme Tarihi:</strong> @DateTime.Now.ToString("dd.MM.yyyy HH:mm")</div>
+            <div><strong>Durum:</strong> @Model.Durumu</div>
+        </div>
+    </div>
+
+    <div class="doc-title">
+        <h2>Zimmet Teslim Tutanağı</h2>
+        <div class="title-underline"></div>
+    </div>
+
+    <table class="doc-info-table">
+        <tr>
+            <td class="label">Personel Adı Soyadı</td>
+            <td>@Model.AppUser?.Ad @Model.AppUser?.Soyad</td>
+            <td class="label">Sicil No</td>
+            <td>@(Model.AppUser?.SicilNo ?? "-")</td>
+        </tr>
+        <tr>
+            <td class="label">Departman / Birim</td>
+            <td>@(Model.AppUser?.DepartmanAd ?? "-") / @(Model.AppUser?.BirimAd ?? "-")</td>
+            <td class="label">Amir</td>
+            <td>@(Model.AppUser?.AmirAdSoyad ?? "-")</td>
+        </tr>
+        <tr>
+            <td class="label">Zimmet Türü</td>
+            <td>@(Model.ZimmetTuru?.Ad ?? "-")</td>
+            <td class="label">Marka / Model</td>
+            <td>@((string.IsNullOrEmpty(Model.Marka) && string.IsNullOrEmpty(Model.Model)) ? "-" : $"{Model.Marka} {Model.Model}")</td>
+        </tr>
+        <tr>
+            <td class="label">Seri Numarası</td>
+            <td>@(string.IsNullOrEmpty(Model.SeriNumarasi) ? "-" : Model.SeriNumarasi)</td>
+            <td class="label">Teslim Tarihi</td>
+            <td>@Model.TeslimTarihi.ToString("dd.MM.yyyy")</td>
+        </tr>
+    </table>
+
+    <div class="doc-declaration">
+        Yukarıda cins, marka/model ve seri numarası belirtilen demirbaş/ekipman, işbu belge tarihi itibarıyla
+        çalışma amacıyla kullanılmak üzere adı geçen personele eksiksiz ve çalışır durumda teslim edilmiştir.
+        Personel, teslim aldığı ekipmanı işyeri kurallarına uygun şekilde kullanmayı, özenle korumayı ve
+        iş ilişkisinin sona ermesi veya talep edilmesi halinde aynı durumda iade etmeyi kabul ve taahhüt eder.
+        Ekipmanın kaybı, arızalanması veya hasar görmesi durumunda ilgili birime derhal bilgi verilecektir.
+    </div>
+
+    <div class="text-muted small mb-1">Ek Açıklama / Notlar:</div>
+    <div class="doc-note-box">@(string.IsNullOrEmpty(Model.Aciklama) ? "—" : Model.Aciklama)</div>
+
+    <div class="doc-signature-area">
+        <div class="doc-signature-box">
+            <div class="doc-signature-line">İnsan Kaynakları Yetkilisi</div>
+            <div class="doc-signature-role">Onay</div>
+        </div>
+        <div class="doc-signature-box">
+            <div class="doc-signature-line">@(Model.AppUser?.AmirAdSoyad ?? "Amir")</div>
+            <div class="doc-signature-role">Bağlı Olduğu Amir</div>
+        </div>
+        <div class="doc-signature-box">
+            <div class="doc-signature-line">@Model.AppUser?.Ad @Model.AppUser?.Soyad</div>
+            <div class="doc-signature-role">Teslim Alan Personel</div>
+        </div>
+    </div>
+
+    <div class="doc-footer">
+        <span>Bu belge sistem tarafından otomatik oluşturulmuştur.</span>
+        <span class="conf">GİZLİLİK SINIFI: KURUM İÇİ &nbsp;|&nbsp; Sayfa 1/1</span>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+    document.getElementById('downloadPdfBtn').addEventListener('click', function () {
+        var element = document.getElementById('pdfContent');
+        var opt = {
+            margin: 0.4,
+            filename: '@pdfFileName',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 3, useCORS: true, backgroundColor: '#ffffff' },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: ['css', 'legacy'] }
+        };
+        html2pdf().set(opt).from(element).save();
+    });
+</script>

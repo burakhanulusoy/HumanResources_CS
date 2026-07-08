@@ -15,7 +15,7 @@ namespace HumanResources.Business.Services.ShiftServices
         IUnitOfWork _unitOfWork,
         IValidator<UpdateShiftDto> _updateValidator,
         IValidator<CreateShiftDto> _createValidator,
-        UserManager<AppUser> _userManager) : IShiftService 
+        UserManager<AppUser> _userManager) : IShiftService
     {
         public async Task<BaseResult<object>> CreateAsync(CreateShiftDto createDto)
         {
@@ -28,7 +28,7 @@ namespace HumanResources.Business.Services.ShiftServices
             var shift = createDto.Adapt<Vardiya>();
 
             shift.CalismaSuresi = MesaiHesapla(createDto.BaslangicSaati, createDto.BitisSaati, createDto.AraDinlenmeSuresiDk);
-        
+
             if (createDto.PersonelIds != null && createDto.PersonelIds.Any())
             {
                 var personeller = await _userManager.Users
@@ -36,6 +36,13 @@ namespace HumanResources.Business.Services.ShiftServices
                     .ToListAsync();
 
                 shift.Personeller = personeller;
+            }
+
+            // Yönetici, seçilen personel listesinde deðilse güvenlik amaçlý null'a çekilir
+            if (shift.YoneticiId.HasValue &&
+                (createDto.PersonelIds == null || !createDto.PersonelIds.Contains(shift.YoneticiId.Value)))
+            {
+                shift.YoneticiId = null;
             }
 
             await _shiftRepository.CreateAsync(shift);
@@ -75,6 +82,13 @@ namespace HumanResources.Business.Services.ShiftServices
                 shift.Personeller = yeniPersoneller;
             }
 
+            // Yönetici, güncel personel listesinde deðilse güvenlik amaçlý null'a çekilir
+            if (shift.YoneticiId.HasValue &&
+                (updateDto.PersonelIds == null || !updateDto.PersonelIds.Contains(shift.YoneticiId.Value)))
+            {
+                shift.YoneticiId = null;
+            }
+
             _shiftRepository.Update(shift);
 
             var result = await _unitOfWork.SaveChangesAsync();
@@ -92,8 +106,6 @@ namespace HumanResources.Business.Services.ShiftServices
                 return BaseResult<object>.Fail("Silinecek vardiya bulunamadý.");
             }
 
-           
-
             _shiftRepository.Delete(shift);
 
             var result = await _unitOfWork.SaveChangesAsync();
@@ -110,6 +122,7 @@ namespace HumanResources.Business.Services.ShiftServices
                     .ThenInclude(p => p.Departman)
                 .Include(s => s.Personeller)
                     .ThenInclude(p => p.Birim)
+                .Include(s => s.Yonetici)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -122,9 +135,10 @@ namespace HumanResources.Business.Services.ShiftServices
         {
             var shift = await _shiftRepository.GetQueryable()
                 .Include(s => s.Personeller)
-                    .ThenInclude(p => p.Departman) // Personelin Departman bilgisini dahil et
+                    .ThenInclude(p => p.Departman)
                 .Include(s => s.Personeller)
-                    .ThenInclude(p => p.Birim)     // Personelin Birim bilgisini dahil et
+                    .ThenInclude(p => p.Birim)
+                .Include(s => s.Yonetici)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.Id == id && !s.SilindiMi);
 
@@ -138,12 +152,10 @@ namespace HumanResources.Business.Services.ShiftServices
             return BaseResult<ResultShiftDto>.Success(mappedItem);
         }
 
-        // --- MESAÝ HESAPLAMA YARDIMCI METODU ---
         private TimeSpan MesaiHesapla(TimeSpan baslangic, TimeSpan bitis, int molaDk)
         {
             TimeSpan fark;
 
-            // Eðer bitiþ saati baþlangýç saatinden küçükse (Örn: Gece 22:00 -> Sabah 06:00), ertesi güne geçilmiþtir.
             if (bitis < baslangic)
             {
                 fark = bitis.Add(TimeSpan.FromDays(1)) - baslangic;
@@ -153,7 +165,6 @@ namespace HumanResources.Business.Services.ShiftServices
                 fark = bitis - baslangic;
             }
 
-            // Toplam süreden mola süresini çýkartýp net çalýþma süresini dönüyoruz
             return fark.Subtract(TimeSpan.FromMinutes(molaDk));
         }
     }

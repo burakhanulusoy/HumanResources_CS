@@ -3,6 +3,7 @@ using System;
 using HumanResources.DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HumanResources.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260708183046_mig_updated_Shiftt")]
+    partial class mig_updated_Shiftt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -641,12 +644,6 @@ namespace HumanResources.DataAccess.Migrations
 
                     b.Property<DateTime>("IadeTarihi")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Marka")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Model")
-                        .HasColumnType("text");
 
                     b.Property<DateTime>("OlusturulmaTarihi")
                         .HasColumnType("timestamp with time zone");

@@ -159,6 +159,7 @@ namespace HumanResources.Business.Services.UserServices
         {
             var user = await _userManager.Users
                 .Include(u => u.Departman)
+                    .ThenInclude(d => d.Yonetici)      // YENÝ
                 .Include(u => u.Birim)
                 .Include(u => u.Amir)
                 .Include(u => u.Vardiya)
@@ -172,7 +173,11 @@ namespace HumanResources.Business.Services.UserServices
 
             TypeAdapterConfig<AppUser, ResultUserDto>.NewConfig()
               .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null)
-              .Map(dest => dest.VardiyaAciklama, src => src.Vardiya != null ? src.Vardiya.Aciklama : null);
+              .Map(dest => dest.VardiyaAciklama, src => src.Vardiya != null ? src.Vardiya.Aciklama : null)
+              .Map(dest => dest.Departman.YoneticiAdSoyad,             // YENÝ
+                   src => src.Departman != null && src.Departman.Yonetici != null
+                          ? src.Departman.Yonetici.Ad + " " + src.Departman.Yonetici.Soyad
+                          : null);
 
             var userDto = user.Adapt<ResultUserDto>();
             return BaseResult<ResultUserDto>.Success(userDto);

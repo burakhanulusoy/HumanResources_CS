@@ -6,6 +6,7 @@
 
     var dosyaUrl = string.IsNullOrEmpty(Model.DosyaYolu) ? null : $"https://localhost:7018{Model.DosyaYolu}";
     var pdfMi = Model.DosyaYolu?.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) == true;
+    var suresiz = Model.Durumu == CertificateStatus.Sinirsiz;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -101,7 +102,6 @@
     <!-- SAĞ: Sertifika bilgileri + belge -->
     <div class="col-lg-8 d-flex flex-column gap-4">
 
-        <!-- Sertifika bilgi kartı -->
         <div class="card shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <span><i class="bi bi-patch-check me-2"></i>Sertifika Bilgileri</span>
@@ -115,6 +115,9 @@
                         break;
                     case CertificateStatus.IptalEdildi:
                         <span class="badge bg-danger px-3">İptal Edildi</span>
+                        break;
+                    case CertificateStatus.Sinirsiz:
+                        <span class="badge bg-info text-dark px-3"><i class="bi bi-infinity me-1"></i>Süresiz Geçerli</span>
                         break;
                 }
             </div>
@@ -146,29 +149,37 @@
                     </div>
                 </div>
 
-                <!-- Tarih zaman çizelgesi -->
-                <div class="row text-center mt-4">
-                    <div class="col-4">
-                        <div class="border-end">
-                            <div class="text-muted small">Alınma</div>
-                            <div class="fw-bold fs-6"><i class="bi bi-calendar-check text-primary me-1"></i>@Model.AlinmaTarihi.ToString("dd.MM.yyyy")</div>
+                @if (suresiz)
+                {
+                    <div class="alert alert-info mt-4 mb-0">
+                        <i class="bi bi-infinity me-1"></i>Bu belge süresiz geçerlidir, yenileme takibi gerekmez.
+                        <div class="small text-muted mt-1">Alınma Tarihi: @Model.AlinmaTarihi.ToString("dd.MM.yyyy")</div>
+                    </div>
+                }
+                else
+                {
+                    <div class="row text-center mt-4">
+                        <div class="col-4">
+                            <div class="border-end">
+                                <div class="text-muted small">Alınma</div>
+                                <div class="fw-bold fs-6"><i class="bi bi-calendar-check text-primary me-1"></i>@Model.AlinmaTarihi.ToString("dd.MM.yyyy")</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="border-end">
+                                <div class="text-muted small">Yenileme</div>
+                                <div class="fw-bold fs-6"><i class="bi bi-arrow-repeat text-warning me-1"></i>@Model.YenilemeTarihi.ToString("dd.MM.yyyy")</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="text-muted small">Geçerlilik Sonu</div>
+                            <div class="fw-bold fs-6"><i class="bi bi-calendar-x text-danger me-1"></i>@Model.GecerlilikTarihi.ToString("dd.MM.yyyy")</div>
                         </div>
                     </div>
-                    <div class="col-4">
-                        <div class="border-end">
-                            <div class="text-muted small">Yenileme</div>
-                            <div class="fw-bold fs-6"><i class="bi bi-arrow-repeat text-warning me-1"></i>@Model.YenilemeTarihi.ToString("dd.MM.yyyy")</div>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="text-muted small">Geçerlilik Sonu</div>
-                        <div class="fw-bold fs-6"><i class="bi bi-calendar-x text-danger me-1"></i>@Model.GecerlilikTarihi.ToString("dd.MM.yyyy")</div>
-                    </div>
-                </div>
+                }
             </div>
         </div>
 
-        <!-- Belge önizleme kartı -->
         <div class="card shadow-sm flex-grow-1">
             <div class="card-header">
                 <i class="bi bi-file-earmark-image me-2"></i>Sertifika Belgesi

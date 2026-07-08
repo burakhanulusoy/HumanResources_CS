@@ -6,7 +6,6 @@
 }
 
 @{
-    // DİKKAT GEREKTİRENLERİ SAY: İptal edilenler, süresi dolanlar veya 30 gün içinde dolacak olanlar
     var dikkatGerektirenCount = Model.Count(s =>
         s.Durumu == CertificateStatus.IptalEdildi ||
         s.Durumu == CertificateStatus.SuresiDolu ||
@@ -58,7 +57,16 @@
                         <td class="fw-semibold text-nowrap personel-name">@s.AppUser?.Ad @s.AppUser?.Soyad</td>
                         <td style="max-width: 220px;" class="text-truncate" title="@s.SertifikaTuru?.Ad">@s.SertifikaTuru?.Ad</td>
                         <td style="max-width: 200px;" class="text-truncate" title="@s.VerenKurum">@s.VerenKurum</td>
-                        <td class="text-nowrap">@s.GecerlilikTarihi.ToString("dd.MM.yyyy")</td>
+                        <td class="text-nowrap">
+                            @if (s.Durumu == CertificateStatus.Sinirsiz)
+                            {
+                                <span class="text-muted"><i class="bi bi-infinity"></i> Süresiz</span>
+                            }
+                            else
+                            {
+                                @s.GecerlilikTarihi.ToString("dd.MM.yyyy")
+                            }
+                        </td>
                         <td class="text-center">
                             @switch (s.Durumu)
                             {
@@ -70,6 +78,9 @@
                                     break;
                                 case CertificateStatus.IptalEdildi:
                                     <span class="badge bg-danger">İptal Edildi</span>
+                                    break;
+                                case CertificateStatus.Sinirsiz:
+                                    <span class="badge bg-info text-dark"><i class="bi bi-infinity me-1"></i>Süresiz</span>
                                     break;
                             }
                         </td>
@@ -100,7 +111,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // Silme ve Alert İşlemleri
     document.querySelectorAll('.js-delete-form').forEach(function (form) {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
@@ -137,9 +147,6 @@
         }
     })();
 
-
-
-    // Arama (Filtreleme) Scripti
     document.addEventListener("DOMContentLoaded", function () {
         const searchInput = document.getElementById("searchInput");
         const noResultMessage = document.getElementById("noResultMessage");
@@ -167,12 +174,3 @@
         }
     });
 </script>
-
-
-
-
-
-
-
-
-

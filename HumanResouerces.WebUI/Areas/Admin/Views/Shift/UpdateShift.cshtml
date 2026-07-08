@@ -5,7 +5,6 @@
     var userList = ViewBag.Users as List<HumanResources.WebUI.DTOs.UserDtos.UserDto>;
     var shiftTimes = ViewBag.ShiftTimes as Dictionary<int, string>;
 
-    // Zaten seçili olanları en üste alalım ki kolayca görülsün
     var orderedUsers = userList?
         .OrderByDescending(u => Model.PersonelIds != null && Model.PersonelIds.Contains(u.Id))
         .ThenBy(u => u.Ad)
@@ -282,6 +281,14 @@
             transform: translateY(-1px);
             color: #fff;
         }
+
+    .manager-select-wrap {
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 12px 14px;
+        background: #fffbeb;
+        border-color: #fde68a;
+    }
 </style>
 
 <div class="card form-card shadow-sm mb-4">
@@ -342,7 +349,7 @@
 
                     <div class="info-hint mb-3">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
-                        Mevcut seçimler korunur. Yeni personel eklemek için sadece onu işaretlemen yeterli — diğerlerine dokunmana gerek yok. Turuncu rozetli personel başka bir vardiyaya atanmıştır.
+                        Mevcut seçimler korunur. Yeni personel eklemek için sadece onu işaretlemen yeterli. Turuncu rozetli personel başka bir vardiyaya atanmıştır.
                     </div>
 
                     <div class="user-picker">
@@ -362,13 +369,12 @@
                                     string? otherShiftLabel = null;
                                     if (hasOtherShift)
                                     {
-                                        var shiftTimesDict = shiftTimes;
-                                        otherShiftLabel = (shiftTimesDict != null && shiftTimesDict.ContainsKey(u.VardiyaId!.Value))
-                                        ? shiftTimesDict[u.VardiyaId!.Value]
+                                        otherShiftLabel = (shiftTimes != null && shiftTimes.ContainsKey(u.VardiyaId!.Value))
+                                        ? shiftTimes[u.VardiyaId!.Value]
                                         : u.VardiyaAciklama;
                                     }
 
-                                    <label class="user-item @(isSelected ? "checked" : "")" data-name="@($"{u.Ad} {u.Soyad}".ToLower())">
+                                    <label class="user-item @(isSelected ? "checked" : "")" data-name="@($"{u.Ad} {u.Soyad}".ToLower())" data-id="@u.Id" data-fullname="@u.Ad @u.Soyad">
                                         <input type="checkbox" name="PersonelIds" value="@u.Id" checked="@isSelected" />
                                         <div class="user-avatar">
                                             @initials
@@ -413,6 +419,17 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="col-md-12 mb-4">
+                    <div class="section-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5" /><path d="M20 21a8 8 0 0 0-16 0" /></svg>
+                        Vardiya Yöneticisi
+                    </div>
+                    <div class="manager-select-wrap">
+                        <select name="YoneticiId" id="yoneticiSelect" class="form-select"></select>
+                        <small class="text-muted d-block mt-1">Sadece bu vardiyaya atanan personeller arasından seçilebilir (opsiyonel).</small>
+                    </div>
+                </div>
             </div>
 
             <div class="text-end mt-4">
@@ -431,10 +448,26 @@
     const userItems = document.querySelectorAll('.user-item');
     const selectedCountEl = document.getElementById('selectedCount');
     const noResultsEl = document.getElementById('noResults');
+    const yoneticiSelect = document.getElementById('yoneticiSelect');
+    const mevcutYoneticiId = "@Model.YoneticiId";
 
     function updateSelectedCount() {
         const checked = document.querySelectorAll('.user-item input[type="checkbox"]:checked').length;
         selectedCountEl.textContent = checked;
+    }
+
+    function yoneticiListesiGuncelle() {
+        const secilenDeger = yoneticiSelect.value || mevcutYoneticiId;
+        yoneticiSelect.innerHTML = '<option value="">-- Yönetici seçin (opsiyonel) --</option>';
+
+        document.querySelectorAll('.user-item input[type="checkbox"]:checked').forEach(cb => {
+            const item = cb.closest('.user-item');
+            const opt = document.createElement('option');
+            opt.value = item.dataset.id;
+            opt.textContent = item.dataset.fullname;
+            if (item.dataset.id === secilenDeger) opt.selected = true;
+            yoneticiSelect.appendChild(opt);
+        });
     }
 
     userItems.forEach(item => {
@@ -442,6 +475,7 @@
         checkbox.addEventListener('change', function () {
             item.classList.toggle('checked', this.checked);
             updateSelectedCount();
+            yoneticiListesiGuncelle();
         });
     });
 
@@ -456,8 +490,8 @@
         noResultsEl.style.display = visibleCount === 0 ? 'inline' : 'none';
     });
 
-    // Sayfa yüklendiğinde mevcut seçili sayıyı göster
     updateSelectedCount();
+    yoneticiListesiGuncelle();
 
     document.getElementById('shiftForm').addEventListener('submit', function (e) {
         e.preventDefault();

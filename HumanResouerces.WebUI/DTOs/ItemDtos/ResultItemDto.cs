@@ -18,5 +18,10 @@ namespace HumanResources.WebUI.DTOs.ItemDtos
         public ZimmetDurumu Durumu { get; set; }
 
         public string? Aciklama { get; set; }
+
+
+        public string? Marka { get; set; }
+        public string? Model { get; set; }
+
     }
 }

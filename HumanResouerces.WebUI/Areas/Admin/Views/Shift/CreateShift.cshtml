@@ -250,6 +250,14 @@
             transform: translateY(-1px);
             color: #fff;
         }
+
+    .manager-select-wrap {
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 12px 14px;
+        background: #fffbeb;
+        border-color: #fde68a;
+    }
 </style>
 
 <div class="card form-card shadow-sm mb-4">
@@ -331,7 +339,7 @@
                                         ? shiftTimes[u.VardiyaId!.Value]
                                         : u.VardiyaAciklama;
                                     }
-                                    <label class="user-item" data-name="@($"{u.Ad} {u.Soyad}".ToLower())">
+                                    <label class="user-item" data-name="@($"{u.Ad} {u.Soyad}".ToLower())" data-id="@u.Id" data-fullname="@u.Ad @u.Soyad">
                                         <input type="checkbox" name="PersonelIds" value="@u.Id" />
                                         <div class="user-avatar">@initials</div>
                                         <div class="user-info">
@@ -361,6 +369,19 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="col-md-12 mb-4">
+                    <div class="section-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5" /><path d="M20 21a8 8 0 0 0-16 0" /></svg>
+                        Vardiya Yöneticisi
+                    </div>
+                    <div class="manager-select-wrap">
+                        <select name="YoneticiId" id="yoneticiSelect" class="form-select">
+                            <option value="">-- Önce personel seçin --</option>
+                        </select>
+                        <small class="text-muted d-block mt-1">Sadece bu vardiyaya atadığınız personeller arasından seçilebilir (opsiyonel).</small>
+                    </div>
+                </div>
             </div>
 
             <div class="text-end mt-4">
@@ -379,40 +400,15 @@
     const userItems = document.querySelectorAll('.user-item');
     const selectedCountEl = document.getElementById('selectedCount');
     const noResultsEl = document.getElementById('noResults');
+    const yoneticiSelect = document.getElementById('yoneticiSelect');
 
     function updateSelectedCount() {
         const checked = document.querySelectorAll('.user-item input[type="checkbox"]:checked').length;
         selectedCountEl.textContent = checked;
     }
 
-    userItems.forEach(item => {
-        const checkbox = item.querySelector('input[type="checkbox"]');
-        checkbox.addEventListener('change', function () {
-            item.classList.toggle('checked', this.checked);
-            updateSelectedCount();
-        });
-    });
+    function yoneticiListesiGuncelle() {
+        const secilenDeger = yoneticiSelect.value;
+        yoneticiSelect.innerHTML = '<option value="">-- Yönetici seçin (opsiyonel) --</option>';
 
-    document.getElementById('userSearch').addEventListener('input', function () {
-        const val = this.value.toLowerCase().trim();
-        let visibleCount = 0;
-        userItems.forEach(item => {
-            const match = item.dataset.name.includes(val);
-            item.style.display = match ? '' : 'none';
-            if (match) visibleCount++;
-        });
-        noResultsEl.style.display = visibleCount === 0 ? 'inline' : 'none';
-    });
-
-    document.getElementById('shiftForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        Swal.fire({
-            title: "Emin misiniz?",
-            text: "Vardiya oluşturulacak.",
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonText: "Evet",
-            cancelButtonText: "İptal"
-        }).then(res => { if (res.isConfirmed) this.submit(); });
-    });
-</script>
+        document.querySelectorAll('.user-item

@@ -31,14 +31,15 @@ namespace HumanResources.Business.Validators.CertificateValidators
                 .LessThanOrEqualTo(DateTime.Today).WithMessage("Alýnma tarihi bugünden ileri bir tarih olamaz.");
 
             RuleFor(x => x.GecerlilikTarihi)
-                .NotEmpty().WithMessage("Geçerlilik tarihi zorunludur.")
-                .GreaterThan(x => x.AlinmaTarihi).WithMessage("Geçerlilik tarihi, alýnma tarihinden sonra olmalýdýr.");
+     .NotEmpty().WithMessage("Geçerlilik tarihi zorunludur.")
+     .GreaterThan(x => x.AlinmaTarihi).WithMessage("Geçerlilik tarihi, alýnma tarihinden sonra olmalýdýr.")
+     .When(x => x.Durumu != CertificateStatus.Sinirsiz);   // YENÝ
 
             RuleFor(x => x.YenilemeTarihi)
                 .NotEmpty().WithMessage("Yenileme tarihi zorunludur.")
                 .GreaterThan(x => x.AlinmaTarihi).WithMessage("Yenileme tarihi, alýnma tarihinden sonra olmalýdýr.")
-                .LessThan(x => x.GecerlilikTarihi).WithMessage("Yenileme tarihi, geçerlilik tarihinden önce olmalýdýr.");
-
+                .LessThan(x => x.GecerlilikTarihi).WithMessage("Yenileme tarihi, geçerlilik tarihinden önce olmalýdýr.")
+                .When(x => x.Durumu != CertificateStatus.Sinirsiz);   // YENÝ
             RuleFor(x => x.Durumu)
                 .IsInEnum().WithMessage("Geçersiz sertifika durumu.");
 

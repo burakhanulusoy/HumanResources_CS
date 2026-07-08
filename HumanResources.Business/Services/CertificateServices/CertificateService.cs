@@ -42,25 +42,78 @@ namespace HumanResources.Business.Services.CertificateServices
 
             var entity = createDto.Adapt<Sertifika>();
 
-           
             if (createDto.Dosya != null)
             {
-               
-                string customName = $"Kullanici{createDto.AppUserId}_Tur{createDto.SertifikaTuruId}_{createDto.VerenKurum}";
-
+                string customName = $"Kullanici{createDto.AppUserId}_Tur{createDto.SertifikaTuruId}";
                 entity.DosyaYolu = await _fileService.UploadFileAsync(createDto.Dosya, "certificates", customName);
             }
 
             entity.AlinmaTarihi = DateTime.SpecifyKind(entity.AlinmaTarihi, DateTimeKind.Utc);
-            entity.GecerlilikTarihi = DateTime.SpecifyKind(entity.GecerlilikTarihi, DateTimeKind.Utc);
-            entity.YenilemeTarihi = DateTime.SpecifyKind(entity.YenilemeTarihi, DateTimeKind.Utc);
-            entity.Durumu = CertificateStatus.Gecerli;
+
+            // ÝÞ KURALI: Süresiz iþaretlenmiþse tarihler önemsizdir, sabit uzak bir tarihe kilitlenir
+            if (createDto.SuresizGecerli)
+            {
+                entity.Durumu = CertificateStatus.Sinirsiz;
+                entity.GecerlilikTarihi = DateTime.SpecifyKind(new DateTime(9999, 12, 31), DateTimeKind.Utc);
+                entity.YenilemeTarihi = DateTime.SpecifyKind(new DateTime(9999, 12, 31), DateTimeKind.Utc);
+            }
+            else
+            {
+                entity.Durumu = CertificateStatus.Gecerli;
+                entity.GecerlilikTarihi = DateTime.SpecifyKind(entity.GecerlilikTarihi, DateTimeKind.Utc);
+                entity.YenilemeTarihi = DateTime.SpecifyKind(entity.YenilemeTarihi, DateTimeKind.Utc);
+            }
 
             await _certificateRepository.CreateAsync(entity);
             bool result = await _unitOfWork.SaveChangesAsync();
 
             return result ? BaseResult<object>.Success(entity) : BaseResult<object>.Fail("Created Failed");
         }
+
+        public async Task<BaseResult<object>> UpdateAsync(UpdateCertificateDto updateDto)
+        {
+            var validationResult = await _updateValidator.ValidateAsync(updateDto);
+
+            if (!validationResult.IsValid) return BaseResult<object>.Fail(validationResult.Errors);
+
+            var entity = await _certificateRepository.GetByIdAsync(updateDto.Id);
+
+            if (entity == null) return BaseResult<object>.Fail("Güncellenecek sertifika bulunamadý.");
+
+            updateDto.Adapt(entity);
+
+            if (updateDto.Dosya != null)
+            {
+                if (!string.IsNullOrEmpty(entity.DosyaYolu))
+                {
+                    _fileService.DeleteFile(entity.DosyaYolu);
+                }
+
+                string customName = $"Kullanici{updateDto.AppUserId}_Tur{updateDto.SertifikaTuruId}";
+                entity.DosyaYolu = await _fileService.UploadFileAsync(updateDto.Dosya, "certificates", customName);
+            }
+
+            entity.AlinmaTarihi = DateTime.SpecifyKind(entity.AlinmaTarihi, DateTimeKind.Utc);
+
+            // ÝÞ KURALI: Durum Süresiz seçildiyse tarihler sabit uzak tarihe kilitlenir
+            if (entity.Durumu == CertificateStatus.Sinirsiz)
+            {
+                entity.GecerlilikTarihi = DateTime.SpecifyKind(new DateTime(9999, 12, 31), DateTimeKind.Utc);
+                entity.YenilemeTarihi = DateTime.SpecifyKind(new DateTime(9999, 12, 31), DateTimeKind.Utc);
+            }
+            else
+            {
+                entity.GecerlilikTarihi = DateTime.SpecifyKind(entity.GecerlilikTarihi, DateTimeKind.Utc);
+                entity.YenilemeTarihi = DateTime.SpecifyKind(entity.YenilemeTarihi, DateTimeKind.Utc);
+            }
+
+            _certificateRepository.Update(entity);
+            bool result = await _unitOfWork.SaveChangesAsync();
+
+            return result ? BaseResult<object>.Success(entity) : BaseResult<object>.Fail("Updated Failed");
+        }
+
+
 
         public async Task<BaseResult<object>> DeleteAsync(int id)
         {
@@ -101,38 +154,7 @@ namespace HumanResources.Business.Services.CertificateServices
             return BaseResult<ResultCertificateDto>.Success(mappedEntity);
         }
 
-        public async Task<BaseResult<object>> UpdateAsync(UpdateCertificateDto updateDto)
-        {
-            var validationResult = await _updateValidator.ValidateAsync(updateDto);
-
-            if (!validationResult.IsValid) return BaseResult<object>.Fail(validationResult.Errors);
-
-            var entity = await _certificateRepository.GetByIdAsync(updateDto.Id);
-
-            if (entity == null) return BaseResult<object>.Fail("Güncellenecek sertifika bulunamadý.");
-
-            updateDto.Adapt(entity);
-
-            if (updateDto.Dosya != null)
-            {
-                if (!string.IsNullOrEmpty(entity.DosyaYolu))
-                {
-                    _fileService.DeleteFile(entity.DosyaYolu);
-                }
-
-                string customName = $"Kullanici{updateDto.AppUserId}_Tur{updateDto.SertifikaTuruId}_{updateDto.VerenKurum}";
-                entity.DosyaYolu = await _fileService.UploadFileAsync(updateDto.Dosya, "certificates", customName);
-            }
-
-            entity.AlinmaTarihi = DateTime.SpecifyKind(entity.AlinmaTarihi, DateTimeKind.Utc);
-            entity.GecerlilikTarihi = DateTime.SpecifyKind(entity.GecerlilikTarihi, DateTimeKind.Utc);
-            entity.YenilemeTarihi = DateTime.SpecifyKind(entity.YenilemeTarihi, DateTimeKind.Utc);
-
-            _certificateRepository.Update(entity);
-            bool result = await _unitOfWork.SaveChangesAsync();
-
-            return result ? BaseResult<object>.Success(entity) : BaseResult<object>.Fail("Updated Failed");
-        }
+     
 
         // --- Özel Metotlar ---
 

@@ -15,7 +15,8 @@ namespace HumanResources.WebUI.DTOs.ShiftDtos
 
         public TimeSpan CalismaSuresi { get; set; }
 
-
+        public int? YoneticiId { get; set; }
+        public UserDto? Yonetici { get; set; }
 
         public IList<UserDto> Personeller { get; set; }
 

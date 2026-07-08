@@ -25,7 +25,12 @@ namespace HumanResources.Business.Services.EducationServices
 
             var entity = createDto.Adapt<Egitim>();
             entity.EgitimTarihi = DateTime.SpecifyKind(entity.EgitimTarihi, DateTimeKind.Utc);
-            entity.Durumu = TrainingStatus.Planlandi;
+
+            // ÝÞ KURALI: Eðitim tarihi geçmiþte ise, eðitim zaten yapýlmýþ demektir -> otomatik "Tamamlandý"
+            // Bugün veya gelecekteyse -> "Planlandý"
+            entity.Durumu = entity.EgitimTarihi.Date < DateTime.UtcNow.Date
+                ? TrainingStatus.Tamamlandi
+                : TrainingStatus.Planlandi;
 
             await _educationRepository.CreateAsync(entity);
             bool result = await _unitOfWork.SaveChangesAsync();
@@ -105,7 +110,10 @@ namespace HumanResources.Business.Services.EducationServices
 
             var entity = educationDto.Adapt<Egitim>();
             entity.EgitimTarihi = DateTime.SpecifyKind(entity.EgitimTarihi, DateTimeKind.Utc);
-            entity.Durumu = TrainingStatus.Planlandi;
+
+            // ÝÞ KURALI: Geçmiþ tarihli eðitim -> otomatik "Tamamlandý"; bugün/gelecek -> "Planlandý"
+            bool gecmisTarihli = entity.EgitimTarihi.Date < DateTime.UtcNow.Date;
+            entity.Durumu = gecmisTarihli ? TrainingStatus.Tamamlandi : TrainingStatus.Planlandi;
 
             await _educationRepository.CreateAsync(entity);
 
@@ -122,7 +130,9 @@ namespace HumanResources.Business.Services.EducationServices
                         AppUserId = userId,
                         EgitimId = entity.Id,
                         BasvuruTarihi = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
-                        BasvuruDurumu = ApplicationStatus.Onaylandi
+                        // Eðitim geçmiþte yapýlmýþsa katýlýmcý kaydý da direkt "Tamamlandý" olarak düþer,
+                        // aksi halde admin atamasý olduðu için "Onaylandý" (eðitim henüz gerçekleþmedi)
+                        BasvuruDurumu = gecmisTarihli ? ApplicationStatus.Tamamlandi : ApplicationStatus.Onaylandi
                     });
                 }
 

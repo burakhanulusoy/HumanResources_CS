@@ -5,34 +5,35 @@
 }
 
 <div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card shadow-sm border-0 rounded-3 mt-4">
-            <div class="card-header bg-white border-bottom py-3">
-                <h5 class="mb-0 fw-bold text-dark">Yeni Zimmet Kaydı Oluştur</h5>
+    <div class="col-lg-9">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-box-seam me-2"></i>Yeni Zimmet Teslimi
             </div>
             <div class="card-body p-4">
                 <form id="createItemForm" asp-action="CreateItem" method="post">
-                    <div class="row g-3">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none"></div>
 
-                        <div class="col-md-6">
-                            <label asp-for="AppUserId" class="form-label fw-semibold text-secondary small text-uppercase">Personel Seçin <span class="text-danger">*</span></label>
-                            <select asp-for="AppUserId" class="form-select form-select-lg bg-light" required>
-                                <option value="">-- Personel Seçiniz --</option>
+                    <h6 class="text-muted border-bottom pb-2 mb-3">Personel ve Ürün Seçimi</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="AppUserId" class="form-label">Personel</label>
+                            <select asp-for="AppUserId" class="form-select js-select2" required data-placeholder="Personel ara ve seç...">
+                                <option value=""></option>
                                 @if (ViewBag.Users != null)
                                 {
                                     foreach (var user in ViewBag.Users)
                                     {
-                                        <option value="@user.Id">@user.Ad @user.Soyad - @user.SicilNo</option>
+                                        <option value="@user.Id">@user.Ad @user.Soyad — @user.SicilNo</option>
                                     }
                                 }
                             </select>
-                            <span asp-validation-for="AppUserId" class="text-danger small mt-1 d-block fw-medium"></span>
+                            <span asp-validation-for="AppUserId" class="text-danger small"></span>
                         </div>
-
-                        <div class="col-md-6">
-                            <label asp-for="ZimmetTuruId" class="form-label fw-semibold text-secondary small text-uppercase">Zimmet Türü <span class="text-danger">*</span></label>
-                            <select asp-for="ZimmetTuruId" class="form-select form-select-lg bg-light" required>
-                                <option value="">-- Eşya Türü Seçiniz --</option>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ZimmetTuruId" class="form-label">Zimmet Türü</label>
+                            <select asp-for="ZimmetTuruId" class="form-select js-select2" required data-placeholder="Tür ara ve seç...">
+                                <option value=""></option>
                                 @if (ViewBag.ItemTypes != null)
                                 {
                                     foreach (var type in ViewBag.ItemTypes)
@@ -41,38 +42,56 @@
                                     }
                                 }
                             </select>
-                            <span asp-validation-for="ZimmetTuruId" class="text-danger small mt-1 d-block fw-medium"></span>
+                            <span asp-validation-for="ZimmetTuruId" class="text-danger small"></span>
                         </div>
+                    </div>
 
-                        <div class="col-md-12">
-                            <label asp-for="SeriNumarasi" class="form-label fw-semibold text-secondary small text-uppercase">Seri Numarası / Demirbaş Kodu</label>
-                            <input asp-for="SeriNumarasi" class="form-control form-control-lg bg-light" placeholder="Eğer yoksa 'Belirtilmedi' yazabilirsiniz" />
-                            <span asp-validation-for="SeriNumarasi" class="text-danger small mt-1 d-block fw-medium"></span>
+                    <h6 class="text-muted border-bottom pb-2 mb-3 mt-2">Ürün Bilgileri</h6>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Marka" class="form-label">Marka <small class="text-muted">(isteğe bağlı)</small></label>
+                            <input asp-for="Marka" class="form-control" placeholder="Örn: Dell, Lenovo" maxlength="100" />
+                            <span asp-validation-for="Marka" class="text-danger small"></span>
                         </div>
-
-                        <div class="col-md-6">
-                            <label asp-for="TeslimTarihi" class="form-label fw-semibold text-secondary small text-uppercase">Teslim Tarihi <span class="text-danger">*</span></label>
-                            <input asp-for="TeslimTarihi" type="date" class="form-control form-control-lg bg-light" required />
-                            <span asp-validation-for="TeslimTarihi" class="text-danger small mt-1 d-block fw-medium"></span>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Model" class="form-label">Model <small class="text-muted">(isteğe bağlı)</small></label>
+                            <input asp-for="Model" class="form-control" placeholder="Örn: Latitude 5420" maxlength="100" />
+                            <span asp-validation-for="Model" class="text-danger small"></span>
                         </div>
-
-                        <div class="col-md-6">
-                            <label asp-for="IadeTarihi" class="form-label fw-semibold text-secondary small text-uppercase">İade Tarihi (Planlanan / Gerçekleşen)</label>
-                            <input asp-for="IadeTarihi" type="date" class="form-control form-control-lg bg-light" />
-                            <span asp-validation-for="IadeTarihi" class="text-danger small mt-1 d-block fw-medium"></span>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="SeriNumarasi" class="form-label">Seri No <small class="text-muted">(isteğe bağlı)</small></label>
+                            <input asp-for="SeriNumarasi" class="form-control" placeholder="Demirbaş kodu" />
+                            <span asp-validation-for="SeriNumarasi" class="text-danger small"></span>
                         </div>
+                    </div>
 
-                        <div class="col-12">
-                            <label asp-for="Aciklama" class="form-label fw-semibold text-secondary small text-uppercase">Açıklama / Notlar <span class="text-danger">*</span></label>
-                            <textarea asp-for="Aciklama" class="form-control bg-light" rows="3" placeholder="Teslim edilen eşyanın durumu, çizik/hasar var mı vs."></textarea>
-                            <span asp-validation-for="Aciklama" class="text-danger small mt-1 d-block fw-medium"></span>
+                    <h6 class="text-muted border-bottom pb-2 mb-3 mt-2">Teslim Bilgileri</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="TeslimTarihi" class="form-label">Teslim Tarihi</label>
+                            <input asp-for="TeslimTarihi" type="date" class="form-control"
+                                   max="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                            <span asp-validation-for="TeslimTarihi" class="text-danger small"></span>
                         </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="IadeTarihi" class="form-label">Planlanan İade Tarihi <small class="text-muted">(varsa)</small></label>
+                            <input asp-for="IadeTarihi" type="date" class="form-control" />
+                            <span asp-validation-for="IadeTarihi" class="text-danger small"></span>
+                        </div>
+                    </div>
 
+                    <div class="mb-3">
+                        <label asp-for="Aciklama" class="form-label">Açıklama / Notlar</label>
+                        <textarea asp-for="Aciklama" class="form-control" rows="3"
+                                  placeholder="Teslim edilen eşyanın durumu, çizik/hasar var mı vs."></textarea>
+                        <span asp-validation-for="Aciklama" class="text-danger small"></span>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <a href="/Admin/Item/Index" class="btn btn-light px-4 border">İptal Et</a>
-                        <button type="submit" class="btn btn-primary px-4">Kaydet</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">İptal</a>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-check-lg me-1"></i>Kaydet
+                        </button>
                     </div>
                 </form>
             </div>
@@ -80,21 +99,31 @@
     </div>
 </div>
 
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    document.getElementById('createItemForm').addEventListener('submit', function (e) {
+    $('.js-select2').select2({ theme: 'bootstrap-5', width: '100%' });
+
+    const form = document.getElementById('createItemForm');
+    form.addEventListener('submit', function (e) {
+        if (form.dataset.confirmed === 'true') return;
+        if (!form.checkValidity()) return;
+
         e.preventDefault();
         Swal.fire({
-            title: 'Kayıt İşlemi',
-            text: "Zimmet kaydını oluşturmak istediğinize emin misiniz?",
+            title: 'Zimmet kaydedilsin mi?',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#0d6efd',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Evet, Kaydet',
-            cancelButtonText: 'İptal'
-        }).then((result) => {
-            if (result.isConfirmed) this.submit();
+            confirmButtonText: 'Evet, kaydet',
+            cancelButtonText: 'Vazgeç'
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                form.dataset.confirmed = 'true';
+                form.submit();
+            }
         });
     });
 </script>

@@ -9,7 +9,7 @@ namespace HumanResources.WebUI.DTOs.CertificateDtos
         public string BelgeNo { get; set; }
 
         public string? Aciklama { get; set; }
-
+        public bool SuresizGecerli { get; set; }
         public IFormFile? Dosya { get; set; }
 
         public DateTime AlinmaTarihi { get; set; }

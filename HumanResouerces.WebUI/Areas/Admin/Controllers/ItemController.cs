@@ -14,14 +14,12 @@ namespace HumanResouerces.WebUI.Areas.Admin.Controllers
     {
         public async Task<IActionResult> Index()
         {
-            // Listede isimleri ve türleri görmek için Details metodunu çağırıyoruz
             var response = await _itemService.GetAllItemsWithDetailsAsync();
             return View(response.Data);
         }
 
         public async Task<IActionResult> ItemDetails(int id)
         {
-            // Eşya detayını ve kime zimmetli olduğunu getirir
             var response = await _itemService.GetItemWithDetailsByIdAsync(id);
             return View(response.Data);
         }
@@ -59,12 +57,17 @@ namespace HumanResouerces.WebUI.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Dropdown'ları dolduran yardımcı metot
+        // YENİ: İmzalı/logolu resmi zimmet teslim belgesi
+        public async Task<IActionResult> ZimmetBelgesi(int id)
+        {
+            var response = await _itemService.GetItemWithDetailsByIdAsync(id);
+            return View(response.Data);
+        }
+
         private async Task FillDropdownsAsync()
         {
             var usersResponse = await _userService.GetAllAsync();
             var itemTypesResponse = await _itemTypeService.GetAllAsync();
-
             ViewBag.Users = usersResponse.Data;
             ViewBag.ItemTypes = itemTypesResponse.Data;
         }

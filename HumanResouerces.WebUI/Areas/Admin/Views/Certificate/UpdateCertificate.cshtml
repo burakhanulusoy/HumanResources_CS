@@ -33,6 +33,20 @@
                     </div>
 
                     <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Durumu" class="form-label">Durum</label>
+                            <select asp-for="Durumu" class="form-select"
+                                    asp-items="Html.GetEnumSelectList<CertificateStatus>()" id="durumSelect"></select>
+                            <span asp-validation-for="Durumu" class="text-danger small"></span>
+                            <small class="text-muted">"Süresiz" seçilirse tarihler devre dışı kalır.</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Dosya" class="form-label">Yeni Dosya <small class="text-muted">(değiştirmek istersen)</small></label>
+                            <input asp-for="Dosya" type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" />
+                        </div>
+                    </div>
+
+                    <div class="row" id="tarihSatiri">
                         <div class="col-md-4 mb-3">
                             <label asp-for="AlinmaTarihi" class="form-label">Alınma Tarihi</label>
                             <input asp-for="AlinmaTarihi" type="date" class="form-control"
@@ -49,19 +63,6 @@
                             <label asp-for="GecerlilikTarihi" class="form-label">Geçerlilik Tarihi</label>
                             <input asp-for="GecerlilikTarihi" type="date" class="form-control" required id="gecerlilikTarihi" />
                             <span asp-validation-for="GecerlilikTarihi" class="text-danger small"></span>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Durumu" class="form-label">Durum</label>
-                            <select asp-for="Durumu" class="form-select"
-                                    asp-items="Html.GetEnumSelectList<CertificateStatus>()"></select>
-                            <span asp-validation-for="Durumu" class="text-danger small"></span>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Dosya" class="form-label">Yeni Dosya <small class="text-muted">(değiştirmek istersen)</small></label>
-                            <input asp-for="Dosya" type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" />
                         </div>
                     </div>
 
@@ -84,12 +85,29 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // Tarih kuralları: Alınma < Yenileme < Geçerlilik
+    const durumSelect = document.getElementById('durumSelect');
     const alinma = document.getElementById('alinmaTarihi');
     const gecerlilik = document.getElementById('gecerlilikTarihi');
     const yenileme = document.getElementById('yenilemeTarihi');
+    const tarihSatiri = document.getElementById('tarihSatiri');
+
+    // CertificateStatus.Sinirsiz = 4
+    function durumaGoreTarihAyarla() {
+        const suresiz = durumSelect.value === '4';
+        gecerlilik.disabled = suresiz;
+        yenileme.disabled = suresiz;
+        gecerlilik.required = !suresiz;
+        yenileme.required = !suresiz;
+
+        tarihSatiri.querySelectorAll('.col-md-4:not(:first-child)').forEach(col => {
+            col.style.opacity = suresiz ? '0.4' : '1';
+        });
+    }
+    durumSelect.addEventListener('change', durumaGoreTarihAyarla);
+    durumaGoreTarihAyarla();
 
     function tarihSinirlariAyarla() {
+        if (durumSelect.value === '4') return;
         if (alinma.value) {
             const ertesiGun = new Date(alinma.value);
             ertesiGun.setDate(ertesiGun.getDate() + 1);
@@ -107,7 +125,6 @@
     gecerlilik.addEventListener('change', tarihSinirlariAyarla);
     tarihSinirlariAyarla();
 
-    // Güncellemeden önce onay
     const form = document.getElementById('updateCertificateForm');
     form.addEventListener('submit', function (e) {
         if (form.dataset.confirmed === 'true') return;

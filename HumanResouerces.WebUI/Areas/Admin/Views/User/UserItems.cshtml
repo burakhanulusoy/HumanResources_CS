@@ -1,0 +1,117 @@
+﻿@model HumanResouerces.WebUI.Areas.Admin.Models.UserItemsViewModel
+@{
+    ViewData["Title"] = "Personel Zimmetleri";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0"><i class="bi bi-box-seam me-2"></i>Zimmet Bilgileri</h3>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Personel Listesine Dön
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                @if (!string.IsNullOrEmpty(Model.Kullanici?.FotografUrl))
+                {
+                    <img src="@Model.Kullanici.FotografUrl" class="rounded-circle mb-3"
+                         style="width:100px;height:100px;object-fit:cover;" alt="Profil" />
+                }
+                else
+                {
+                    <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center mb-3"
+                         style="width:100px;height:100px;font-size:1.8rem;">
+                        @Model.Kullanici?.Ad?[0]@Model.Kullanici?.Soyad?[0]
+                    </div>
+                }
+                <h5 class="mb-1">@Model.Kullanici?.Ad @Model.Kullanici?.Soyad</h5>
+                <p class="text-muted small mb-3">Sicil: @Model.Kullanici?.SicilNo</p>
+
+                <ul class="list-group list-group-flush text-start">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="text-muted">Departman</span>
+                        <span>@(Model.Kullanici?.Departman?.Ad ?? "-")</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="text-muted">Birim</span>
+                        <span>@(Model.Kullanici?.Birim?.Ad ?? "-")</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="text-muted">Toplam Zimmet</span>
+                        <span class="badge bg-primary rounded-pill">@Model.Zimmetler.Count</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-box-seam me-2"></i>Zimmet Listesi</span>
+                <span class="badge bg-secondary rounded-pill">@Model.Zimmetler.Count kayıt</span>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Zimmetler.Count > 0)
+                {
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Zimmet Türü</th>
+                                <th>Marka / Model</th>
+                                <th>Teslim Tarihi</th>
+                                <th class="text-center">Durum</th>
+                                <th class="text-end">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var z in Model.Zimmetler)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@z.ZimmetTuru?.Ad</td>
+                                    <td class="text-muted">
+                                        @(string.IsNullOrEmpty(z.Marka) && string.IsNullOrEmpty(z.Model) ? "-" : $"{z.Marka} {z.Model}")
+                                    </td>
+                                    <td>@z.TeslimTarihi.ToString("dd.MM.yyyy")</td>
+                                    <td class="text-center">
+                                        @switch (z.Durumu.ToString())
+                                        {
+                                            case "Aktif":
+                                                <span class="badge bg-success">Aktif</span>
+                                                break;
+                                            case "IadeEdildi":
+                                                <span class="badge bg-secondary">İade Edildi</span>
+                                                break;
+                                            case "Arizali":
+                                                <span class="badge bg-warning text-dark">Arızalı</span>
+                                                break;
+                                            case "Kayip":
+                                                <span class="badge bg-danger">Kayıp</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        <a asp-controller="Item" asp-action="ZimmetBelgesi" asp-route-id="@z.Id"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-file-earmark-text me-1"></i>Belge
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-5">
+                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                        Bu personelin üzerinde herhangi bir zimmet bulunmuyor.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

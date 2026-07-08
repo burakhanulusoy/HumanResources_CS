@@ -28,7 +28,8 @@ namespace HumanResources.WebUI.DTOs.ItemDtos
         // Açýklama zorunlu deðil ama "Ekranýnda çizik var öyle teslim ettim" gibi notlar için hayat kurtarýr
         public string? Aciklama { get; set; }
 
-
+        public string? Marka { get; set; }
+        public string? Model { get; set; }
 
 
     }

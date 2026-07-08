@@ -10,7 +10,7 @@ namespace HumanResources.Business.DTOs.CertificateDtos
 
         public string VerenKurum { get; set; }
         public string BelgeNo { get; set; }
-
+        public bool SuresizGecerli { get; set; }   
         public string? Aciklama { get; set; }
 
         public IFormFile? Dosya { get; set; }

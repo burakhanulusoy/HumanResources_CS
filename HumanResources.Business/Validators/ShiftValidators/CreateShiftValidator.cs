@@ -21,6 +21,12 @@ namespace HumanResources.Business.Validators.ShiftValidators
             RuleFor(x => x.AraDinlenmeSuresiDk)
                 .GreaterThanOrEqualTo(0).WithMessage("Ara dinlenme süresi negatif bir deðer olamaz.")
                 .LessThan(480).WithMessage("Ara dinlenme süresi çok uzun (Maksimum 8 saat / 480 dk olabilir).");
+
+            RuleFor(x => x.YoneticiId)
+        .Must((dto, yoneticiId) => !yoneticiId.HasValue ||
+                                    (dto.PersonelIds != null && dto.PersonelIds.Contains(yoneticiId.Value)))
+        .WithMessage("Vardiya yöneticisi, bu vardiyaya atanan personellerden biri olmalýdýr.");
+
         }
 
 

@@ -39,6 +39,19 @@ namespace HumanResources.DataAccess.Context
                 .HasForeignKey(u => u.AmirId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<AppUser>()
+     .HasOne(u => u.Vardiya)
+     .WithMany(v => v.Personeller)
+     .HasForeignKey(u => u.VardiyaId)
+     .OnDelete(DeleteBehavior.SetNull);
+
+            // 2) Vardiya -> Yonetici (bir vardiyanýn bir yöneticisi olur, YoneticiId üzerinden)
+            // Bu, yukarýdakinden TAMAMEN AYRI bir iliþki — AppUser tarafýnda ters navigation yok
+            modelBuilder.Entity<Vardiya>()
+                .HasOne(v => v.Yonetici)
+                .WithMany()
+                .HasForeignKey(v => v.YoneticiId)
+                .OnDelete(DeleteBehavior.SetNull);
 
         }
 

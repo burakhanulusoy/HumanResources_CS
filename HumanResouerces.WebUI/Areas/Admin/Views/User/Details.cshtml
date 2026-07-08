@@ -393,7 +393,7 @@
         <div class="brand">
             <img src="@logoUrl" alt="CS Savunma Logo" />
             <div>
-                <div class="brand-name">C<span>S</span> SAVUNMA</div>
+                <div class="brand-name">ÖNCÜ SAVUNMA</div>
                 <div class="brand-sub">İnsan Kaynakları</div>
             </div>
         </div>
@@ -476,9 +476,23 @@
         </div>
 
         <div class="form-signatures">
-            <div class="sig-box"><div class="sig-line">Hazırlayan</div><div class="sig-role">İnsan Kaynakları</div></div>
-            <div class="sig-box"><div class="sig-line">Departman Yöneticisi</div><div class="sig-role">Onay</div></div>
-            <div class="sig-box"><div class="sig-line">İK Müdürü</div><div class="sig-role">Onay</div></div>
+            <!-- Sol Kısım: Bağlı Olduğu Amir -->
+            <div class="sig-box">
+                <div class="sig-line">@(string.IsNullOrEmpty(Model.AmirAdSoyad) ? "Bağlı Amir" : Model.AmirAdSoyad)</div>
+                <div class="sig-role">Bağlı Olduğu Amir</div>
+            </div>
+
+            <!-- Orta Kısım: Departman Yöneticisi -->
+            <div class="sig-box">
+                <div class="sig-line">@(string.IsNullOrEmpty(Model.Departman?.YoneticiAdSoyad) ? "Departman Yöneticisi" : Model.Departman.YoneticiAdSoyad)</div>
+                <div class="sig-role">Departman Yöneticisi Onayı</div>
+            </div>
+
+            <!-- Sağ Kısım: İnsan Kaynakları / Genel Müdür -->
+            <div class="sig-box">
+                <div class="sig-line">İnsan Kaynakları Müdürü</div>
+                <div class="sig-role">Onay</div>
+            </div>
         </div>
 
         <div class="form-footer">

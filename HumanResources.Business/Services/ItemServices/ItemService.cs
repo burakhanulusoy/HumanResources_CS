@@ -104,13 +104,19 @@ namespace HumanResources.Business.Services.ItemServices
             return BaseResult<List<ItemDto>>.Success(mappedEntities);
         }
 
-        public async Task<BaseResult<ItemDto>> GetItemWithDetailsByIdAsync(int id)
-        {
-            var entity = await _itemRepository.GetItemWithDetailsByIdAsync(id);
-            if (entity is null) return BaseResult<ItemDto>.Fail("Item Not Found");
+      public async Task<BaseResult<ItemDto>> GetItemWithDetailsByIdAsync(int id)
+{
+    var entity = await _itemRepository.GetItemWithDetailsByIdAsync(id);
+    if (entity is null) return BaseResult<ItemDto>.Fail("Item Not Found");
 
-            var mappedEntity = entity.Adapt<ItemDto>();
-            return BaseResult<ItemDto>.Success(mappedEntity);
-        }
+    // Amir/Departman/Birim adlarýný flatten map et (UserDto bu alanlarý düz string olarak bekliyor)
+    TypeAdapterConfig<AppUser, HumanResources.Business.DTOs.UserDtos.UserDto>.NewConfig()
+        .Map(dest => dest.AmirAdSoyad, src => src.Amir != null ? src.Amir.Ad + " " + src.Amir.Soyad : null)
+        .Map(dest => dest.DepartmanAd, src => src.Departman != null ? src.Departman.Ad : null)
+        .Map(dest => dest.BirimAd, src => src.Birim != null ? src.Birim.Ad : null);
+
+    var mappedEntity = entity.Adapt<ItemDto>();
+    return BaseResult<ItemDto>.Success(mappedEntity);
+}
     }
 }
