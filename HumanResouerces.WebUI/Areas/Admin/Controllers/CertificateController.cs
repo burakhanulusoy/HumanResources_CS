@@ -73,5 +73,15 @@ namespace HumanResouerces.WebUI.Areas.Admin.Controllers
             var response = await _certificateService.GetUpcomingSoonAsync(days);
             return View(response.Data ?? new());
         }
+
+        // Kullanıcı listesinden gelen id'ye göre sadece o personelin sertifikalarını listeler
+        public async Task<IActionResult> UserCertificates(int userId)
+        {
+            var response = await _certificateService.GetByUserIdAsync(userId);
+
+            // Eğer o personelin hiç sertifikası yoksa boş liste döndür
+            return View(response.Data ?? new());
+        }
+
     }
 }

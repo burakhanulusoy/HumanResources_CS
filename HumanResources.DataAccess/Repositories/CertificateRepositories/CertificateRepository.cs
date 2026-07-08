@@ -14,11 +14,14 @@ namespace HumanResources.DataAccess.Repositories.CertificateRepositories
         public async Task<List<Sertifika>> GetCertificateByUserIdAsync(int userId)
         {
             return await _table
-                 .Include(x => x.AppUser)       // Personelin bilgileri gelsin
-                 .Include(x => x.SertifikaTuru) // UI'da göstermek için Sertifika adý gelsin
-                 .Where(x => x.AppUserId == userId)
-                 .AsNoTracking()
-                 .ToListAsync();
+                .Include(x => x.AppUser)
+                    .ThenInclude(u => u.Departman) // Personelin Departman bilgisini de getir
+                .Include(x => x.AppUser)
+                    .ThenInclude(u => u.Birim)     // Personelin Birim bilgisini de getir
+                .Include(x => x.SertifikaTuru)     // UI'da göstermek için Sertifika adý gelsin
+                .Where(x => x.AppUserId == userId)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<List<Sertifika>> GetDateUpcamingSoonAsync(int bildirimGunu)

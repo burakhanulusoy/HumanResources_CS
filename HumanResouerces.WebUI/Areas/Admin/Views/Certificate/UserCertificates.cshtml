@@ -1,0 +1,148 @@
+﻿@model List<HumanResources.WebUI.DTOs.CertificateDtos.CertificateDto>
+@using HumanResouerces.WebUI.Enums
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+
+
+
+@{
+    ViewData["Title"] = "Personel Sertifikaları";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    // appsettings.json'dan API Base URL değerini çekiyoruz (sonundaki slash'i garantiye alarak)
+    var apiBaseUrl = Configuration["ApiOptions:baseUrl"]?.TrimEnd('/');
+
+    // Liste boş değilse personel bilgilerini ilk kayıttan çekiyoruz
+    var personel = Model.FirstOrDefault()?.AppUser;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="mb-0">
+            <i class="bi bi-person-badge text-success me-2"></i>
+            @(personel != null ? $"{personel.Ad} {personel.Soyad} - Sertifika Bilgileri" : "Personel Sertifikaları")
+        </h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 mt-2">
+                <li class="breadcrumb-item"><a asp-controller="User" asp-action="Index" class="text-decoration-none">Personel Listesi</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Sertifikalar</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a asp-controller="User" asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Listeye Dön
+        </a>
+    </div>
+</div>
+
+@if (personel != null)
+{
+    <div class="card shadow-sm border-0 mb-4 bg-light">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-auto text-center mb-3 mb-md-0">
+                    @if (!string.IsNullOrEmpty(personel.FotografUrl))
+                    {
+                        <img src="@personel.FotografUrl" alt="@personel.Ad" class="rounded-circle shadow-sm" style="width: 80px; height: 80px; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center shadow-sm mx-auto" style="width: 80px; height: 80px; font-size: 2rem;">
+                            @personel.Ad?.Substring(0, 1)@personel.Soyad?.Substring(0, 1)
+                        </div>
+                    }
+                </div>
+                <div class="col-md">
+                    <h5 class="fw-bold mb-1">@personel.Ad @personel.Soyad</h5>
+                    <p class="text-muted mb-0">
+                        <i class="bi bi-building me-1"></i> @(personel.DepartmanAd ?? "Departman Belirtilmemiş") |
+                        <i class="bi bi-diagram-3 me-1"></i> @(personel.BirimAd ?? "Birim Belirtilmemiş")
+                    </p>
+                    <p class="text-muted mb-0"><i class="bi bi-envelope me-1"></i> @personel.Email</p>
+                </div>
+                <div class="col-md-auto mt-3 mt-md-0 text-md-end">
+                    <span class="badge bg-primary fs-6">Toplam @Model.Count Sertifika</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        @if (Model.Count > 0)
+        {
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Sertifika Türü</th>
+                        <th>Veren Kurum</th>
+                        <th>Belge No</th>
+                        <th>Alınma Tarihi</th>
+                        <th>Geçerlilik</th>
+                        <th class="text-center">Durum</th>
+                        <th class="text-end">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in Model)
+                    {
+                        var kalanGun = (s.GecerlilikTarihi.Date - DateTime.Today).Days;
+                        string rowClass = s.Durumu == CertificateStatus.IptalEdildi ? "table-secondary text-muted" : "";
+
+                        <tr class="@rowClass">
+                            <td class="fw-semibold">@s.SertifikaTuru?.Ad</td>
+                            <td>@s.VerenKurum</td>
+                            <td><span class="text-muted">@s.BelgeNo</span></td>
+                            <td>@s.AlinmaTarihi.ToString("dd.MM.yyyy")</td>
+                            <td>@s.GecerlilikTarihi.ToString("dd.MM.yyyy")</td>
+                            <td class="text-center">
+                                @if (s.Durumu == CertificateStatus.IptalEdildi)
+                                {
+                                    <span class="badge bg-dark">İptal Edildi</span>
+                                }
+                                else if (s.Durumu == CertificateStatus.SuresiDolu || kalanGun < 0)
+                                {
+                                    <span class="badge bg-danger">Süresi Doldu</span>
+                                }
+                                else if (kalanGun <= 30)
+                                {
+                                    <span class="badge bg-warning text-dark">Yaklaşıyor (@kalanGun Gün)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">Geçerli</span>
+                                }
+                            </td>
+                            <td class="text-end text-nowrap">
+                                @if (!string.IsNullOrEmpty(s.DosyaYolu))
+                                {
+                                    <a href="@apiBaseUrl/@(s.DosyaYolu.TrimStart('/'))" target="_blank" class="btn btn-sm btn-outline-primary" title="Belgeyi Görüntüle">
+                                        <i class="bi bi-file-earmark-pdf"></i> Görüntüle
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small fst-italic d-inline-block me-2">Dosya Yok</span>
+                                }
+                                <a asp-action="DetailsCertificate" asp-route-id="@s.Id" class="btn btn-sm btn-outline-info ms-1">
+                                    <i class="bi bi-eye"></i> Daha Detaylı İncele
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-journal-x text-muted mb-3" style="font-size: 3rem;"></i>
+                <h5 class="text-muted">Bu personele ait sertifika bulunamadı.</h5>
+                <p class="text-muted mb-4">Personelin aldığı eğitimleri ve belgeleri sisteme ekleyerek takip edebilirsiniz.</p>
+                <a asp-controller="User" asp-action="Index" class="btn btn-outline-secondary">Geri Dön</a>
+            </div>
+        }
+    </div>
+</div>
