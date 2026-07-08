@@ -10,5 +10,7 @@ namespace HumanResources.WebUI.DTOs.DiciplineDtos
 
         // Kullanýcýdan yeni bir dosya almak için:
         public IFormFile? Dosya { get; set; }
+        public IFormFile? IspatGorseli { get; set; }
+        public string? TanikAdSoyad { get; set; }
     }
 }

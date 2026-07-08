@@ -88,5 +88,13 @@ namespace HumanResouerces.WebUI.Areas.Admin.Controllers
             await _shiftService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
+
+
+        public async Task<IActionResult> ShiftUsers(int id)
+        {
+            var response = await _shiftService.GetById2Async(id);
+            return View(response.Data);
+        }
+
     }
 }

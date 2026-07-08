@@ -1,0 +1,129 @@
+﻿@model HumanResources.WebUI.DTOs.ShiftDtos.ResultShiftDto
+@{
+    ViewData["Title"] = $"{Model.Aciklama} - Personel Listesi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int count = 0;
+}
+
+<style>
+    .staff-card {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid #eef0f3;
+    }
+
+        .staff-card .card-header {
+            background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%);
+            border-bottom: 1px solid #eef0f3;
+        }
+
+            .staff-card .card-header h5 {
+                color: #2c3e50;
+            }
+
+    .btn-outline-back {
+        background: #f3f4f6;
+        color: #4b5563;
+        border: 1px solid #e5e7eb;
+        font-weight: 500;
+        border-radius: 10px;
+        transition: all .2s ease;
+    }
+
+        .btn-outline-back:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+    .staff-table thead th {
+        background-color: #f8f9fc;
+        color: #6b7280;
+        font-size: .8rem;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        font-weight: 600;
+        border-bottom: 2px solid #eef0f3;
+    }
+
+    .btn-inspect {
+        background-color: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #bfdbfe;
+        font-weight: 500;
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        border-radius: 8px;
+        transition: all .2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+        .btn-inspect:hover {
+            background-color: #3b82f6;
+            color: #fff;
+        }
+</style>
+
+<div class="card staff-card shadow-sm mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h5 class="mb-0 fw-bold d-flex align-items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+            @Model.Aciklama - Atanan Personeller
+        </h5>
+        <a href="/Admin/Shift/Index" class="btn btn-outline-back px-3">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>
+            Vardiyalara Dön
+        </a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table staff-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;" class="py-3 ps-4">#</th>
+                        <th style="width: 25%;" class="py-3">Ad Soyad</th>
+                        <th style="width: 20%;" class="py-3">Sicil No</th>
+                        <th style="width: 20%;" class="py-3">Departman</th>
+                        <th style="width: 15%;" class="py-3">Birim</th>
+                        <th style="width: 15%;" class="text-center py-3">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Personeller != null && Model.Personeller.Any())
+                    {
+                        foreach (var user in Model.Personeller)
+                        {
+                            count++;
+                            <tr>
+                                <td class="py-3 fw-bold text-muted ps-4">@count</td>
+                                <td class="py-3 fw-semibold text-dark">@user.Ad @user.Soyad</td>
+                                <td class="py-3 text-muted">@(string.IsNullOrEmpty(user.SicilNo) ? "-" : user.SicilNo)</td>
+                                <td class="py-3">@(string.IsNullOrEmpty(user.DepartmanAd) ? "-" : user.DepartmanAd)</td>
+                                <td class="py-3">@(string.IsNullOrEmpty(user.BirimAd) ? "-" : user.BirimAd)</td>
+                                <td class="text-center py-3">
+                                    <a href="/Admin/User/Details/@user.Id" class="btn btn-inspect">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
+                                        Kişiyi İncele
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="text-muted">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="mb-3"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="17" y1="8" x2="23" y2="14" /><line x1="23" y1="8" x2="17" y2="14" /></svg>
+                                    <p class="mb-0">Bu vardiyaya atanmış herhangi bir personel bulunmuyor.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -75,7 +75,6 @@
             box-shadow: 0 0 0 3px rgba(13,148,136,.12);
         }
 
-    /* Dosya yükleme kutusu */
     .file-drop {
         border: 2px dashed #d1d5db;
         border-radius: 12px;
@@ -147,7 +146,7 @@
     </div>
     <div class="card-body dsp-form-body">
         <form asp-action="CreateDicipline" method="post" id="createForm" enctype="multipart/form-data" novalidate>
-            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <div class="row">
                 <div class="col-md-6 mb-4">
@@ -159,7 +158,8 @@
                 </div>
                 <div class="col-md-6 mb-4">
                     <label class="dsp-label"><i class="bi bi-calendar-event"></i> Olay Tarihi</label>
-                    <input type="date" asp-for="Record.OlayTarihi" asp-format="{0:yyyy-MM-dd}" class="form-control dsp-input" required />
+                    <input type="date" asp-for="Record.OlayTarihi" asp-format="{0:yyyy-MM-dd}" class="form-control dsp-input"
+                           max="@DateTime.Today.ToString("yyyy-MM-dd")" required />
                     <span class="text-danger small" asp-validation-for="Record.OlayTarihi"></span>
                 </div>
             </div>
@@ -172,6 +172,13 @@
             </div>
 
             <div class="mb-4">
+                <label class="dsp-label"><i class="bi bi-person-check"></i> Tanık Adı Soyadı (Opsiyonel)</label>
+                <input type="text" asp-for="Record.TanikAdSoyad" class="form-control dsp-input"
+                       placeholder="Olaya tanık olan personelin adı soyadı..." maxlength="100" />
+                <span class="text-danger small" asp-validation-for="Record.TanikAdSoyad"></span>
+            </div>
+
+            <div class="mb-4">
                 <label class="dsp-label"><i class="bi bi-justify-left"></i> Detaylı Açıklama</label>
                 <textarea asp-for="Record.Detay" class="form-control dsp-input" rows="4"
                           placeholder="Olayın detaylarını giriniz..." maxlength="1500" required></textarea>
@@ -179,12 +186,23 @@
             </div>
 
             <div class="mb-4">
-                <label class="dsp-label"><i class="bi bi-paperclip"></i> Belge / Tutanak (Opsiyonel)</label>
+                <label class="dsp-label"><i class="bi bi-paperclip"></i> Belge / Savunma (Opsiyonel)</label>
                 <label class="file-drop d-block" id="fileDrop">
                     <i class="bi bi-cloud-arrow-up"></i>
                     <span class="file-name" id="fileName">Dosya seçmek için tıklayın (PDF, Word, Görsel — max 10 MB)</span>
                     <input type="file" asp-for="Record.Dosya" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xlsx" />
                 </label>
+                <span class="text-danger small" asp-validation-for="Record.Dosya"></span>
+            </div>
+
+            <div class="mb-4">
+                <label class="dsp-label"><i class="bi bi-camera"></i> İspat Görseli (Opsiyonel)</label>
+                <label class="file-drop d-block" id="ispatDrop">
+                    <i class="bi bi-image"></i>
+                    <span class="file-name" id="ispatName">Olayla ilgili görsel seçmek için tıklayın (JPG, PNG)</span>
+                    <input type="file" asp-for="Record.IspatGorseli" accept=".jpg,.jpeg,.png" />
+                </label>
+                <span class="text-danger small" asp-validation-for="Record.IspatGorseli"></span>
             </div>
 
             <div class="d-flex justify-content-end gap-2">
@@ -197,14 +215,21 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // Seçilen dosya adını kutuda göster
+    // Savunma belgesi dosya adı
     const fileInput = document.querySelector('#fileDrop input[type=file]');
     fileInput.addEventListener('change', function () {
-        const drop = document.getElementById('fileDrop');
-        const label = document.getElementById('fileName');
         if (this.files.length > 0) {
-            label.textContent = this.files[0].name;
-            drop.classList.add('has-file');
+            document.getElementById('fileName').textContent = this.files[0].name;
+            document.getElementById('fileDrop').classList.add('has-file');
+        }
+    });
+
+    // İspat görseli dosya adı
+    const ispatInput = document.querySelector('#ispatDrop input[type=file]');
+    ispatInput.addEventListener('change', function () {
+        if (this.files.length > 0) {
+            document.getElementById('ispatName').textContent = this.files[0].name;
+            document.getElementById('ispatDrop').classList.add('has-file');
         }
     });
 

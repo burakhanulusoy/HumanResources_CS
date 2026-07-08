@@ -12,5 +12,8 @@ namespace HumanResources.Business.DTOs.DiciplineDtos
 
         // Kullanýcýdan dosyayý almak için:
         public IFormFile? Dosya { get; set; }
+        public IFormFile? IspatGorseli { get; set; }
+        public string? TanikAdSoyad { get; set; }
+
     }
 }

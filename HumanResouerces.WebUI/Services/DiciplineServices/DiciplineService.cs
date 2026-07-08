@@ -11,13 +11,13 @@ namespace HumanResources.WebUI.Services.DiciplineServices
         public async Task<BaseResult<object>> CreateAsync(CreateDiciplineDto createDto)
         {
             using var content = BuildFormContent(
-                dosya: createDto.Dosya,
+                dosyalar: new[] { ("Dosya", createDto.Dosya), ("IspatGorseli", createDto.IspatGorseli) },
                 ("AppUserId", createDto.AppUserId.ToString()),
-                ("DisiplinNedeni", createDto.DisiplinNedeni),   // <-- eksikti, validation bu yüzden patlýyordu
-                ("Detay", createDto.Detay),                     // <-- eksikti
+                ("DisiplinNedeni", createDto.DisiplinNedeni),
+                ("Detay", createDto.Detay),
+                ("TanikAdSoyad", createDto.TanikAdSoyad),
                 ("OlayTarihi", createDto.OlayTarihi.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))
             );
-
             var response = await _client.PostAsync("diciplines", content);
             var result = await response.Content.ReadFromJsonAsync<BaseResult<object>>();
             return result.IsFailure ? throw new ApiValidationException(result.Errors) : result;
@@ -26,17 +26,37 @@ namespace HumanResources.WebUI.Services.DiciplineServices
         public async Task<BaseResult<object>> UpdateAsync(UpdateDiciplineDto updateDto)
         {
             using var content = BuildFormContent(
-                dosya: updateDto.Dosya,
+                dosyalar: new[] { ("Dosya", updateDto.Dosya), ("IspatGorseli", updateDto.IspatGorseli) },
                 ("Id", updateDto.Id.ToString()),
                 ("AppUserId", updateDto.AppUserId.ToString()),
-                ("DisiplinNedeni", updateDto.DisiplinNedeni),   // <-- eksikti
-                ("Detay", updateDto.Detay),                     // <-- eksikti
+                ("DisiplinNedeni", updateDto.DisiplinNedeni),
+                ("Detay", updateDto.Detay),
+                ("TanikAdSoyad", updateDto.TanikAdSoyad),
                 ("OlayTarihi", updateDto.OlayTarihi.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))
             );
-
             var response = await _client.PutAsync("diciplines", content);
             var result = await response.Content.ReadFromJsonAsync<BaseResult<object>>();
             return result.IsFailure ? throw new ApiValidationException(result.Errors) : result;
+        }
+
+        private static MultipartFormDataContent BuildFormContent(
+            (string FieldName, IFormFile? File)[] dosyalar,
+            params (string Key, string? Value)[] fields)
+        {
+            var content = new MultipartFormDataContent();
+            foreach (var (key, value) in fields)
+                content.Add(new StringContent(value ?? string.Empty), key);
+
+            foreach (var (fieldName, file) in dosyalar)
+            {
+                if (file is not null && file.Length > 0)
+                {
+                    var streamContent = new StreamContent(file.OpenReadStream());
+                    streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+                    content.Add(streamContent, fieldName, file.FileName);
+                }
+            }
+            return content;
         }
 
         public async Task<BaseResult<object>> DeleteAsync(int id)
@@ -54,22 +74,6 @@ namespace HumanResources.WebUI.Services.DiciplineServices
         public async Task<BaseResult<List<DiciplineDto>>> GetByUserIdAsync(int userId)
             => await _client.GetFromJsonAsync<BaseResult<List<DiciplineDto>>>($"diciplines/GetByUserId/{userId}");
 
-        // ---- Ortak multipart builder: alan unutma derdine son ----
-        private static MultipartFormDataContent BuildFormContent(IFormFile? dosya, params (string Key, string? Value)[] fields)
-        {
-            var content = new MultipartFormDataContent();
-
-            foreach (var (key, value) in fields)
-                content.Add(new StringContent(value ?? string.Empty), key);
-
-            if (dosya is not null && dosya.Length > 0)
-            {
-                var streamContent = new StreamContent(dosya.OpenReadStream());
-                streamContent.Headers.ContentType = new MediaTypeHeaderValue(dosya.ContentType);
-                content.Add(streamContent, "Dosya", dosya.FileName);
-            }
-
-            return content;
-        }
+       
     }
 }

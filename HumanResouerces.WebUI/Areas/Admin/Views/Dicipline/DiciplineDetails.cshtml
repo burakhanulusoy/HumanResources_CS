@@ -8,9 +8,7 @@
                               || neden?.Contains("odul", StringComparison.OrdinalIgnoreCase) == true;
     var currentIsOdul = IsOdul(Model.CurrentRecord.DisiplinNedeni);
 
-    // DİKKAT: Buradaki adresi KENDİ API PROJENİN ÇALIŞTIĞI PORT ile değiştir.
-    // Örn: API'n https://localhost:7214'te çalışıyorsa onu yaz.
-    var apiBaseUrl = "https://localhost:7018";
+    var apiBaseUrl = "https://localhost:7018"; // API portunla değiştir
 }
 
 <style>
@@ -124,7 +122,20 @@
             color: #fff;
         }
 
-    /* Geçmiş kayıtlar - zaman çizelgesi */
+    .record-btn {
+        border: 1.5px solid #0d9488;
+        color: #0d9488;
+        border-radius: 999px;
+        padding: .5rem 1.25rem;
+        font-weight: 600;
+        font-size: .9rem;
+    }
+
+        .record-btn:hover {
+            background: #0d9488;
+            color: #fff;
+        }
+
     .timeline {
         position: relative;
         padding-left: 1.75rem;
@@ -251,6 +262,19 @@
                     </div>
                 </div>
             </div>
+
+            @if (!string.IsNullOrEmpty(Model.CurrentRecord.TanikAdSoyad))
+            {
+                <div class="col-md-6">
+                    <div class="detail-box">
+                        <div class="detail-label">Tanık</div>
+                        <div class="detail-value">
+                            <i class="bi bi-person-check me-1 text-muted"></i>@Model.CurrentRecord.TanikAdSoyad
+                        </div>
+                    </div>
+                </div>
+            }
+
             <div class="col-12">
                 <div class="detail-box">
                     <div class="detail-label">Detaylı Açıklama</div>
@@ -258,20 +282,36 @@
                 </div>
             </div>
 
-            @* İŞTE SİHİRLİ DOKUNUŞ BURADA: apiBaseUrl eklendi *@
-            @if (!string.IsNullOrEmpty(Model.CurrentRecord.DosyaYolu))
+            @if (!string.IsNullOrEmpty(Model.CurrentRecord.IspatGorseliYolu))
             {
-                <div class="col-12 mt-2">
-                    <a href="@($"{apiBaseUrl}{Model.CurrentRecord.DosyaYolu}")" target="_blank" class="btn file-btn">
-                        <i class="bi bi-file-earmark-arrow-down me-1"></i> Ekli Belgeyi Görüntüle / İndir
-                    </a>
+                <div class="col-12">
+                    <div class="detail-box">
+                        <div class="detail-label">İspat Görseli</div>
+                        <a href="@($"{apiBaseUrl}{Model.CurrentRecord.IspatGorseliYolu}")" target="_blank" title="Büyütmek için tıklayın">
+                            <img src="@($"{apiBaseUrl}{Model.CurrentRecord.IspatGorseliYolu}")"
+                                 class="img-fluid border rounded mt-2" style="max-height:320px;cursor:zoom-in;" alt="İspat Görseli" />
+                        </a>
+                    </div>
                 </div>
             }
+
+            <div class="col-12 mt-2 d-flex gap-2 flex-wrap">
+                @if (!string.IsNullOrEmpty(Model.CurrentRecord.DosyaYolu))
+                {
+                    <a href="@($"{apiBaseUrl}{Model.CurrentRecord.DosyaYolu}")" target="_blank" class="btn file-btn">
+                        <i class="bi bi-file-earmark-arrow-down me-1"></i> Ekli Belgeyi Görüntüle
+                    </a>
+                }
+                <a asp-action="Record" asp-route-id="@Model.CurrentRecord.Id" asp-route-userId="@Model.CurrentRecord.AppUserId"
+                   class="btn record-btn">
+                    <i class="bi bi-file-earmark-text me-1"></i> Tutanak Oluştur
+                </a>
+            </div>
         </div>
 
         <hr class="my-4" />
 
-        @* --- Personelin Diğer Kayıtları (Zaman Çizelgesi) --- *@
+        @* --- Personelin Diğer Kayıtları --- *@
         <h6 class="fw-bold mb-3">
             <i class="bi bi-clock-history me-1"></i>
             Personelin Diğer Kayıtları

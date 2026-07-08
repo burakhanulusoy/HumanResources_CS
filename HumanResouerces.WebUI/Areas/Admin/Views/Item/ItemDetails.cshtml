@@ -1,0 +1,76 @@
+﻿@model HumanResources.WebUI.DTOs.ItemDtos.ItemDto
+@{
+    ViewData["Title"] = "Zimmet Detayları";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row mt-4">
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow-sm border-0 rounded-3 h-100">
+            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold text-dark">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2 text-primary"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Zimmet Bilgileri
+                </h5>
+                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle px-3 py-2 rounded-pill">
+                    Durum: @Model.Durumu.ToString()
+                </span>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-semibold text-uppercase">Zimmet Türü</label>
+                        <p class="fw-bold fs-6 mb-0">@(Model.ZimmetTuru?.Ad ?? "-")</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-semibold text-uppercase">Seri Numarası</label>
+                        <p class="fw-bold fs-6 mb-0">@(string.IsNullOrEmpty(Model.SeriNumarasi) ? "Belirtilmemiş" : Model.SeriNumarasi)</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-semibold text-uppercase">Teslim Ediliş Tarihi</label>
+                        <p class="fw-bold fs-6 mb-0">@Model.TeslimTarihi.ToString("dd.MM.yyyy")</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small fw-semibold text-uppercase">İade Tarihi</label>
+                        <p class="fw-bold fs-6 mb-0">@(Model.IadeTarihi.HasValue && Model.IadeTarihi.Value.Year > 2000 ? Model.IadeTarihi.Value.ToString("dd.MM.yyyy") : "Devam Ediyor")</p>
+                    </div>
+                    <div class="col-12">
+                        <label class="text-muted small fw-semibold text-uppercase">Açıklama / Notlar</label>
+                        <div class="p-3 bg-light rounded mt-1 border">
+                            @(string.IsNullOrEmpty(Model.Aciklama) ? "Bu zimmet ile ilgili ek bir açıklama bulunmamaktadır." : Model.Aciklama)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-white border-top p-3 d-flex justify-content-end">
+                <a href="/Admin/Item/Index" class="btn btn-light border px-4 me-2">Listeye Dön</a>
+                <a href="/Admin/Item/UpdateItem/@Model.Id" class="btn btn-primary px-4">Zimmeti Düzenle</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="mb-0 fw-bold text-dark">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2 text-success"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Zimmetli Personel
+                </h5>
+            </div>
+            <div class="card-body p-4 text-center">
+                <div class="mb-3">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                        <span class="fs-3 fw-bold text-secondary">@(Model.AppUser?.Ad?.Substring(0, 1))@(Model.AppUser?.Soyad?.Substring(0, 1))</span>
+                    </div>
+                </div>
+                <h5 class="fw-bold mb-1">@(Model.AppUser?.Ad) @(Model.AppUser?.Soyad)</h5>
+                <p class="text-muted mb-3">@(Model.AppUser?.DepartmanAd ?? "Departman Yok") / @(Model.AppUser?.BirimAd ?? "Birim Yok")</p>
+
+                <a href="/Admin/User/Details/@Model.AppUserId" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    Personeli İncele
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

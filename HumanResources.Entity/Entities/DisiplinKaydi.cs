@@ -20,5 +20,10 @@ namespace HumanResources.Entity.Entities
         // 5. Belge (Islak imzalý tutanak, savunma metni veya ödül sertifikasý vb.)
         public string? DosyaYolu { get; set; }
 
+
+        // YENÝ
+        public string? IspatGorseliYolu { get; set; }   // Olayýn ispat görseli
+        public string? TanikAdSoyad { get; set; }       // Tutanakta 1. tanýk (varsa)
+
     }
 }

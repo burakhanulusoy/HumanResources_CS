@@ -1,6 +1,5 @@
-    using HumanResources.Entity.Entities.Common;
+using HumanResources.Entity.Entities.Common;
 using HumanResources.Entity.Enums;
-using System;
 
 namespace HumanResources.Entity.Entities
 {

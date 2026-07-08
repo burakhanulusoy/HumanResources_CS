@@ -1,0 +1,100 @@
+﻿@model HumanResources.WebUI.DTOs.ItemDtos.CreateItemDto
+@{
+    ViewData["Title"] = "Yeni Zimmet Ekle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 rounded-3 mt-4">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="mb-0 fw-bold text-dark">Yeni Zimmet Kaydı Oluştur</h5>
+            </div>
+            <div class="card-body p-4">
+                <form id="createItemForm" asp-action="CreateItem" method="post">
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label asp-for="AppUserId" class="form-label fw-semibold text-secondary small text-uppercase">Personel Seçin <span class="text-danger">*</span></label>
+                            <select asp-for="AppUserId" class="form-select form-select-lg bg-light" required>
+                                <option value="">-- Personel Seçiniz --</option>
+                                @if (ViewBag.Users != null)
+                                {
+                                    foreach (var user in ViewBag.Users)
+                                    {
+                                        <option value="@user.Id">@user.Ad @user.Soyad - @user.SicilNo</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="AppUserId" class="text-danger small mt-1 d-block fw-medium"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="ZimmetTuruId" class="form-label fw-semibold text-secondary small text-uppercase">Zimmet Türü <span class="text-danger">*</span></label>
+                            <select asp-for="ZimmetTuruId" class="form-select form-select-lg bg-light" required>
+                                <option value="">-- Eşya Türü Seçiniz --</option>
+                                @if (ViewBag.ItemTypes != null)
+                                {
+                                    foreach (var type in ViewBag.ItemTypes)
+                                    {
+                                        <option value="@type.Id">@type.Ad</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="ZimmetTuruId" class="text-danger small mt-1 d-block fw-medium"></span>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label asp-for="SeriNumarasi" class="form-label fw-semibold text-secondary small text-uppercase">Seri Numarası / Demirbaş Kodu</label>
+                            <input asp-for="SeriNumarasi" class="form-control form-control-lg bg-light" placeholder="Eğer yoksa 'Belirtilmedi' yazabilirsiniz" />
+                            <span asp-validation-for="SeriNumarasi" class="text-danger small mt-1 d-block fw-medium"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="TeslimTarihi" class="form-label fw-semibold text-secondary small text-uppercase">Teslim Tarihi <span class="text-danger">*</span></label>
+                            <input asp-for="TeslimTarihi" type="date" class="form-control form-control-lg bg-light" required />
+                            <span asp-validation-for="TeslimTarihi" class="text-danger small mt-1 d-block fw-medium"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="IadeTarihi" class="form-label fw-semibold text-secondary small text-uppercase">İade Tarihi (Planlanan / Gerçekleşen)</label>
+                            <input asp-for="IadeTarihi" type="date" class="form-control form-control-lg bg-light" />
+                            <span asp-validation-for="IadeTarihi" class="text-danger small mt-1 d-block fw-medium"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Aciklama" class="form-label fw-semibold text-secondary small text-uppercase">Açıklama / Notlar <span class="text-danger">*</span></label>
+                            <textarea asp-for="Aciklama" class="form-control bg-light" rows="3" placeholder="Teslim edilen eşyanın durumu, çizik/hasar var mı vs."></textarea>
+                            <span asp-validation-for="Aciklama" class="text-danger small mt-1 d-block fw-medium"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="/Admin/Item/Index" class="btn btn-light px-4 border">İptal Et</a>
+                        <button type="submit" class="btn btn-primary px-4">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.getElementById('createItemForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Kayıt İşlemi',
+            text: "Zimmet kaydını oluşturmak istediğinize emin misiniz?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#0d6efd',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Evet, Kaydet',
+            cancelButtonText: 'İptal'
+        }).then((result) => {
+            if (result.isConfirmed) this.submit();
+        });
+    });
+</script>

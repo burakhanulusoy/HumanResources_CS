@@ -11,5 +11,7 @@ namespace HumanResources.WebUI.DTOs.DiciplineDtos
         public string Detay { get; set; }
         public DateTime OlayTarihi { get; set; }
         public string? DosyaYolu { get; set; }
+        public string? IspatGorseliYolu { get; set; }
+        public string? TanikAdSoyad { get; set; }
     }
 }

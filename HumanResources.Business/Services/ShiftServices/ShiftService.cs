@@ -107,6 +107,9 @@ namespace HumanResources.Business.Services.ShiftServices
             var shifts = await _shiftRepository.GetQueryable()
                 .Where(s => !s.SilindiMi)
                 .Include(s => s.Personeller)
+                    .ThenInclude(p => p.Departman)
+                .Include(s => s.Personeller)
+                    .ThenInclude(p => p.Birim)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -119,6 +122,9 @@ namespace HumanResources.Business.Services.ShiftServices
         {
             var shift = await _shiftRepository.GetQueryable()
                 .Include(s => s.Personeller)
+                    .ThenInclude(p => p.Departman) // Personelin Departman bilgisini dahil et
+                .Include(s => s.Personeller)
+                    .ThenInclude(p => p.Birim)     // Personelin Birim bilgisini dahil et
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.Id == id && !s.SilindiMi);
 

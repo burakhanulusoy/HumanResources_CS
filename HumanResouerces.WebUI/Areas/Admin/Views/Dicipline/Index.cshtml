@@ -133,11 +133,20 @@
         font-size: .76rem;
         padding: .3rem .6rem;
         border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: .25rem;
+        margin-right: .25rem;
     }
 
         .doc-badge.var {
             background: #eff6ff;
             color: #2563eb;
+        }
+
+        .doc-badge.ispat {
+            background: #f0fdfa;
+            color: #0d9488;
         }
 
         .doc-badge.yok {
@@ -217,9 +226,10 @@
                     <tr>
                         <th style="width:5%">#</th>
                         <th style="width:10%">Tür</th>
-                        <th style="width:28%">Kayıt Nedeni</th>
-                        <th style="width:15%">Olay Tarihi</th>
-                        <th style="width:12%">Belge</th>
+                        <th style="width:14%">Personel</th>
+                        <th style="width:26%">Kayıt Nedeni</th>
+                        <th style="width:13%">Olay Tarihi</th>
+                        <th style="width:16%">Ekler</th>
                         <th style="width:30%" class="text-end pe-4">İşlemler</th>
                     </tr>
                 </thead>
@@ -238,14 +248,19 @@
                                         @(odul ? "Ödül" : "Disiplin")
                                     </span>
                                 </td>
+                                <td class="fw-semibold text-nowrap">@item.AppUser?.Ad @item.AppUser?.Soyad</td>
                                 <td><span class="record-name">@item.DisiplinNedeni</span></td>
                                 <td><span class="date-badge"><i class="bi bi-calendar3 me-1"></i>@item.OlayTarihi.ToString("dd.MM.yyyy")</span></td>
                                 <td>
                                     @if (!string.IsNullOrEmpty(item.DosyaYolu))
                                     {
-                                        <span class="doc-badge var"><i class="bi bi-paperclip"></i> Ekli</span>
+                                        <span class="doc-badge var"><i class="bi bi-paperclip"></i> Belge</span>
                                     }
-                                    else
+                                    @if (!string.IsNullOrEmpty(item.IspatGorseliYolu))
+                                    {
+                                        <span class="doc-badge ispat"><i class="bi bi-camera"></i> İspat</span>
+                                    }
+                                    @if (string.IsNullOrEmpty(item.DosyaYolu) && string.IsNullOrEmpty(item.IspatGorseliYolu))
                                     {
                                         <span class="doc-badge yok"><i class="bi bi-dash-lg"></i> Yok</span>
                                     }
@@ -287,7 +302,7 @@
     function deleteDicipline(id, name) {
         Swal.fire({
             title: "Emin misiniz?",
-            html: `<b>${name}</b> kaydını silmek üzeresiniz.<br>Ekli belge de sunucudan silinecek. Bu işlem geri alınamaz!`,
+            html: `<b>${name}</b> kaydını silmek üzeresiniz.<br>Ekli belgeler de sunucudan silinecek. Bu işlem geri alınamaz!`,
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#dc2626",

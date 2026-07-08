@@ -22,6 +22,11 @@ namespace HumanResources.Business.Validators.DiciplineValidators
             RuleFor(x => x.OlayTarihi)
                 .NotEmpty().WithMessage("Olay tarihi zorunludur.")
                 .LessThanOrEqualTo(DateTime.UtcNow.AddDays(1)).WithMessage("Olay tarihi gelecekteki bir tarih olamaz.");
+           
+            
+            RuleFor(x => x.TanikAdSoyad)
+         .MaximumLength(100).WithMessage("Tanýk adý en fazla 100 karakter olabilir.");
+
         }
     }
 }

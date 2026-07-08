@@ -1,0 +1,166 @@
+﻿@model List<HumanResources.WebUI.DTOs.ItemDtos.ItemDto>
+@{
+    ViewData["Title"] = "Zimmet Listesi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int count = 0;
+}
+
+<style>
+    .card-custom {
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-header-custom {
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        border-top-left-radius: 12px !important;
+        border-top-right-radius: 12px !important;
+    }
+
+    .table-custom thead th {
+        background-color: #f1f5f9;
+        color: #475569;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .table-custom tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    .action-btn {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+
+    .btn-view {
+        background-color: #f3f4f6;
+        color: #4b5563;
+        border: 1px solid #e5e7eb;
+    }
+
+        .btn-view:hover {
+            background-color: #4b5563;
+            color: white;
+        }
+
+    .btn-edit {
+        background-color: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #bfdbfe;
+    }
+
+        .btn-edit:hover {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+    .btn-delete {
+        background-color: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+
+        .btn-delete:hover {
+            background-color: #ef4444;
+            color: white;
+        }
+</style>
+
+<div class="card card-custom mb-4">
+    <div class="card-header card-header-custom py-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold text-dark d-flex align-items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2 text-primary"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+            Tüm Zimmet Kayıtları
+        </h5>
+        <a href="/Admin/Item/CreateItem" class="btn btn-primary btn-sm px-3 d-flex align-items-center gap-2" style="border-radius: 8px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Yeni Zimmet Ver
+        </a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-custom align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">#</th>
+                        <th>Personel</th>
+                        <th>Zimmet Türü</th>
+                        <th>Seri No</th>
+                        <th>Teslim Tarihi</th>
+                        <th>Durum</th>
+                        <th class="text-center">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            count++;
+                            <tr>
+                                <td class="fw-bold text-muted ps-4">@count</td>
+                                <td class="fw-semibold text-dark">@(item.AppUser?.Ad) @(item.AppUser?.Soyad)</td>
+                                <td>@(item.ZimmetTuru?.Ad)</td>
+                                <td><span class="text-muted">@(string.IsNullOrEmpty(item.SeriNumarasi) ? "-" : item.SeriNumarasi)</span></td>
+                                <td>@item.TeslimTarihi.ToString("dd.MM.yyyy")</td>
+                                <td>
+                                    <span class="badge @(item.Durumu.ToString() == "Aktif" ? "bg-success" : "bg-warning") bg-opacity-10 text-dark border">
+                                        @item.Durumu.ToString()
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-inline-flex gap-2">
+                                        <a href="/Admin/Item/ItemDetails/@item.Id" class="action-btn btn-view text-decoration-none">İncele</a>
+                                        <a href="/Admin/Item/UpdateItem/@item.Id" class="action-btn btn-edit text-decoration-none">Düzenle</a>
+                                        <button onclick="deleteItem(@item.Id)" class="action-btn btn-delete border-0">Sil</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <p class="mb-0">Henüz sisteme eklenmiş bir zimmet bulunmuyor.</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function deleteItem(id) {
+        Swal.fire({
+            title: "Emin misiniz?",
+            text: "Bu zimmet kaydını silmek istediğinize emin misiniz? Geri alamazsınız!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#dc2626",
+            cancelButtonColor: "#64748b",
+            confirmButtonText: "Evet, Sil!",
+            cancelButtonText: "İptal"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({ title: "Silindi!", text: "Kayıt başarıyla silindi.", icon: "success", showConfirmButton: false, timer: 1500 })
+                .then(() => { window.location.href = "/Admin/Item/DeleteItem/" + id; });
+            }
+        });
+    }
+</script>

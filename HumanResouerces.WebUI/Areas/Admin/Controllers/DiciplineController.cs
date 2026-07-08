@@ -133,5 +133,20 @@ namespace HumanResouerces.WebUI.Areas.Admin.Controllers
                 ModelState.AddModelError(string.Empty, ex.Message);
             }
         }
+
+        public async Task<IActionResult> Record(int id, int userId)
+        {
+            var response = await _diciplineService.GetByUserIdAsync(userId);
+            var record = response?.Data?.FirstOrDefault(x => x.Id == id);
+
+            if (record is null)
+            {
+                TempData["Error"] = "Kayıt bulunamadı.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(record);
+        }
+
     }
 }

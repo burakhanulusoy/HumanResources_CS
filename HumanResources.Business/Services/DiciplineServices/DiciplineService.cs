@@ -43,6 +43,12 @@ namespace HumanResources.Business.Services.DiciplineServices
                 entity.DosyaYolu = await _fileService.UploadFileAsync(createDto.Dosya, "diciplines", customName);
             }
 
+            if (createDto.IspatGorseli != null)
+            {
+                string ispatName = $"Ispat_Kullanici{createDto.AppUserId}_{DateTime.Now:yyyyMMdd}";
+                entity.IspatGorseliYolu = await _fileService.UploadFileAsync(createDto.IspatGorseli, "diciplines", ispatName);
+            }
+
             entity.OlayTarihi = DateTime.SpecifyKind(entity.OlayTarihi, DateTimeKind.Utc);
 
             await _diciplineRepository.CreateAsync(entity);
@@ -70,6 +76,15 @@ namespace HumanResources.Business.Services.DiciplineServices
                     updateDto.Dosya, "diciplines", $"user-{updateDto.AppUserId}");
             }
 
+            if (updateDto.IspatGorseli != null)
+            {
+                if (!string.IsNullOrEmpty(entity.IspatGorseliYolu))
+                    _fileService.DeleteFile(entity.IspatGorseliYolu);
+
+                entity.IspatGorseliYolu = await _fileService.UploadFileAsync(
+                    updateDto.IspatGorseli, "diciplines", $"Ispat_user-{updateDto.AppUserId}");
+            }
+
             entity.OlayTarihi = DateTime.SpecifyKind(entity.OlayTarihi, DateTimeKind.Utc);
 
             _diciplineRepository.Update(entity);
@@ -87,6 +102,9 @@ namespace HumanResources.Business.Services.DiciplineServices
             if (!string.IsNullOrEmpty(entity.DosyaYolu))
                 _fileService.DeleteFile(entity.DosyaYolu);
 
+            if (!string.IsNullOrEmpty(entity.IspatGorseliYolu))
+                _fileService.DeleteFile(entity.IspatGorseliYolu);
+
             _diciplineRepository.Delete(entity);
             bool result = await _unitOfWork.SaveChangesAsync();
 
@@ -95,7 +113,7 @@ namespace HumanResources.Business.Services.DiciplineServices
 
         public async Task<BaseResult<List<ResultDiciplineDto>>> GetAllAsync()
         {
-            var entities = await _diciplineRepository.GetAllAsync();
+            var entities = await _diciplineRepository.GetAllWithUserAsync();
             var mappedEntities = entities.Adapt<List<ResultDiciplineDto>>();
             return BaseResult<List<ResultDiciplineDto>>.Success(mappedEntities);
         }
