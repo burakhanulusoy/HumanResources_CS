@@ -16,6 +16,7 @@ namespace HumanResources.WebUI.Services.DiciplineServices
                 ("DisiplinNedeni", createDto.DisiplinNedeni),
                 ("Detay", createDto.Detay),
                 ("TanikAdSoyad", createDto.TanikAdSoyad),
+                ("TanikAdSoyad2", createDto.TanikAdSoyad2),
                 ("OlayTarihi", createDto.OlayTarihi.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))
             );
             var response = await _client.PostAsync("diciplines", content);
@@ -32,12 +33,28 @@ namespace HumanResources.WebUI.Services.DiciplineServices
                 ("DisiplinNedeni", updateDto.DisiplinNedeni),
                 ("Detay", updateDto.Detay),
                 ("TanikAdSoyad", updateDto.TanikAdSoyad),
+                ("TanikAdSoyad2", updateDto.TanikAdSoyad2),
                 ("OlayTarihi", updateDto.OlayTarihi.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))
             );
             var response = await _client.PutAsync("diciplines", content);
             var result = await response.Content.ReadFromJsonAsync<BaseResult<object>>();
             return result.IsFailure ? throw new ApiValidationException(result.Errors) : result;
         }
+
+        public async Task<BaseResult<object>> DeleteAsync(int id)
+        {
+            var response = await _client.DeleteAsync($"diciplines/{id}");
+            return await response.Content.ReadFromJsonAsync<BaseResult<object>>();
+        }
+
+        public async Task<BaseResult<List<ResultDiciplineDto>>> GetAllAsync()
+            => await _client.GetFromJsonAsync<BaseResult<List<ResultDiciplineDto>>>("diciplines");
+
+        public async Task<BaseResult<UpdateDiciplineDto>> GetByIdAsync(int id)
+            => await _client.GetFromJsonAsync<BaseResult<UpdateDiciplineDto>>($"diciplines/{id}");
+
+        public async Task<BaseResult<List<DiciplineDto>>> GetByUserIdAsync(int userId)
+            => await _client.GetFromJsonAsync<BaseResult<List<DiciplineDto>>>($"diciplines/GetByUserId/{userId}");
 
         private static MultipartFormDataContent BuildFormContent(
             (string FieldName, IFormFile? File)[] dosyalar,
@@ -58,22 +75,5 @@ namespace HumanResources.WebUI.Services.DiciplineServices
             }
             return content;
         }
-
-        public async Task<BaseResult<object>> DeleteAsync(int id)
-        {
-            var response = await _client.DeleteAsync($"diciplines/{id}");
-            return await response.Content.ReadFromJsonAsync<BaseResult<object>>();
-        }
-
-        public async Task<BaseResult<List<ResultDiciplineDto>>> GetAllAsync()
-            => await _client.GetFromJsonAsync<BaseResult<List<ResultDiciplineDto>>>("diciplines");
-
-        public async Task<BaseResult<UpdateDiciplineDto>> GetByIdAsync(int id)
-            => await _client.GetFromJsonAsync<BaseResult<UpdateDiciplineDto>>($"diciplines/{id}");
-
-        public async Task<BaseResult<List<DiciplineDto>>> GetByUserIdAsync(int userId)
-            => await _client.GetFromJsonAsync<BaseResult<List<DiciplineDto>>>($"diciplines/GetByUserId/{userId}");
-
-       
     }
 }

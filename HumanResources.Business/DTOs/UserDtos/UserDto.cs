@@ -48,6 +48,9 @@ namespace HumanResources.Business.DTOs.UserDtos
         public string? AmirAdSoyad { get; set; }
 
         public int? VardiyaId { get; set; } 
-        public string? VardiyaAciklama { get; set; } 
+        public string? VardiyaAciklama { get; set; }
+
+        public string? VardiyaAmiriAdSoyad { get; set; }
+
     }
 }

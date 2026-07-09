@@ -1,63 +1,259 @@
 ﻿@model HumanResources.WebUI.DTOs.DiciplineDtos.DiciplineDto
 @{
-    ViewData["Title"] = "Tutanak";
+    ViewData["Title"] = "Disiplin Tespit Tutanağı";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var u = Model.AppUser;
+    string logoUrl = "/ImagesProject/Logo.png";
+    string pdfFileName = $"Tutanak_{u?.Ad}_{u?.Soyad}.pdf";
+
+    bool IsOdul(string neden) => neden?.Contains("ödül", StringComparison.OrdinalIgnoreCase) == true
+                              || neden?.Contains("odul", StringComparison.OrdinalIgnoreCase) == true;
+    var odul = IsOdul(Model.DisiplinNedeni);
 }
 
 <style>
-    .tutanak-sayfa {
-        background: #fff;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 3rem 3.5rem;
+    .btn-outline-back {
+        background: #f3f4f6;
+        color: #4b5563;
         border: 1px solid #e5e7eb;
-        font-family: "Times New Roman", serif;
-        font-size: 14px;
-        line-height: 1.8;
-        color: #111;
+        font-weight: 500;
+        border-radius: 10px;
     }
 
-    .tutanak-baslik {
+        .btn-outline-back:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+    .btn-print-pdf {
+        background: #0B2545;
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(11,37,69,.25);
+    }
+
+        .btn-print-pdf:hover {
+            background: #0d2c55;
+            color: #fff;
+        }
+
+        .btn-print-pdf i {
+            color: #29A8CC;
+        }
+
+    /* ===== Resmi belge şablonu ===== */
+    #pdfContent {
+        background: #ffffff;
+        max-width: 850px;
+        margin: 0 auto;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #1a1a1a;
+        border-radius: 4px;
+        padding: 42px 46px;
+    }
+
+    .doc-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 3px double #0B2545;
+        padding-bottom: 16px;
+        margin-bottom: 20px;
+    }
+
+        .doc-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+            .doc-header .brand img {
+                height: 78px;
+                width: auto;
+                display: block;
+            }
+
+        .doc-header .org-info h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: .04em;
+            color: #0B2545;
+            text-transform: uppercase;
+        }
+
+        .doc-header .org-info p {
+            margin: 2px 0 0;
+            font-size: .8rem;
+            color: #555;
+        }
+
+        .doc-header .doc-meta {
+            text-align: right;
+            font-size: .76rem;
+            color: #333;
+            line-height: 1.6;
+        }
+
+            .doc-header .doc-meta strong {
+                color: #0B2545;
+            }
+
+    .doc-title {
         text-align: center;
-        font-weight: 700;
-        font-size: 18px;
-        letter-spacing: 4px;
-        margin-bottom: 2rem;
+        margin-bottom: 22px;
     }
 
-    .tutanak-bolum {
+        .doc-title h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            margin: 0;
+            color: #0B2545;
+        }
+
+        .doc-title .title-underline {
+            width: 100px;
+            height: 3px;
+            background: #29A8CC;
+            margin: 8px auto 0;
+            border-radius: 2px;
+        }
+
+        .doc-title .tur-rozet {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: .74rem;
+            font-weight: 700;
+            padding: .3rem .9rem;
+            border-radius: 999px;
+        }
+
+            .doc-title .tur-rozet.odul {
+                background: #ecfdf5;
+                color: #059669;
+            }
+
+            .doc-title .tur-rozet.ceza {
+                background: #fef2f2;
+                color: #dc2626;
+            }
+
+    .doc-info-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 22px;
+        font-size: .86rem;
+    }
+
+        .doc-info-table td {
+            border: 1px solid #333;
+            padding: 9px 12px;
+        }
+
+            .doc-info-table td.label {
+                background: #eef2f7;
+                font-weight: 700;
+                color: #0B2545;
+                width: 24%;
+            }
+
+    .doc-section-heading {
+        font-size: .88rem;
         font-weight: 700;
-        margin-top: 1.2rem;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        color: #0B2545;
+        border-bottom: 1px solid #0B2545;
+        padding-bottom: 4px;
+        margin: 22px 0 10px;
+    }
+
+    .doc-paragraph {
+        font-size: .87rem;
+        line-height: 1.75;
+        color: #222;
+        text-align: justify;
+        margin-bottom: 12px;
     }
 
     .doldur {
-        border-bottom: 1px dotted #555;
-        padding: 0 6px;
-        font-weight: 600;
+        font-weight: 700;
+        color: #0B2545;
     }
 
-    .bos-satir {
-        display: inline-block;
-        min-width: 220px;
-        border-bottom: 1px dotted #555;
+    .doc-detail-box {
+        white-space: pre-line;
+        border: 1px dashed #94a3b8;
+        border-radius: 6px;
+        padding: 14px;
+        min-height: 90px;
+        font-size: .87rem;
+        color: #374151;
+        margin-bottom: 8px;
     }
 
-    .imza-alani {
+    .doc-declaration {
+        font-size: .84rem;
+        color: #333;
+        line-height: 1.7;
+        margin: 18px 0 8px;
+        text-align: justify;
+    }
+
+    .doc-signature-area {
         display: flex;
         justify-content: space-between;
-        margin-top: 3rem;
-        gap: 1rem;
+        margin-top: 44px;
+        gap: 18px;
         flex-wrap: wrap;
     }
 
-    .imza-kutu {
-        min-width: 200px;
+    .doc-signature-box {
+        flex: 1;
+        min-width: 150px;
+        text-align: center;
+        font-size: .8rem;
     }
 
-        .imza-kutu .rol {
+    .doc-signature-name {
+        min-height: 20px;
+        font-weight: 700;
+        color: #0B2545;
+        margin-bottom: 4px;
+    }
+
+    .doc-signature-line {
+        border-top: 1px solid #0B2545;
+        margin-top: 44px;
+        padding-top: 6px;
+        font-weight: 700;
+        color: #0B2545;
+        font-size: .78rem;
+    }
+
+    .doc-signature-role {
+        font-size: .72rem;
+        color: #64748b;
+        margin-top: 2px;
+    }
+
+    .doc-footer {
+        margin-top: 30px;
+        border-top: 1px solid #0B2545;
+        padding-top: 10px;
+        font-size: .7rem;
+        color: #444;
+        display: flex;
+        justify-content: space-between;
+    }
+
+        .doc-footer .conf {
+            color: #0B2545;
             font-weight: 700;
-            margin-bottom: 2.2rem;
         }
 
     @@media print {
@@ -65,83 +261,125 @@
             visibility: hidden;
         }
 
-        .tutanak-sayfa, .tutanak-sayfa * {
+        #pdfContent, #pdfContent * {
             visibility: visible;
         }
 
-        .tutanak-sayfa {
+        #pdfContent {
             position: absolute;
             left: 0;
             top: 0;
             width: 100%;
-            border: none;
-            padding: 1.5rem;
+            box-shadow: none;
         }
     }
 </style>
 
-<div class="d-flex justify-content-between align-items-center mb-3" style="max-width:800px;margin:0 auto;">
+<div class="d-flex justify-content-between align-items-center mb-4" style="max-width:850px;margin-left:auto;margin-right:auto;">
     <a asp-action="DiciplineDetails" asp-route-id="@Model.Id" asp-route-userId="@Model.AppUserId"
-       class="btn btn-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i> Detaya Dön</a>
-    <button onclick="window.print()" class="btn btn-primary btn-sm"><i class="bi bi-printer me-1"></i> Yazdır</button>
+       class="btn btn-outline-back px-3">
+        <i class="bi bi-arrow-left me-1"></i>Detaya Dön
+    </a>
+    <button onclick="window.print()" class="btn btn-print-pdf px-4">
+        <i class="bi bi-printer me-1"></i>Belgeyi Yazdır / PDF Al
+    </button>
 </div>
 
-<div class="tutanak-sayfa">
-    <div class="tutanak-baslik">TUTANAK</div>
-
-    <div class="tutanak-bolum">İŞVERENİN</div>
-    <div>Unvanı: <span class="bos-satir"></span></div>
-
-    <div class="tutanak-bolum">İŞÇİNİN</div>
-    <div>Adı Soyadı: <span class="doldur">@u?.Ad @u?.Soyad</span></div>
-    <div>T.C. Kimlik No: <span class="doldur">@u?.TcKimlikNo</span></div>
-    <div>Bölümü: <span class="doldur">@u?.DepartmanAd@(!string.IsNullOrEmpty(u?.DepartmanAd) && !string.IsNullOrEmpty(u?.BirimAd) ? " / " : "")@u?.BirimAd</span></div>    <div>Görevi: <span class="doldur">@u?.PersonelTipi</span></div>
-
-    <div class="tutanak-bolum">TESPİT EDİLEN DURUM / OLAYIN KONUSU</div>
-    <p class="mt-2">
-        <span class="doldur">@Model.OlayTarihi.ToString("dd/MM/yyyy")</span> tarihinde, yukarıda bilgileri yazılı personelin
-        fabrikanın <span class="doldur">@u?.BirimAd</span> bölümündeki çalışması/vardiyası esnasında;
-    </p>
-
-    <p><strong>Kayıt Nedeni:</strong> <span class="doldur">@Model.DisiplinNedeni</span></p>
-
-    <p>
-        İşçinin, işyerinde uygulanmakta olan çalışma kurallarına ve iş disiplinine aykırı olarak
-        aşağıda belirtilen eylemde/harekette bulunduğu tespit edilmiştir:
-    </p>
-    <p style="white-space: pre-line; border: 1px dotted #999; padding: .75rem; min-height: 90px;">@Model.Detay</p>
-
-    <p>
-        Yukarıda detayları belirtilen durum ile ilgili personelin işyerinde uygulanmakta olan çalışma kurallarına,
-        fabrika düzenine ve iş disiplinine aykırı davrandığı ortaklaşa imza altına alınmıştır.
-    </p>
-    <p>
-        İşbu tespit tutanağı aşağıdaki imzası bulunan kişiler huzurunda bir baskıya maruz kalmadan imzalanmıştır.
-        &nbsp;&nbsp;<span class="doldur">@DateTime.Today.ToString("dd/MM/yyyy")</span>
-    </p>
-
-    <div class="imza-alani">
-        <div class="imza-kutu">
-            <div class="rol">VARDİYA AMİRİ</div>
-            <div>Adı Soyadı: <span class="bos-satir" style="min-width:130px;"></span></div>
-            <div class="mt-3">İmza:</div>
-        </div>
-
-        <div class="imza-kutu">
-            <div class="rol">TANIKLAR</div>
-            <div>
-                Adı Soyadı:
-                <span class="@(string.IsNullOrEmpty(Model.TanikAdSoyad) ? "bos-satir" : "doldur")" style="min-width:130px;">@Model.TanikAdSoyad</span>
+<div id="pdfContent" class="card shadow-sm">
+    <div class="doc-header">
+        <div class="brand">
+            <img src="@logoUrl" alt="Logo" />
+            <div class="org-info">
+                <h3>ÖNCÜ SAVUNMA</h3>
+                <p>İnsan Kaynakları Departmanı</p>
             </div>
-            <div class="mt-2 mb-3">İmza:</div>
-            <div>Adı Soyadı: <span class="bos-satir" style="min-width:130px;"></span></div>
-            <div class="mt-2">İmza:</div>
+        </div>
+        <div class="doc-meta">
+            <div><strong>Belge No:</strong> DSP-@Model.Id.ToString("D4")-@DateTime.Now.ToString("yyyyMMdd")</div>
+            <div><strong>Düzenleme Tarihi:</strong> @DateTime.Now.ToString("dd.MM.yyyy HH:mm")</div>
+            <div><strong>Gizlilik:</strong> Kurum İçi</div>
+        </div>
+    </div>
+
+    <div class="doc-title">
+        <h2>Personel Durum Tespit Tutanağı</h2>
+        <div class="title-underline"></div>
+        <span class="tur-rozet @(odul ? "odul" : "ceza")">
+            @(odul ? "ÖDÜL KAYDI" : "DİSİPLİN KAYDI")
+        </span>
+    </div>
+
+    <table class="doc-info-table">
+        <tr>
+            <td class="label">İşçinin Adı Soyadı</td>
+            <td>@u?.Ad @u?.Soyad</td>
+            <td class="label">T.C. Kimlik No</td>
+            <td>@(u?.TcKimlikNo ?? "-")</td>
+        </tr>
+        <tr>
+            <td class="label">Bölümü</td>
+            <td>
+                @(u?.DepartmanAd ?? "-")@(!string.IsNullOrEmpty(u?.DepartmanAd) && !string.IsNullOrEmpty(u?.BirimAd) ? " / " : "")@(u?.BirimAd ?? "")
+            </td>
+            <td class="label">Görevi</td>
+            <td>@(u?.PersonelTipi ?? "-")</td>
+        </tr>
+        <tr>
+            <td class="label">Vardiya Amiri</td>
+            <td>@(u?.VardiyaAmiriAdSoyad ?? "Atanmamış")</td>
+            <td class="label">Olay Tarihi</td>
+            <td>@Model.OlayTarihi.ToString("dd.MM.yyyy")</td>
+        </tr>
+    </table>
+
+    <div class="doc-section-heading">Tespit Edilen Durum / Olayın Konusu</div>
+    <p class="doc-paragraph">
+        <span class="doldur">@Model.OlayTarihi.ToString("dd.MM.yyyy")</span> tarihinde, yukarıda bilgileri yazılı personelin
+        fabrikanın <span class="doldur">@(u?.BirimAd ?? "ilgili")</span> bölümündeki çalışması/vardiyası esnasında,
+        işyerinde uygulanmakta olan çalışma kurallarına ve iş disiplinine ilişkin aşağıdaki durum tespit edilmiştir.
+    </p>
+
+    <div class="doc-section-heading">Kayıt Nedeni</div>
+    <p class="doc-paragraph"><span class="doldur">@Model.DisiplinNedeni</span></p>
+
+    <div class="doc-section-heading">Olayın Detaylı Açıklaması</div>
+    <div class="doc-detail-box">@Model.Detay</div>
+
+    <div class="doc-declaration">
+        Yukarıda detayları belirtilen durum ile ilgili personelin işyerinde uygulanmakta olan çalışma kurallarına,
+        fabrika düzenine ve iş disiplinine aykırı davrandığı/başarı gösterdiği ortaklaşa imza altına alınmıştır.
+        İşbu tespit tutanağı, aşağıda imzası bulunan kişiler huzurunda herhangi bir baskıya maruz kalınmaksızın
+        düzenlenmiş ve imzalanmıştır. &nbsp;<span class="doldur">@DateTime.Today.ToString("dd.MM.yyyy")</span>
+    </div>
+
+    <div class="doc-signature-area">
+        <div class="doc-signature-box">
+            <div class="doc-signature-name">@(u?.VardiyaAmiriAdSoyad ?? "")</div>
+            <div class="doc-signature-line">Vardiya Amiri</div>
+            <div class="doc-signature-role">İmza</div>
         </div>
 
-        <div class="imza-kutu">
-            <div class="rol">İŞÇİ</div>
-            <div>Adı Soyadı: <span class="doldur">@u?.Ad @u?.Soyad</span></div>
-            <div class="mt-3">İmza:</div>
+        <div class="doc-signature-box">
+            <div class="doc-signature-name">@(string.IsNullOrEmpty(Model.TanikAdSoyad) ? "\u00a0" : Model.TanikAdSoyad)</div>
+            <div class="doc-signature-line">Tanık 1</div>
+            <div class="doc-signature-role">İmza</div>
         </div>
+
+        <div class="doc-signature-box">
+            <div class="doc-signature-name">@(string.IsNullOrEmpty(Model.TanikAdSoyad2) ? "\u00a0" : Model.TanikAdSoyad2)</div>
+            <div class="doc-signature-line">Tanık 2</div>
+            <div class="doc-signature-role">İmza</div>
+        </div>
+
+        <div class="doc-signature-box">
+            <div class="doc-signature-name">@u?.Ad @u?.Soyad</div>
+            <div class="doc-signature-line">İşçi</div>
+            <div class="doc-signature-role">İmza</div>
+        </div>
+    </div>
+
+    <div class="doc-footer">
+        <span>Bu belge Öncü Savunma İnsan Kaynakları Departmanı tarafından sistem üzerinden düzenlenmiştir.</span>
+        <span class="conf">Sayfa 1/1</span>
     </div>
 </div>

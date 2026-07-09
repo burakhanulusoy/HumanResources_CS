@@ -7,14 +7,20 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h3 class="mb-0"><i class="bi bi-box-seam me-2"></i>Zimmet Yönetimi</h3>
-    <a asp-action="CreateItem" class="btn btn-primary">
-        <i class="bi bi-plus-lg me-1"></i>Yeni Zimmet Ver
-    </a>
+    <div class="d-flex gap-3">
+        <div class="input-group" style="max-width: 260px;">
+            <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" id="searchInput" class="form-control" placeholder="Personel adına göre ara...">
+        </div>
+        <a asp-action="CreateItem" class="btn btn-primary text-nowrap">
+            <i class="bi bi-plus-lg me-1"></i>Yeni Zimmet Ver
+        </a>
+    </div>
 </div>
 
 <div class="card shadow-sm">
     <div class="card-body p-0">
-        <table class="table table-hover align-middle mb-0">
+        <table class="table table-hover align-middle mb-0" id="itemTable">
             <thead class="table-light">
                 <tr>
                     <th>Personel</th>
@@ -33,7 +39,7 @@
                     {
                         count++;
                         <tr>
-                            <td class="fw-semibold text-nowrap">@item.AppUser?.Ad @item.AppUser?.Soyad</td>
+                            <td class="fw-semibold text-nowrap personel-name">@item.AppUser?.Ad @item.AppUser?.Soyad</td>
                             <td>@item.ZimmetTuru?.Ad</td>
                             <td class="text-muted">
                                 @(string.IsNullOrEmpty(item.Marka) && string.IsNullOrEmpty(item.Model)
@@ -94,6 +100,11 @@
                 }
             </tbody>
         </table>
+
+        <div id="noResultMessage" class="text-center text-muted py-4" style="display: none;">
+            <i class="bi bi-search fs-2 d-block mb-2"></i>
+            Aradığınız kritere uygun personel bulunamadı.
+        </div>
     </div>
 </div>
 
@@ -114,5 +125,35 @@
                 if (result.isConfirmed) form.submit();
             });
         });
+    });
+
+    // Arama (Filtreleme) Scripti
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        const noResultMessage = document.getElementById("noResultMessage");
+
+        if (searchInput) {
+            searchInput.addEventListener("keyup", function () {
+                const filter = this.value.toLowerCase();
+                const rows = document.querySelectorAll("#itemTable tbody tr");
+                let hasVisibleRow = false;
+
+                rows.forEach(row => {
+                    const nameCell = row.querySelector(".personel-name");
+                    if (!nameCell) return; // boş satır (kayıt yok mesajı) atlanır
+                    const text = nameCell.textContent.toLowerCase();
+                    if (text.includes(filter)) {
+                        row.style.display = "";
+                        hasVisibleRow = true;
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+
+                if (noResultMessage) {
+                    noResultMessage.style.display = hasVisibleRow ? "none" : "block";
+                }
+            });
+        }
     });
 </script>

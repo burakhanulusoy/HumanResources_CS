@@ -1,9 +1,6 @@
 using HumanResources.DataAccess.Context;
 using HumanResources.Entity.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace HumanResources.DataAccess.Repositories.DiciplineRepositories
 {
@@ -17,11 +14,14 @@ namespace HumanResources.DataAccess.Repositories.DiciplineRepositories
         {
             return await _table
                 .Include(x => x.AppUser)
-                    .ThenInclude(u => u.Departman) // Personelin Departman bilgisini getir
+                    .ThenInclude(u => u.Departman)
                 .Include(x => x.AppUser)
-                    .ThenInclude(u => u.Birim)     // Personelin Birim bilgisini getir
+                    .ThenInclude(u => u.Birim)
+                .Include(x => x.AppUser)
+                    .ThenInclude(u => u.Vardiya)
+                        .ThenInclude(v => v.Yonetici) // Personelin vardiya amirini de getir
                 .Where(x => x.AppUserId == userId)
-                .AsNoTracking() // Sadece okuma yapacaðýmýz için performansý artýrýr
+                .AsNoTracking()
                 .ToListAsync();
         }
 
@@ -29,9 +29,12 @@ namespace HumanResources.DataAccess.Repositories.DiciplineRepositories
         {
             return await _table
                 .Include(x => x.AppUser)
-                    .ThenInclude(u => u.Departman) // Listeleme ekranýnda da lazým olabilir diye buraya da ekledik
+                    .ThenInclude(u => u.Departman)
                 .Include(x => x.AppUser)
                     .ThenInclude(u => u.Birim)
+                .Include(x => x.AppUser)
+                    .ThenInclude(u => u.Vardiya)
+                        .ThenInclude(v => v.Yonetici)
                 .AsNoTracking()
                 .ToListAsync();
         }

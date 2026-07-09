@@ -3,7 +3,7 @@ using HumanResources.WebUI.DTOs.UserDtos;
 
 namespace HumanResources.WebUI.DTOs.DiciplineDtos
 {
-    public class DiciplineDto:BaseDto
+    public class DiciplineDto : BaseDto
     {
         public int AppUserId { get; set; }
         public UserDto AppUser { get; set; }
@@ -13,5 +13,6 @@ namespace HumanResources.WebUI.DTOs.DiciplineDtos
         public string? DosyaYolu { get; set; }
         public string? IspatGorseliYolu { get; set; }
         public string? TanikAdSoyad { get; set; }
+        public string? TanikAdSoyad2 { get; set; }
     }
 }

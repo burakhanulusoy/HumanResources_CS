@@ -70,7 +70,7 @@ namespace HumanResources.Business.Services.DiciplineServices
             if (updateDto.Dosya != null)
             {
                 if (!string.IsNullOrEmpty(entity.DosyaYolu))
-                    _fileService.DeleteFile(entity.DosyaYolu); // Eski dosyayý sil
+                    _fileService.DeleteFile(entity.DosyaYolu);
 
                 entity.DosyaYolu = await _fileService.UploadFileAsync(
                     updateDto.Dosya, "diciplines", $"user-{updateDto.AppUserId}");
@@ -98,7 +98,6 @@ namespace HumanResources.Business.Services.DiciplineServices
             var entity = await _diciplineRepository.GetByIdAsync(id);
             if (entity is null) return BaseResult<object>.Fail("Kayýt bulunamadý.");
 
-            // Kayýt siliniyorsa dosyasý da sunucuda yetim kalmasýn
             if (!string.IsNullOrEmpty(entity.DosyaYolu))
                 _fileService.DeleteFile(entity.DosyaYolu);
 
@@ -114,6 +113,8 @@ namespace HumanResources.Business.Services.DiciplineServices
         public async Task<BaseResult<List<ResultDiciplineDto>>> GetAllAsync()
         {
             var entities = await _diciplineRepository.GetAllWithUserAsync();
+
+            ConfigureVardiyaAmiriMapping();
             var mappedEntities = entities.Adapt<List<ResultDiciplineDto>>();
             return BaseResult<List<ResultDiciplineDto>>.Success(mappedEntities);
         }
@@ -133,7 +134,20 @@ namespace HumanResources.Business.Services.DiciplineServices
             if (entities == null || !entities.Any())
                 return BaseResult<List<DiciplineDto>>.Fail("Bu personele ait disiplin veya ödül kaydý bulunamadý.");
 
+            // ÝÞ KURALI: Kiþinin baðlý olduðu vardiyanýn yöneticisini, personel bilgisine flatten olarak ekle.
+            // Böylece tutanak ekranýnda "Vardiya Amiri" alaný elle doldurulmaz, sistemden otomatik gelir.
+            ConfigureVardiyaAmiriMapping();
+
             return BaseResult<List<DiciplineDto>>.Success(entities.Adapt<List<DiciplineDto>>());
+        }
+
+        private static void ConfigureVardiyaAmiriMapping()
+        {
+            TypeAdapterConfig<AppUser, HumanResources.Business.DTOs.UserDtos.UserDto>.NewConfig()
+                .Map(dest => dest.VardiyaAmiriAdSoyad,
+                     src => src.Vardiya != null && src.Vardiya.Yonetici != null
+                            ? src.Vardiya.Yonetici.Ad + " " + src.Vardiya.Yonetici.Soyad
+                            : null);
         }
     }
 }

@@ -5,12 +5,23 @@
 }
 
 <style>
+    :root {
+        --navy: #0B2545;
+        --navy-2: #143A6B;
+        --cyan: #29A8CC;
+        --cyan-soft: #EAF6FA;
+        --line: #E4E9F0;
+        --soft: #F7F9FC;
+        --muted: #64748B;
+    }
+
     .dsp-form-card {
-        border: 1px solid #e5e7eb;
+        border: 1px solid var(--line);
         border-radius: 14px;
-        box-shadow: 0 1px 3px rgba(0,0,0,.04);
-        max-width: 860px;
+        box-shadow: 0 1px 3px rgba(11,37,69,.06);
+        max-width: 900px;
         margin: 0 auto;
+        overflow: hidden;
     }
 
     .dsp-form-header {
@@ -18,84 +29,109 @@
         align-items: center;
         gap: 1rem;
         padding: 1.5rem 1.75rem;
-        border-bottom: 1px solid #f1f5f9;
+        background: linear-gradient(120deg, var(--navy) 0%, var(--navy-2) 100%);
+        color: #fff;
     }
 
         .dsp-form-header .icon-wrap {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
+            width: 46px;
+            height: 46px;
+            border-radius: 10px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #22c55e, #16a34a);
-            color: #fff;
-            font-size: 1.3rem;
+            background: rgba(255,255,255,.12);
+            color: var(--cyan);
+            font-size: 1.25rem;
+            flex-shrink: 0;
         }
 
     .dsp-form-title {
         font-weight: 700;
-        color: #111827;
         margin: 0;
+        letter-spacing: .01em;
     }
 
     .dsp-form-subtitle {
-        color: #6b7280;
-        font-size: .85rem;
+        color: #B9C6D8;
+        font-size: .82rem;
         margin: 2px 0 0;
     }
 
     .dsp-form-body {
-        padding: 1.75rem;
+        padding: 2rem;
     }
+
+    .dsp-section-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--navy);
+        font-size: .78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        margin: 1.75rem 0 1rem;
+    }
+
+        .dsp-section-title:first-child {
+            margin-top: 0;
+        }
+
+        .dsp-section-title::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--line);
+        }
 
     .dsp-label {
         font-weight: 600;
         color: #374151;
-        font-size: .88rem;
-        margin-bottom: .45rem;
+        font-size: .86rem;
+        margin-bottom: .4rem;
         display: flex;
         align-items: center;
         gap: .4rem;
     }
 
         .dsp-label i {
-            color: #0d9488;
+            color: var(--cyan);
         }
 
     .dsp-input {
-        border: 1.5px solid #e5e7eb;
-        border-radius: 10px;
+        border: 1.5px solid var(--line);
+        border-radius: 8px;
         padding: .6rem .85rem;
         font-size: .92rem;
     }
 
         .dsp-input:focus {
-            border-color: #0d9488;
-            box-shadow: 0 0 0 3px rgba(13,148,136,.12);
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 3px rgba(41,168,204,.15);
         }
 
     .file-drop {
-        border: 2px dashed #d1d5db;
-        border-radius: 12px;
-        padding: 1.5rem;
+        border: 1.5px dashed #cbd5e1;
+        border-radius: 10px;
+        padding: 1.4rem;
         text-align: center;
         color: #9ca3af;
         cursor: pointer;
         transition: .2s;
-        background: #fafafa;
+        background: var(--soft);
     }
 
         .file-drop:hover, .file-drop.has-file {
-            border-color: #0d9488;
-            color: #0d9488;
-            background: #f0fdfa;
+            border-color: var(--cyan);
+            color: var(--navy);
+            background: var(--cyan-soft);
         }
 
         .file-drop i {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             display: block;
-            margin-bottom: .35rem;
+            margin-bottom: .3rem;
         }
 
         .file-drop input[type=file] {
@@ -104,29 +140,33 @@
 
     .file-name {
         font-weight: 600;
-        font-size: .88rem;
+        font-size: .86rem;
     }
 
     .btn-create {
-        background: linear-gradient(135deg, #22c55e, #16a34a);
+        background: var(--navy);
         color: #fff;
         border: none;
-        border-radius: 10px;
-        padding: .6rem 1.4rem;
+        border-radius: 8px;
+        padding: .6rem 1.5rem;
         font-weight: 600;
     }
 
         .btn-create:hover {
+            background: var(--navy-2);
             color: #fff;
-            filter: brightness(1.08);
+        }
+
+        .btn-create i {
+            color: var(--cyan);
         }
 
     .btn-cancel {
-        background: #f1f5f9;
+        background: var(--soft);
         color: #475569;
-        border: none;
-        border-radius: 10px;
-        padding: .6rem 1.2rem;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: .6rem 1.3rem;
         font-weight: 600;
     }
 
@@ -134,25 +174,57 @@
             background: #e2e8f0;
             color: #334155;
         }
+
+    .validation-summary-banner {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+        border-radius: 10px;
+        padding: .85rem 1.1rem;
+        margin-bottom: 1.25rem;
+        font-size: .88rem;
+    }
+
+        .validation-summary-banner ul {
+            margin: 4px 0 0;
+            padding-left: 1.2rem;
+        }
+
+    /* Select2 kurumsal tema uyumu */
+    .select2-container--bootstrap-5 .select2-selection {
+        border: 1.5px solid var(--line) !important;
+        border-radius: 8px !important;
+        min-height: 42px !important;
+    }
 </style>
 
 <div class="card dsp-form-card mb-4">
     <div class="dsp-form-header">
         <span class="icon-wrap"><i class="bi bi-file-earmark-plus"></i></span>
         <div>
-            <h5 class="dsp-form-title">Yeni Kayıt Oluştur</h5>
-            <p class="dsp-form-subtitle">Personele ait disiplin veya ödül kaydı ekleyin</p>
+            <h5 class="dsp-form-title">Yeni Disiplin / Ödül Kaydı</h5>
+            <p class="dsp-form-subtitle">İnsan Kaynakları Departmanı — Personel İşlem Formu</p>
         </div>
     </div>
     <div class="card-body dsp-form-body">
-        <form asp-action="CreateDicipline" method="post" id="createForm" enctype="multipart/form-data" novalidate>
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="validation-summary-banner">
+                <strong><i class="bi bi-exclamation-triangle me-1"></i>Formda düzeltilmesi gereken alanlar var:</strong>
+                <div asp-validation-summary="ModelOnly"></div>
+            </div>
+        }
+
+        <form asp-action="CreateDicipline" method="post" id="createForm" enctype="multipart/form-data" novalidate>
+
+            <div class="dsp-section-title">Personel ve Olay Bilgisi</div>
             <div class="row">
                 <div class="col-md-6 mb-4">
                     <label class="dsp-label"><i class="bi bi-person-badge"></i> Personel</label>
-                    <select asp-for="Record.AppUserId" asp-items="Model.Users" class="form-select dsp-input" required>
-                        <option value="">-- Personel Seçiniz --</option>
+                    <select asp-for="Record.AppUserId" asp-items="Model.Users" class="form-select dsp-input js-select2" required
+                            data-placeholder="Personel ara ve seç...">
+                        <option value=""></option>
                     </select>
                     <span class="text-danger small" asp-validation-for="Record.AppUserId"></span>
                 </div>
@@ -172,50 +244,68 @@
             </div>
 
             <div class="mb-4">
-                <label class="dsp-label"><i class="bi bi-person-check"></i> Tanık Adı Soyadı (Opsiyonel)</label>
-                <input type="text" asp-for="Record.TanikAdSoyad" class="form-control dsp-input"
-                       placeholder="Olaya tanık olan personelin adı soyadı..." maxlength="100" />
-                <span class="text-danger small" asp-validation-for="Record.TanikAdSoyad"></span>
-            </div>
-
-            <div class="mb-4">
                 <label class="dsp-label"><i class="bi bi-justify-left"></i> Detaylı Açıklama</label>
                 <textarea asp-for="Record.Detay" class="form-control dsp-input" rows="4"
                           placeholder="Olayın detaylarını giriniz..." maxlength="1500" required></textarea>
                 <span class="text-danger small" asp-validation-for="Record.Detay"></span>
             </div>
 
-            <div class="mb-4">
-                <label class="dsp-label"><i class="bi bi-paperclip"></i> Belge / Savunma (Opsiyonel)</label>
-                <label class="file-drop d-block" id="fileDrop">
-                    <i class="bi bi-cloud-arrow-up"></i>
-                    <span class="file-name" id="fileName">Dosya seçmek için tıklayın (PDF, Word, Görsel — max 10 MB)</span>
-                    <input type="file" asp-for="Record.Dosya" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xlsx" />
-                </label>
-                <span class="text-danger small" asp-validation-for="Record.Dosya"></span>
+            <div class="dsp-section-title">Tanıklar</div>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="dsp-label"><i class="bi bi-person-check"></i> Tanık 1 <small class="text-muted fw-normal">(opsiyonel)</small></label>
+                    <input type="text" asp-for="Record.TanikAdSoyad" class="form-control dsp-input"
+                           placeholder="Tanık olan personelin adı soyadı..." maxlength="100" />
+                    <span class="text-danger small" asp-validation-for="Record.TanikAdSoyad"></span>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="dsp-label"><i class="bi bi-person-check-fill"></i> Tanık 2 <small class="text-muted fw-normal">(opsiyonel)</small></label>
+                    <input type="text" asp-for="Record.TanikAdSoyad2" class="form-control dsp-input"
+                           placeholder="İkinci tanık varsa adı soyadı..." maxlength="100" />
+                    <span class="text-danger small" asp-validation-for="Record.TanikAdSoyad2"></span>
+                </div>
             </div>
 
-            <div class="mb-4">
-                <label class="dsp-label"><i class="bi bi-camera"></i> İspat Görseli (Opsiyonel)</label>
-                <label class="file-drop d-block" id="ispatDrop">
-                    <i class="bi bi-image"></i>
-                    <span class="file-name" id="ispatName">Olayla ilgili görsel seçmek için tıklayın (JPG, PNG)</span>
-                    <input type="file" asp-for="Record.IspatGorseli" accept=".jpg,.jpeg,.png" />
-                </label>
-                <span class="text-danger small" asp-validation-for="Record.IspatGorseli"></span>
+            <div class="dsp-section-title">Ekler</div>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="dsp-label"><i class="bi bi-paperclip"></i> Belge / Savunma <small class="text-muted fw-normal">(opsiyonel)</small></label>
+                    <label class="file-drop d-block" id="fileDrop">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                        <span class="file-name" id="fileName">PDF, Word, Görsel — max 10 MB</span>
+                        <input type="file" asp-for="Record.Dosya" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xlsx" />
+                    </label>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="dsp-label"><i class="bi bi-camera"></i> İspat Görseli <small class="text-muted fw-normal">(opsiyonel)</small></label>
+                    <label class="file-drop d-block" id="ispatDrop">
+                        <i class="bi bi-image"></i>
+                        <span class="file-name" id="ispatName">JPG, PNG</span>
+                        <input type="file" asp-for="Record.IspatGorseli" accept=".jpg,.jpeg,.png" />
+                    </label>
+                </div>
             </div>
 
-            <div class="d-flex justify-content-end gap-2">
+            <div class="d-flex justify-content-end gap-2 mt-2">
                 <a href="/Admin/Dicipline/Index" class="btn btn-cancel">İptal</a>
-                <button type="submit" class="btn btn-create"><i class="bi bi-check-lg"></i> Kaydet</button>
+                <button type="submit" class="btn btn-create"><i class="bi bi-check-lg me-1"></i> Kaydı Oluştur</button>
             </div>
         </form>
     </div>
 </div>
 
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // Savunma belgesi dosya adı
+    $('.js-select2').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        language: { noResults: function () { return "Sonuç bulunamadı"; } }
+    });
+
     const fileInput = document.querySelector('#fileDrop input[type=file]');
     fileInput.addEventListener('change', function () {
         if (this.files.length > 0) {
@@ -224,7 +314,6 @@
         }
     });
 
-    // İspat görseli dosya adı
     const ispatInput = document.querySelector('#ispatDrop input[type=file]');
     ispatInput.addEventListener('change', function () {
         if (this.files.length > 0) {
@@ -233,20 +322,27 @@
         }
     });
 
-    document.getElementById('createForm').addEventListener('submit', function (e) {
-        var form = this;
+    const form = document.getElementById('createForm');
+    form.addEventListener('submit', function (e) {
+        if (form.dataset.confirmed === 'true') return;
         if (!form.checkValidity()) { form.reportValidity(); e.preventDefault(); return; }
+
         e.preventDefault();
         Swal.fire({
-            title: "Emin misiniz?",
-            text: "Kayıt sisteme eklenecektir.",
+            title: "Kayıt oluşturulsun mu?",
+            text: "Girilen bilgiler sisteme kalıcı olarak eklenecektir.",
             icon: "question",
             showCancelButton: true,
-            confirmButtonColor: "#16a34a",
+            confirmButtonColor: "#0B2545",
             cancelButtonColor: "#6c757d",
-            confirmButtonText: "Evet, kaydet",
+            confirmButtonText: "Evet, oluştur",
             cancelButtonText: "İptal",
             reverseButtons: true
-        }).then(res => { if (res.isConfirmed) form.submit(); });
+        }).then(res => {
+            if (res.isConfirmed) {
+                form.dataset.confirmed = 'true';
+                form.submit();
+            }
+        });
     });
 </script>

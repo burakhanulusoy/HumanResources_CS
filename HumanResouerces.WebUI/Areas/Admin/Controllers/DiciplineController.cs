@@ -121,16 +121,19 @@ namespace HumanResouerces.WebUI.Areas.Admin.Controllers
 
         private void AddApiErrorsToModelState(ApiValidationException ex)
         {
-            // ApiValidationException'ının içindeki hata listesine göre uyarlarsın.
-            // Örn: ex.Errors bir List<string> ise:
-            if (ex.Errors is not null)
+            if (ex.Errors is not null && ex.Errors.Any())
             {
                 foreach (var error in ex.Errors)
-                    ModelState.AddModelError(string.Empty, error.ToString());
+                {
+                    // API'den gelen PropertyName "OlayTarihi" gibi geliyor,
+                    // formdaki alan adı ise "Record.OlayTarihi" — eşleşmesi için önek ekliyoruz.
+                    var key = string.IsNullOrEmpty(error.PropertyName) ? string.Empty : $"Record.{error.PropertyName}";
+                    ModelState.AddModelError(key, error.ErrorMessage);
+                }
             }
             else
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
+                ModelState.AddModelError(string.Empty, "İşlem sırasında bir hata oluştu.");
             }
         }
 
