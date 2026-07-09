@@ -110,10 +110,13 @@ namespace HumanResources.Business.Validators.UserValidators
                 .NotNull().WithMessage("Birim seçimi zorunludur.")
                 .GreaterThan(0).WithMessage("Geçerli bir birim seçiniz.");
 
-            // AmirId — zorunlu deðil, girilirse 0'dan büyük olmalý
             RuleFor(x => x.AmirId)
-                .GreaterThan(0).WithMessage("Geçerli bir amir seçiniz.")
-                .When(x => x.AmirId.HasValue);
+     .NotNull().WithMessage("Amir seçimi zorunludur.")
+     .GreaterThan(0).WithMessage("Geçerli bir amir seçiniz.");
+
+            RuleFor(x => x.VardiyaId)
+                .NotNull().WithMessage("Vardiya seçimi zorunludur.")
+                .GreaterThan(0).WithMessage("Geçerli bir vardiya seçiniz.");
 
             RuleFor(x => x.CalismaDurumu)
                 .NotNull().WithMessage("Çalýþma durumu boþ olamaz.")

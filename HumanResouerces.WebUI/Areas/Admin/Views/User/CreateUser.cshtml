@@ -1,0 +1,492 @@
+﻿@model HumanResources.WebUI.DTOs.UserDtos.CreateUserDto
+@{
+    ViewData["Title"] = "Yeni Personel Ekle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    :root {
+        --navy: #0B2545;
+        --navy-2: #143A6B;
+        --cyan: #29A8CC;
+        --cyan-soft: #EAF6FA;
+        --line: #E4E9F0;
+        --soft: #F7F9FC;
+    }
+
+    .usr-form-card {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow: 0 1px 3px rgba(11,37,69,.06);
+        max-width: 980px;
+        margin: 0 auto;
+        overflow: hidden;
+    }
+
+    .usr-form-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem 1.75rem;
+        background: linear-gradient(120deg, var(--navy) 0%, var(--navy-2) 100%);
+        color: #fff;
+    }
+
+        .usr-form-header .icon-wrap {
+            width: 46px;
+            height: 46px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,.12);
+            color: var(--cyan);
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+    .usr-form-title {
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .usr-form-subtitle {
+        color: #B9C6D8;
+        font-size: .82rem;
+        margin: 2px 0 0;
+    }
+
+    .usr-form-body {
+        padding: 2rem;
+    }
+
+    .usr-section-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--navy);
+        font-size: .78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        margin: 1.75rem 0 1rem;
+    }
+
+        .usr-section-title:first-child {
+            margin-top: 0;
+        }
+
+        .usr-section-title::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--line);
+        }
+
+    .usr-label {
+        font-weight: 600;
+        color: #374151;
+        font-size: .86rem;
+        margin-bottom: .4rem;
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+    }
+
+        .usr-label i {
+            color: var(--cyan);
+        }
+
+    .usr-input {
+        border: 1.5px solid var(--line);
+        border-radius: 8px;
+        padding: .6rem .85rem;
+        font-size: .92rem;
+    }
+
+        .usr-input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 3px rgba(41,168,204,.15);
+        }
+
+    .photo-drop {
+        border: 1.5px dashed #cbd5e1;
+        border-radius: 10px;
+        padding: 1.4rem;
+        text-align: center;
+        color: #9ca3af;
+        cursor: pointer;
+        transition: .2s;
+        background: var(--soft);
+    }
+
+        .photo-drop:hover, .photo-drop.has-file {
+            border-color: var(--cyan);
+            color: var(--navy);
+            background: var(--cyan-soft);
+        }
+
+        .photo-drop i {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: .3rem;
+        }
+
+        .photo-drop input[type=file] {
+            display: none;
+        }
+
+    .file-name {
+        font-weight: 600;
+        font-size: .86rem;
+    }
+
+    .btn-save {
+        background: var(--navy);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: .6rem 1.5rem;
+        font-weight: 600;
+    }
+
+        .btn-save:hover {
+            background: var(--navy-2);
+            color: #fff;
+        }
+
+        .btn-save i {
+            color: var(--cyan);
+        }
+
+    .btn-cancel {
+        background: var(--soft);
+        color: #475569;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: .6rem 1.3rem;
+        font-weight: 600;
+    }
+
+        .btn-cancel:hover {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+    .validation-summary-banner {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+        border-radius: 10px;
+        padding: .85rem 1.1rem;
+        margin-bottom: 1.25rem;
+        font-size: .88rem;
+    }
+
+        .validation-summary-banner ul {
+            margin: 4px 0 0;
+            padding-left: 1.2rem;
+        }
+
+    .select2-container--bootstrap-5 .select2-selection {
+        border: 1.5px solid var(--line) !important;
+        border-radius: 8px !important;
+        min-height: 42px !important;
+    }
+</style>
+
+<div class="card usr-form-card mb-4">
+    <div class="usr-form-header">
+        <span class="icon-wrap"><i class="bi bi-person-plus"></i></span>
+        <div>
+            <h5 class="usr-form-title">Yeni Personel Ekle</h5>
+            <p class="usr-form-subtitle">İnsan Kaynakları Departmanı — Personel Kayıt Formu</p>
+        </div>
+    </div>
+    <div class="card-body usr-form-body">
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="validation-summary-banner">
+                <strong><i class="bi bi-exclamation-triangle me-1"></i>Formda düzeltilmesi gereken alanlar var:</strong>
+                <div asp-validation-summary="ModelOnly"></div>
+            </div>
+        }
+
+        <form asp-action="CreateUser" method="post" id="createUserForm" enctype="multipart/form-data" novalidate>
+
+            <div class="usr-section-title">Hesap Bilgileri</div>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <label class="usr-label"><i class="bi bi-person-badge"></i> Kullanıcı Adı</label>
+                    <input asp-for="UserName" class="form-control usr-input" required />
+                    <span class="text-danger small" asp-validation-for="UserName"></span>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label class="usr-label"><i class="bi bi-envelope"></i> E-posta</label>
+                    <input asp-for="Email" type="email" class="form-control usr-input" required />
+                    <span class="text-danger small" asp-validation-for="Email"></span>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label class="usr-label"><i class="bi bi-key"></i> Şifre</label>
+                    <input asp-for="Password" type="password" class="form-control usr-input" required />
+                    <span class="text-danger small" asp-validation-for="Password"></span>
+                    <small class="text-muted">En az 8 karakter, büyük/küçük harf, rakam ve özel karakter içermeli.</small>
+                </div>
+            </div>
+
+            <div class="usr-section-title">Kimlik Bilgileri</div>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="usr-label"><i class="bi bi-person"></i> Ad</label>
+                    <input asp-for="Ad" class="form-control usr-input" required />
+                    <span class="text-danger small" asp-validation-for="Ad"></span>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="usr-label"><i class="bi bi-person"></i> Soyad</label>
+                    <input asp-for="Soyad" class="form-control usr-input" required />
+                    <span class="text-danger small" asp-validation-for="Soyad"></span>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label class="usr-label"><i class="bi bi-credit-card-2-front"></i> T.C. Kimlik No</label>
+                    <input asp-for="TcKimlikNo" class="form-control usr-input" maxlength="11" required />
+                    <span class="text-danger small" asp-validation-for="TcKimlikNo"></span>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label class="usr-label"><i class="bi bi-calendar-heart"></i> Doğum Tarihi</label>
+                    <input asp-for="DogumTarihi" type="date" class="form-control usr-input"
+                           max="@DateTime.Today.AddYears(-16).ToString("yyyy-MM-dd")" required />
+                    <span class="text-danger small" asp-validation-for="DogumTarihi"></span>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label class="usr-label"><i class="bi bi-droplet"></i> Kan Grubu</label>
+                    <select asp-for="KanGrubu" class="form-select usr-input" required>
+                        <option value="">-- Seçiniz --</option>
+                        <option value="A Rh+">A Rh+</option>
+                        <option value="A Rh-">A Rh-</option>
+                        <option value="B Rh+">B Rh+</option>
+                        <option value="B Rh-">B Rh-</option>
+                        <option value="AB Rh+">AB Rh+</option>
+                        <option value="AB Rh-">AB Rh-</option>
+                        <option value="0 Rh+">0 Rh+</option>
+                        <option value="0 Rh-">0 Rh-</option>
+                    </select>
+                    <span class="text-danger small" asp-validation-for="KanGrubu"></span>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="usr-label"><i class="bi bi-gender-ambiguous"></i> Cinsiyet</label>
+                    <select asp-for="Cinsiyet" class="form-select usr-input" required>
+                        <option value="">-- Seçiniz --</option>
+                        <option value="Erkek">Erkek</option>
+                        <option value="Kadın">Kadın</option>
+                    </select>
+                    <span class="text-danger small" asp-validation-for="Cinsiyet"></span>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="usr-label"><i class="bi bi-heart"></i> Medeni Durum</label>
+                    <select asp-for="MedeniDurum" class="form-select usr-input" required>
+                        <option value="">-- Seçiniz --</option>
+                        <option value="Bekar">Bekar</option>
+                        <option value="Evli">Evli</option>
+                    </select>
+                    <span class="text-danger small" asp-validation-for="MedeniDurum"></span>
+                </div>
+            </div>
+
+            <div class="usr-section-title">İletişim Bilgileri</div>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="usr-label"><i class="bi bi-telephone"></i> Telefon</label>
+                    <input asp-for="PhoneNumber" class="form-control usr-input" placeholder="05XX XXX XX XX" required />
+                    <span class="text-danger small" asp-validation-for="PhoneNumber"></span>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="usr-label"><i class="bi bi-geo-alt"></i> Adres</label>
+                    <input asp-for="Adres" class="form-control usr-input" required />
+                    <span class="text-danger small" asp-validation-for="Adres"></span>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="usr-label"><i class="bi bi-person-exclamation"></i> Acil Durumda Aranacak Kişi</label>
+                    <input asp-for="AcilDurumKisiAdSoyad" class="form-control usr-input" required />
+                    <span class="text-danger small" asp-validation-for="AcilDurumKisiAdSoyad"></span>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="usr-label"><i class="bi bi-telephone-plus"></i> Acil Durum Telefonu</label>
+                    <input asp-for="AcilDurumTelefonu" class="form-control usr-input" required />
+                    <span class="text-danger small" asp-validation-for="AcilDurumTelefonu"></span>
+                </div>
+            </div>
+
+            <div class="usr-section-title">İş ve Organizasyon Bilgileri</div>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="usr-label"><i class="bi bi-building"></i> Departman</label>
+                    <select asp-for="DepartmanId" id="departmanSelect" class="form-select usr-input js-select2" required
+                            data-placeholder="Departman ara ve seç...">
+                        <option value="">-- Seçiniz --</option>
+                        @foreach (var d in ViewBag.Departmanlar ?? new List<HumanResources.WebUI.DTOs.DepartmentDtos.ResultDepartmentDto>())
+                        {
+                            <option value="@d.Id">@d.Ad</option>
+                        }
+                    </select>
+                    <span class="text-danger small" asp-validation-for="DepartmanId"></span>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="usr-label"><i class="bi bi-diagram-3"></i> Birim</label>
+                    <select asp-for="BirimId" id="birimSelect" class="form-select usr-input js-select2" required
+                            data-placeholder="Birim ara ve seç...">
+                        <option value="">-- Seçiniz --</option>
+                        @foreach (var b in ViewBag.Birimler ?? new List<HumanResources.WebUI.DTOs.UnitDtos.ResultUnitDto>())
+                        {
+                            <option value="@b.Id" data-departman="@b.DepartmanId">@b.Ad</option>
+                        }
+                    </select>
+                    <span class="text-danger small" asp-validation-for="BirimId"></span>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="usr-label"><i class="bi bi-person-up"></i> Amir</label>
+                    <select asp-for="AmirId" class="form-select usr-input js-select2" required data-placeholder="Amir ara ve seç...">
+                        <option value="">-- Seçiniz --</option>
+                        @foreach (var a in ViewBag.Amirler ?? new List<HumanResources.WebUI.DTOs.UserDtos.UserDto>())
+                        {
+                            <option value="@a.Id">@a.Ad @a.Soyad</option>
+                        }
+                    </select>
+                    <span class="text-danger small" asp-validation-for="AmirId"></span>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="usr-label"><i class="bi bi-clock-history"></i> Vardiya</label>
+                    <select asp-for="VardiyaId" class="form-select usr-input js-select2" required data-placeholder="Vardiya ara ve seç...">
+                        <option value="">-- Seçiniz --</option>
+                        @foreach (var v in ViewBag.Vardiyalar ?? new List<HumanResources.WebUI.DTOs.ShiftDtos.ResultShiftDto>())
+                        {
+                            <option value="@v.Id">@v.Aciklama (@v.BaslangicSaati.ToString(@"hh\:mm") - @v.BitisSaati.ToString(@"hh\:mm"))</option>
+                        }
+                    </select>
+                    <span class="text-danger small" asp-validation-for="VardiyaId"></span>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label class="usr-label"><i class="bi bi-activity"></i> Çalışma Durumu</label>
+                    <select asp-for="CalismaDurumu" class="form-select usr-input" required>
+                        <option value="">-- Seçiniz --</option>
+                        <option value="Aktif">Aktif</option>
+                        <option value="İzinli">İzinli</option>
+                        <option value="Raporlu">Raporlu</option>
+                    </select>
+                    <span class="text-danger small" asp-validation-for="CalismaDurumu"></span>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label class="usr-label"><i class="bi bi-briefcase"></i> Personel Tipi</label>
+                    <select asp-for="PersonelTipi" class="form-select usr-input" required>
+                        <option value="">-- Seçiniz --</option>
+                        <option value="Tam Zamanlı">Tam Zamanlı</option>
+                        <option value="Yarı Zamanlı">Yarı Zamanlı</option>
+                        <option value="Stajyer">Stajyer</option>
+                    </select>
+                    <span class="text-danger small" asp-validation-for="PersonelTipi"></span>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label class="usr-label"><i class="bi bi-hash"></i> Sicil No</label>
+                    <input asp-for="SicilNo" class="form-control usr-input" required />
+                    <span class="text-danger small" asp-validation-for="SicilNo"></span>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label class="usr-label"><i class="bi bi-file-earmark-text"></i> SGK Sicil No</label>
+                    <input asp-for="SgkSicilNo" class="form-control usr-input" required />
+                    <span class="text-danger small" asp-validation-for="SgkSicilNo"></span>
+                </div>
+            </div>
+
+            <div class="usr-section-title">Profil Fotoğrafı</div>
+            <div class="mb-4">
+                <label class="photo-drop d-block" id="fotoDrop">
+                    <i class="bi bi-person-circle"></i>
+                    <span class="file-name" id="fotoName">Fotoğraf seçmek için tıklayın (JPG, PNG)</span>
+                    <input type="file" asp-for="Fotograf" accept=".jpg,.jpeg,.png" />
+                </label>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-2">
+                <a asp-action="UserList" class="btn btn-cancel">İptal</a>
+                <button type="submit" class="btn btn-save"><i class="bi bi-check-lg me-1"></i> Personeli Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $('.js-select2').select2({ theme: 'bootstrap-5', width: '100%', language: { noResults: function () { return "Sonuç bulunamadı"; } } });
+
+    // Birim listesini DOM'dan hiç silmeden, sadece görünürlüğünü (matcher ile) filtreliyoruz.
+    // Böylece Razor'un "selected" işaretlemesi (validasyon hatası sonrası dahil) hiç bozulmuyor.
+    $('#birimSelect').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        placeholder: 'Birim ara ve seç...',
+        matcher: function (params, data) {
+            if (!data.id) return data; // placeholder satırı
+            var text = (data.text || '').toLowerCase();
+            var term = (params.term || '').toLowerCase();
+            var textUyuyor = text.indexOf(term) > -1;
+
+            var secilenDepartman = $('#departmanSelect').val();
+            var birimDepartman = $(data.element).data('departman');
+            var departmanUyuyor = !secilenDepartman || String(birimDepartman) === String(secilenDepartman);
+
+            return (textUyuyor && departmanUyuyor) ? data : null;
+        }
+    });
+
+    // Sayfa ilk yüklendikten SONRA kullanıcı departmanı değiştirirse,
+    // eski departmana ait birim seçiliyse temizle (ilk yüklemede/hata sonrası dokunmuyoruz).
+    var sayfaHazir = false;
+    setTimeout(function () { sayfaHazir = true; }, 300);
+
+    $('#departmanSelect').on('change', function () {
+        if (!sayfaHazir) return;
+        var secilenDepartman = $(this).val();
+        var birimSecili = $('#birimSelect option:selected');
+        var birimDepartman = birimSecili.data('departman');
+
+        if (birimDepartman && secilenDepartman && String(birimDepartman) !== String(secilenDepartman)) {
+            $('#birimSelect').val('').trigger('change');
+        }
+    });
+
+    const fotoInput = document.querySelector('#fotoDrop input[type=file]');
+    fotoInput.addEventListener('change', function () {
+        if (this.files.length > 0) {
+            document.getElementById('fotoName').textContent = this.files[0].name;
+            document.getElementById('fotoDrop').classList.add('has-file');
+        }
+    });
+
+    const form = document.getElementById('createUserForm');
+    form.addEventListener('submit', function (e) {
+        if (form.dataset.confirmed === 'true') return;
+        if (!form.checkValidity()) { form.reportValidity(); e.preventDefault(); return; }
+
+        e.preventDefault();
+        Swal.fire({
+            title: "Personel kaydedilsin mi?",
+            text: "Girilen bilgiler sisteme kalıcı olarak eklenecektir.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#0B2545",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Evet, kaydet",
+            cancelButtonText: "İptal",
+            reverseButtons: true
+        }).then(res => {
+            if (res.isConfirmed) {
+                form.dataset.confirmed = 'true';
+                form.submit();
+            }
+        });
+    });
+</script>
