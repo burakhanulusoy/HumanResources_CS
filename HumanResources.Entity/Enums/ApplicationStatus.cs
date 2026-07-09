@@ -32,4 +32,12 @@ namespace HumanResources.Entity.Enums
         Kayip = 4         // Kayboldu veya çalýndý
     }
 
+    public enum DemirbasDurumu
+    {
+        Musait = 0,      // Depoda, verilebilir
+        Zimmetli = 1,    // Þu an birinde
+        Arizali = 2,     // Tamirde / kullanýlamaz
+        HizmetDisi = 3   // Hurdaya ayrýldý
+    }
+
 }

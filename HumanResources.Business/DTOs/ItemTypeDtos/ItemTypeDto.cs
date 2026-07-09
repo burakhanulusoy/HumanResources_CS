@@ -1,20 +1,10 @@
 using HumanResources.Business.Base;
-using HumanResources.Business.DTOs.ItemDtos;
-using HumanResources.Entity.Entities;
-
+using HumanResources.Business.DTOs.DemirbasDtos;
 namespace HumanResources.Business.DTOs.ItemTypeDtos
 {
-    public class ItemTypeDto:BaseDto
+    public class ItemTypeDto : BaseDto
     {
-        public string Ad { get; set; } // Örn: Laptop, Monitör, ESD Bileklik, Ýþ Ayakkabýsý
-
-        public IList<ResultItemDto> Zimmetler { get; set; }
-
-
-
-
-
-
-
+        public string Ad { get; set; }
+        public IList<ResultDemirbasDto> Demirbaslar { get; set; }
     }
 }

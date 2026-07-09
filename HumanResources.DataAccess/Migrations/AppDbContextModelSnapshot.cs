@@ -290,6 +290,50 @@ namespace HumanResources.DataAccess.Migrations
                     b.ToTable("Birimler");
                 });
 
+            modelBuilder.Entity("HumanResources.Entity.Entities.Demirbas", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Aciklama")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Durumu")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("GuncellenmeTarihi")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Marka")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("OlusturulmaTarihi")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SeriNumarasi")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("SilindiMi")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("ZimmetTuruId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ZimmetTuruId");
+
+                    b.ToTable("Demirbaslar");
+                });
+
             modelBuilder.Entity("HumanResources.Entity.Entities.Departman", b =>
                 {
                     b.Property<int>("Id")
@@ -630,10 +674,12 @@ namespace HumanResources.DataAccess.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Aciklama")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("AppUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DemirbasId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Durumu")
@@ -642,35 +688,26 @@ namespace HumanResources.DataAccess.Migrations
                     b.Property<DateTime>("GuncellenmeTarihi")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("IadeTarihi")
+                    b.Property<DateTime?>("IadeTarihi")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Marka")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Model")
-                        .HasColumnType("text");
 
                     b.Property<DateTime>("OlusturulmaTarihi")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("SeriNumarasi")
-                        .HasColumnType("text");
-
                     b.Property<bool>("SilindiMi")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("SuresizMi")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("TeslimTarihi")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("ZimmetTuruId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId");
 
-                    b.HasIndex("ZimmetTuruId");
+                    b.HasIndex("DemirbasId");
 
                     b.ToTable("Zimmetler");
                 });
@@ -867,6 +904,17 @@ namespace HumanResources.DataAccess.Migrations
                     b.Navigation("Departman");
                 });
 
+            modelBuilder.Entity("HumanResources.Entity.Entities.Demirbas", b =>
+                {
+                    b.HasOne("HumanResources.Entity.Entities.ZimmetTuru", "ZimmetTuru")
+                        .WithMany("Demirbaslar")
+                        .HasForeignKey("ZimmetTuruId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ZimmetTuru");
+                });
+
             modelBuilder.Entity("HumanResources.Entity.Entities.Departman", b =>
                 {
                     b.HasOne("HumanResources.Entity.Entities.AppUser", "Yonetici")
@@ -944,15 +992,15 @@ namespace HumanResources.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HumanResources.Entity.Entities.ZimmetTuru", "ZimmetTuru")
+                    b.HasOne("HumanResources.Entity.Entities.Demirbas", "Demirbas")
                         .WithMany("Zimmetler")
-                        .HasForeignKey("ZimmetTuruId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("DemirbasId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("AppUser");
 
-                    b.Navigation("ZimmetTuru");
+                    b.Navigation("Demirbas");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -1026,6 +1074,11 @@ namespace HumanResources.DataAccess.Migrations
                     b.Navigation("Personeller");
                 });
 
+            modelBuilder.Entity("HumanResources.Entity.Entities.Demirbas", b =>
+                {
+                    b.Navigation("Zimmetler");
+                });
+
             modelBuilder.Entity("HumanResources.Entity.Entities.Departman", b =>
                 {
                     b.Navigation("Birimler");
@@ -1055,7 +1108,7 @@ namespace HumanResources.DataAccess.Migrations
 
             modelBuilder.Entity("HumanResources.Entity.Entities.ZimmetTuru", b =>
                 {
-                    b.Navigation("Zimmetler");
+                    b.Navigation("Demirbaslar");
                 });
 #pragma warning restore 612, 618
         }

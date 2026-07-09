@@ -273,6 +273,7 @@
                                 <th>Zimmet Türü</th>
                                 <th>Marka / Model</th>
                                 <th>Teslim Tarihi</th>
+                                <th>İade / Süre</th>
                                 <th class="text-center">Durum</th>
                                 <th class="text-end">İşlem</th>
                             </tr>
@@ -281,11 +282,25 @@
                             @foreach (var z in Model.Zimmetler)
                             {
                                 <tr>
-                                    <td class="fw-semibold">@z.ZimmetTuru?.Ad</td>
+                                    <td class="fw-semibold">@z.Demirbas?.ZimmetTuru?.Ad</td>
                                     <td class="text-muted">
-                                        @(string.IsNullOrEmpty(z.Marka) && string.IsNullOrEmpty(z.Model) ? "-" : $"{z.Marka} {z.Model}")
+                                        @(z.Demirbas == null ? "-" : $"{z.Demirbas.Marka} {z.Demirbas.Model}")
                                     </td>
                                     <td>@z.TeslimTarihi.ToString("dd.MM.yyyy")</td>
+                                    <td>
+                                        @if (z.SuresizMi)
+                                        {
+                                            <span class="badge bg-info-subtle text-info-emphasis"><i class="bi bi-infinity me-1"></i>Süresiz</span>
+                                        }
+                                        else if (z.IadeTarihi.HasValue)
+                                        {
+                                            @z.IadeTarihi.Value.ToString("dd.MM.yyyy")
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
                                     <td class="text-center">
                                         @switch (z.Durumu.ToString())
                                         {
@@ -375,7 +390,7 @@
                 <th style="width: 20%;">Marka / Model</th>
                 <th style="width: 15%;">Seri No</th>
                 <th style="width: 15%;">Teslim Tarihi</th>
-                <th style="width: 12%;">İade Tarihi</th>
+                <th style="width: 12%;">İade / Süre</th>
                 <th style="width: 13%;">Durum</th>
             </tr>
         </thead>
@@ -388,14 +403,20 @@
                     sira++;
                     <tr>
                         <td>@sira</td>
-                        <td>@(z.ZimmetTuru?.Ad ?? "-")</td>
-                        <td>@(string.IsNullOrEmpty(z.Marka) && string.IsNullOrEmpty(z.Model) ? "-" : $"{z.Marka} {z.Model}")</td>
-                        <td>@(string.IsNullOrEmpty(z.SeriNumarasi) ? "-" : z.SeriNumarasi)</td>
+                        <td>@(z.Demirbas?.ZimmetTuru?.Ad ?? "-")</td>
+                        <td>@(z.Demirbas == null ? "-" : $"{z.Demirbas.Marka} {z.Demirbas.Model}")</td>
+                        <td>@(string.IsNullOrEmpty(z.Demirbas?.SeriNumarasi) ? "-" : z.Demirbas.SeriNumarasi)</td>
                         <td>@z.TeslimTarihi.ToString("dd.MM.yyyy")</td>
-                        <td>@(z.IadeTarihi.HasValue && z.IadeTarihi.Value.Year > 2000 ? z.IadeTarihi.Value.ToString("dd.MM.yyyy") : "Devam Ediyor")</td>
-                        <td>@z.Durumu</td>
-                    </tr>
-                }
+                        <td>
+                            @(z.SuresizMi
+                                                ? "Süresiz"
+                                                : (z.IadeTarihi.HasValue && z.IadeTarihi.Value.Year > 2000
+                                                ? z.IadeTarihi.Value.ToString("dd.MM.yyyy")
+                                                : "Devam Ediyor"))
+                </td>
+                <td>@z.Durumu</td>
+            </tr>
+                        }
             }
             else
             {

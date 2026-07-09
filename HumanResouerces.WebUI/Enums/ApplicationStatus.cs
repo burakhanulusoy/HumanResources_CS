@@ -31,5 +31,11 @@ namespace HumanResouerces.WebUI.Enums
         Arizali = 3,      // Bozuldu veya hasar gördü
         Kayip = 4         // Kayboldu veya çalýndý
     }
-
+    public enum DemirbasDurumu
+    {
+        Musait = 0,
+        Zimmetli = 1,
+        Arizali = 2,
+        HizmetDisi = 3
+    }
 }

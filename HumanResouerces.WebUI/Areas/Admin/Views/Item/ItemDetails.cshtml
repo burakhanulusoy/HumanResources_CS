@@ -37,25 +37,25 @@
                     <div class="col-md-6">
                         <div class="p-3 bg-light rounded h-100">
                             <div class="text-muted small mb-1"><i class="bi bi-tags me-1"></i>Zimmet Türü</div>
-                            <div class="fw-semibold">@(Model.ZimmetTuru?.Ad ?? "-")</div>
+                            <div class="fw-semibold">@(Model.Demirbas?.ZimmetTuru?.Ad ?? "-")</div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="p-3 bg-light rounded h-100">
                             <div class="text-muted small mb-1"><i class="bi bi-upc-scan me-1"></i>Seri Numarası</div>
-                            <div class="fw-semibold">@(string.IsNullOrEmpty(Model.SeriNumarasi) ? "Belirtilmemiş" : Model.SeriNumarasi)</div>
+                            <div class="fw-semibold">@(string.IsNullOrEmpty(Model.Demirbas?.SeriNumarasi) ? "Belirtilmemiş" : Model.Demirbas.SeriNumarasi)</div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="p-3 bg-light rounded h-100">
                             <div class="text-muted small mb-1"><i class="bi bi-award me-1"></i>Marka</div>
-                            <div class="fw-semibold">@(string.IsNullOrEmpty(Model.Marka) ? "-" : Model.Marka)</div>
+                            <div class="fw-semibold">@(string.IsNullOrEmpty(Model.Demirbas?.Marka) ? "-" : Model.Demirbas.Marka)</div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="p-3 bg-light rounded h-100">
                             <div class="text-muted small mb-1"><i class="bi bi-cpu me-1"></i>Model</div>
-                            <div class="fw-semibold">@(string.IsNullOrEmpty(Model.Model) ? "-" : Model.Model)</div>
+                            <div class="fw-semibold">@(string.IsNullOrEmpty(Model.Demirbas?.Model) ? "-" : Model.Demirbas.Model)</div>
                         </div>
                     </div>
                 </div>
@@ -70,10 +70,21 @@
                     <div class="col-6">
                         <div class="text-muted small">İade Tarihi</div>
                         <div class="fw-bold fs-6">
-                            <i class="bi bi-calendar-x text-secondary me-1"></i>
-                            @(Model.IadeTarihi.HasValue && Model.IadeTarihi.Value.Year > 2000
-                                                        ? Model.IadeTarihi.Value.ToString("dd.MM.yyyy")
-                                                        : "Devam Ediyor")
+                            @if (Model.SuresizMi)
+                            {
+                                <i class="bi bi-infinity text-info me-1"></i>
+                                <span>Süresiz</span>
+                            }
+                            else if (Model.IadeTarihi.HasValue && Model.IadeTarihi.Value.Year > 2000)
+                            {
+                                <i class="bi bi-calendar-x text-secondary me-1"></i>
+                                @Model.IadeTarihi.Value.ToString("dd.MM.yyyy")
+                            }
+                            else
+                            {
+                                <i class="bi bi-hourglass-split text-secondary me-1"></i>
+                                <span>Devam Ediyor</span>
+                            }
                         </div>
                     </div>
                 </div>

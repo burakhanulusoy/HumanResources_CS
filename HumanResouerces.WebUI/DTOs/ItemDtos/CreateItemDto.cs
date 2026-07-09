@@ -1,19 +1,13 @@
+// CreateItemDto.cs
 namespace HumanResources.WebUI.DTOs.ItemDtos
 {
-    public class CreateItemDto 
+    public class CreateItemDto
     {
         public int AppUserId { get; set; }
-
-        public int ZimmetTuruId { get; set; }
-
-        public string SeriNumarasi { get; set; }
-
+        public int DemirbasId { get; set; }
         public DateTime TeslimTarihi { get; set; }
-
-        public DateTime IadeTarihi { get; set; }
-
-        public string? Marka { get; set; }
-        public string? Model { get; set; }
-        public string Aciklama { get; set; }
+        public DateTime? IadeTarihi { get; set; }
+        public bool SuresizMi { get; set; }
+        public string? Aciklama { get; set; }
     }
 }

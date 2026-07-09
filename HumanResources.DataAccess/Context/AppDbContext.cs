@@ -53,6 +53,20 @@ namespace HumanResources.DataAccess.Context
                 .HasForeignKey(v => v.YoneticiId)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            modelBuilder.Entity<Zimmet>()
+       .HasOne(z => z.Demirbas)
+       .WithMany(d => d.Zimmetler)
+       .HasForeignKey(z => z.DemirbasId)
+       .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Demirbas>()
+                .HasOne(d => d.ZimmetTuru)
+                .WithMany(t => t.Demirbaslar)
+                .HasForeignKey(d => d.ZimmetTuruId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+
         }
 
         private static LambdaExpression ConvertToDeleteFilter(Type type)
@@ -74,7 +88,7 @@ namespace HumanResources.DataAccess.Context
 
         public DbSet<Zimmet> Zimmetler { get; set; }
         public DbSet<ZimmetTuru> ZimmetTurleri { get; set; }
-
+        public DbSet<Demirbas> Demirbaslar { get; set; }
         public DbSet<Egitim> Egitimler { get; set; }
         public DbSet<AppUserEgitim> AppUserEgitimler { get; set; } // Çoka çok (Many-to-Many) veya ara tablo
         public DbSet<Sertifika> Sertifikalar { get; set; }

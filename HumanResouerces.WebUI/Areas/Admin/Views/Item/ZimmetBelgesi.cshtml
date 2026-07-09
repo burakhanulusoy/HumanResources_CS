@@ -61,7 +61,6 @@
             gap: 18px;
         }
 
-            /* Logo büyütüldü: 58px -> 90px */
             .doc-header .brand img {
                 height: 90px;
                 width: auto;
@@ -241,15 +240,25 @@
         </tr>
         <tr>
             <td class="label">Zimmet Türü</td>
-            <td>@(Model.ZimmetTuru?.Ad ?? "-")</td>
+            <td>@(Model.Demirbas?.ZimmetTuru?.Ad ?? "-")</td>
             <td class="label">Marka / Model</td>
-            <td>@((string.IsNullOrEmpty(Model.Marka) && string.IsNullOrEmpty(Model.Model)) ? "-" : $"{Model.Marka} {Model.Model}")</td>
+            <td>@(Model.Demirbas == null ? "-" : $"{Model.Demirbas.Marka} {Model.Demirbas.Model}")</td>
         </tr>
         <tr>
             <td class="label">Seri Numarası</td>
-            <td>@(string.IsNullOrEmpty(Model.SeriNumarasi) ? "-" : Model.SeriNumarasi)</td>
+            <td>@(string.IsNullOrEmpty(Model.Demirbas?.SeriNumarasi) ? "-" : Model.Demirbas.SeriNumarasi)</td>
             <td class="label">Teslim Tarihi</td>
             <td>@Model.TeslimTarihi.ToString("dd.MM.yyyy")</td>
+        </tr>
+        <tr>
+            <td class="label">İade Durumu</td>
+            <td colspan="3">
+                @(Model.SuresizMi
+                                ? "Süresiz (kalıcı kullanım — belirli bir iade tarihi yoktur)"
+                                : (Model.IadeTarihi.HasValue
+                                ? "Planlanan İade Tarihi: " + Model.IadeTarihi.Value.ToString("dd.MM.yyyy")
+                                : "Belirtilmemiş"))
+            </td>
         </tr>
     </table>
 

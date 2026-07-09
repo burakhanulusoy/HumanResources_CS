@@ -1,6 +1,6 @@
 ﻿using HumanResources.WebUI.DTOs.ItemDtos;
+using HumanResources.WebUI.Services.DemirbasServices;
 using HumanResources.WebUI.Services.ItemServices;
-using HumanResources.WebUI.Services.ItemTypeServices;
 using HumanResources.WebUI.Services.UserServices;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,13 +10,17 @@ namespace HumanResouerces.WebUI.Areas.Admin.Controllers
     public class ItemController(
         IItemService _itemService,
         IUserService _userService,
-        IItemTypeService _itemTypeService) : Controller
+        IDemirbasService _demirbasService,
+        IConfiguration _configuration) : Controller   // ItemType yerine Demirbas
     {
         public async Task<IActionResult> Index()
         {
             var response = await _itemService.GetAllItemsWithDetailsAsync();
+            ViewBag.ApiBaseUrl = _configuration["ApiOptions:baseUrl"] + "/api/";
             return View(response.Data);
         }
+
+
 
         public async Task<IActionResult> ItemDetails(int id)
         {
@@ -26,7 +30,7 @@ namespace HumanResouerces.WebUI.Areas.Admin.Controllers
 
         public async Task<IActionResult> CreateItem()
         {
-            await FillDropdownsAsync();
+            await FillDropdownsAsync();   // sadece MÜSAİT demirbaşlar
             return View();
         }
 
@@ -39,8 +43,10 @@ namespace HumanResouerces.WebUI.Areas.Admin.Controllers
 
         public async Task<IActionResult> UpdateItem(int id)
         {
-            await FillDropdownsAsync();
             var response = await _itemService.GetByIdAsync(id);
+
+            // Güncellemede: mevcut demirbaş + hâlâ müsait olanlar dropdown'da görünsün
+            await FillDropdownsAsync(response.Data?.DemirbasId);
             return View(response.Data);
         }
 
@@ -57,19 +63,39 @@ namespace HumanResouerces.WebUI.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // YENİ: İmzalı/logolu resmi zimmet teslim belgesi
         public async Task<IActionResult> ZimmetBelgesi(int id)
         {
             var response = await _itemService.GetItemWithDetailsByIdAsync(id);
             return View(response.Data);
         }
 
-        private async Task FillDropdownsAsync()
+        private async Task FillDropdownsAsync(int? currentDemirbasId = null)
         {
             var usersResponse = await _userService.GetAllAsync();
-            var itemTypesResponse = await _itemTypeService.GetAllAsync();
+            var availableResponse = await _demirbasService.GetAvailableAsync();
+
+            var list = availableResponse.Data ?? new List<HumanResources.WebUI.DTOs.DemirbasDtos.ResultDemirbasDto>();
+
+            // Güncelleme senaryosu: seçili demirbaş "Zimmetli" olduğu için müsait listede gelmez.
+            // Kullanıcının mevcut seçimini kaybetmemek için onu da ekliyoruz.
+            if (currentDemirbasId.HasValue && currentDemirbasId.Value > 0
+                && !list.Any(d => d.Id == currentDemirbasId.Value))
+            {
+                var currentResponse = await _demirbasService.GetByIdAsync(currentDemirbasId.Value);
+                if (currentResponse?.Data != null)
+                {
+                    list.Add(new HumanResources.WebUI.DTOs.DemirbasDtos.ResultDemirbasDto
+                    {
+                        Id = currentResponse.Data.Id,
+                        Marka = currentResponse.Data.Marka,
+                        Model = currentResponse.Data.Model,
+                        SeriNumarasi = currentResponse.Data.SeriNumarasi
+                    });
+                }
+            }
+
             ViewBag.Users = usersResponse.Data;
-            ViewBag.ItemTypes = itemTypesResponse.Data;
+            ViewBag.Demirbaslar = list;
         }
     }
 }

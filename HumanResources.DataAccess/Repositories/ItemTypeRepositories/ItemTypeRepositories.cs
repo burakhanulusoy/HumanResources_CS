@@ -15,8 +15,7 @@ namespace HumanResources.DataAccess.Repositories.ItemTypeRepositories
         public async Task<List<ZimmetTuru>> GetAllItemTypesWithItemsAsync()
         {
             return await _table
-                .Include(x => x.Zimmetler) // Bu türe ait tüm eþyalarý dahil et
-                    .ThenInclude(z => z.AppUser) // O eþyanýn HANGÝ PERSONELDE olduðunu da dahil et
+                .Include(x => x.Demirbaslar)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -24,8 +23,7 @@ namespace HumanResources.DataAccess.Repositories.ItemTypeRepositories
         public async Task<ZimmetTuru> GetItemTypeWithItemsByIdAsync(int id)
         {
             return await _table
-                .Include(x => x.Zimmetler)
-                    .ThenInclude(z => z.AppUser) // Hangi personelde olduðunu görmek için User verisini baðlýyoruz
+                .Include(x => x.Demirbaslar)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
         }

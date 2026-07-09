@@ -1,0 +1,98 @@
+﻿@model HumanResources.WebUI.DTOs.DemirbasDtos.CreateDemirbasDto
+@{
+    ViewData["Title"] = "Yeni Demirbaş Ekle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-hdd-stack me-2"></i>Yeni Demirbaş Kaydı
+            </div>
+            <div class="card-body p-4">
+                <form id="createDemirbasForm" asp-action="CreateDemirbas" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none"></div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label asp-for="ZimmetTuruId" class="form-label">Kategori (Zimmet Türü)</label>
+                            <select asp-for="ZimmetTuruId" class="form-select js-select2" required data-placeholder="Kategori ara ve seç...">
+                                <option value=""></option>
+                                @if (ViewBag.ItemTypes != null)
+                                {
+                                    foreach (var type in ViewBag.ItemTypes)
+                                    {
+                                        <option value="@type.Id">@type.Ad</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="ZimmetTuruId" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Marka" class="form-label">Marka</label>
+                            <input asp-for="Marka" class="form-control" placeholder="Örn: Dell, Lenovo" maxlength="100" required />
+                            <span asp-validation-for="Marka" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Model" class="form-label">Model</label>
+                            <input asp-for="Model" class="form-control" placeholder="Örn: Latitude 5420" maxlength="100" required />
+                            <span asp-validation-for="Model" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="SeriNumarasi" class="form-label">Seri Numarası <small class="text-muted">(isteğe bağlı)</small></label>
+                        <input asp-for="SeriNumarasi" class="form-control" placeholder="Demirbaş / seri kodu" maxlength="100" />
+                        <span asp-validation-for="SeriNumarasi" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Aciklama" class="form-label">Açıklama / Notlar</label>
+                        <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Ürünün durumu, aksesuarları vs."></textarea>
+                        <span asp-validation-for="Aciklama" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">İptal</a>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-check-lg me-1"></i>Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $('.js-select2').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        language: { noResults: function () { return "Sonuç bulunamadı"; } }
+    });
+
+    const form = document.getElementById('createDemirbasForm');
+    form.addEventListener('submit', function (e) {
+        if (form.dataset.confirmed === 'true') return;
+        if (!form.checkValidity()) return;
+        e.preventDefault();
+        Swal.fire({
+            title: 'Demirbaş kaydedilsin mi?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Evet, kaydet',
+            cancelButtonText: 'Vazgeç'
+        }).then(function (result) {
+            if (result.isConfirmed) { form.dataset.confirmed = 'true'; form.submit(); }
+        });
+    });
+</script>

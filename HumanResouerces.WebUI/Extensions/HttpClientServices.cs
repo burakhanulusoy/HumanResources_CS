@@ -1,6 +1,7 @@
 ﻿using HumanResouerces.WebUI.Options;
 using HumanResources.WebUI.Services.CertificateServices;
 using HumanResources.WebUI.Services.CertificateTypeServices;
+using HumanResources.WebUI.Services.DemirbasServices;
 using HumanResources.WebUI.Services.DepartmentServices;
 using HumanResources.WebUI.Services.DiciplineServices;
 using HumanResources.WebUI.Services.EducationServices;
@@ -100,6 +101,11 @@ namespace HumanResouerces.WebUI.Extensions
             services.AddHttpClient<IUserService, UserService>(options =>
             {
                 options.BaseAddress = new Uri(apiBaseUrl);
+            });
+
+            services.AddHttpClient<IDemirbasService, DemirbasService>(c =>
+            {
+                c.BaseAddress = new Uri(apiBaseUrl); // diğer client'larla aynı base adres
             });
         }
     }

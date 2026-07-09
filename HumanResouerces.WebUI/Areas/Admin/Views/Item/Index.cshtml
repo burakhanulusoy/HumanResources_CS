@@ -12,6 +12,9 @@
             <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
             <input type="text" id="searchInput" class="form-control" placeholder="Personel adına göre ara...">
         </div>
+        <a href="@(ViewBag.ApiBaseUrl)items/ExcelExport" class="btn btn-success text-nowrap">
+            <i class="bi bi-file-earmark-excel me-1"></i>Excel İndir
+        </a>
         <a asp-action="CreateItem" class="btn btn-primary text-nowrap">
             <i class="bi bi-plus-lg me-1"></i>Yeni Zimmet Ver
         </a>
@@ -28,6 +31,7 @@
                     <th>Marka / Model</th>
                     <th>Seri No</th>
                     <th>Teslim Tarihi</th>
+                    <th>İade / Süre</th>
                     <th class="text-center">Durum</th>
                     <th class="text-end">İşlemler</th>
                 </tr>
@@ -40,16 +44,30 @@
                         count++;
                         <tr>
                             <td class="fw-semibold text-nowrap personel-name">@item.AppUser?.Ad @item.AppUser?.Soyad</td>
-                            <td>@item.ZimmetTuru?.Ad</td>
+                            <td>@item.Demirbas?.ZimmetTuru?.Ad</td>
                             <td class="text-muted">
-                                @(string.IsNullOrEmpty(item.Marka) && string.IsNullOrEmpty(item.Model)
-                                                        ? "-"
-                                                        : $"{item.Marka} {item.Model}")
-                    </td>
-                    <td><span class="text-muted">@(string.IsNullOrEmpty(item.SeriNumarasi) ? "-" : item.SeriNumarasi)</span></td>
-                    <td class="text-nowrap">@item.TeslimTarihi.ToString("dd.MM.yyyy")</td>
-                    <td class="text-center">
-                        @switch (item.Durumu.ToString())
+                                @(item.Demirbas == null ? "-" : $"{item.Demirbas.Marka} {item.Demirbas.Model}")
+                            </td>
+                            <td>
+                                <span class="text-muted">@(string.IsNullOrEmpty(item.Demirbas?.SeriNumarasi) ? "-" : item.Demirbas.SeriNumarasi)</span>
+                            </td>
+                            <td class="text-nowrap">@item.TeslimTarihi.ToString("dd.MM.yyyy")</td>
+                            <td class="text-nowrap">
+                                @if (item.SuresizMi)
+                                {
+                                    <span class="badge bg-info-subtle text-info-emphasis"><i class="bi bi-infinity me-1"></i>Süresiz</span>
+                                }
+                                else if (item.IadeTarihi.HasValue)
+                                {
+                                    @item.IadeTarihi.Value.ToString("dd.MM.yyyy")
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @switch (item.Durumu.ToString())
                                 {
                                     case "Aktif":
                                         <span class="badge bg-success">Aktif</span>
@@ -90,7 +108,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="7">
+                        <td colspan="8">
                             <div class="text-center text-muted py-5">
                                 <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                 Henüz sisteme eklenmiş bir zimmet bulunmuyor.
@@ -127,7 +145,6 @@
         });
     });
 
-    // Arama (Filtreleme) Scripti
     document.addEventListener("DOMContentLoaded", function () {
         const searchInput = document.getElementById("searchInput");
         const noResultMessage = document.getElementById("noResultMessage");
@@ -140,7 +157,7 @@
 
                 rows.forEach(row => {
                     const nameCell = row.querySelector(".personel-name");
-                    if (!nameCell) return; // boş satır (kayıt yok mesajı) atlanır
+                    if (!nameCell) return;
                     const text = nameCell.textContent.toLowerCase();
                     if (text.includes(filter)) {
                         row.style.display = "";

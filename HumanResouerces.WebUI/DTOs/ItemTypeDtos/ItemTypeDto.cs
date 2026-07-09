@@ -1,19 +1,10 @@
 using HumanResouerces.WebUI.Base;
-using HumanResources.WebUI.DTOs.ItemDtos;
-
+using HumanResources.WebUI.DTOs.DemirbasDtos;
 namespace HumanResources.WebUI.DTOs.ItemTypeDtos
 {
-    public class ItemTypeDto:BaseDto
+    public class ItemTypeDto : BaseDto
     {
-        public string Ad { get; set; } // Örn: Laptop, Monitör, ESD Bileklik, Ýþ Ayakkabýsý
-
-        public IList<ResultItemDto> Zimmetler { get; set; }
-
-
-
-
-
-
-
+        public string Ad { get; set; }
+        public IList<ResultDemirbasDto> Demirbaslar { get; set; }
     }
 }
